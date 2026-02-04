@@ -129,44 +129,51 @@
         };
     }
 
-    async function unlock() {
-        const u = document.getElementById('userInput').value.trim();
-        const p = document.getElementById('passInput').value.trim();
-        if(!u || !p) return alert("Vui lòng nhập đủ!");
+async function unlock() {
+    const u = document.getElementById('userInput').value.trim();
+    const p = document.getElementById('passInput').value.trim();
+    if(!u || !p) return alert("Vui lòng nhập đủ!");
+    
+    const btn = document.querySelector("#lock-screen .btn-save");
+    btn.innerText = "ĐANG XÁC THỰC..."; btn.disabled = true;
+
+    const encryptedAuth = getAuthData(u, p);
+
+    try {
+        const res = await fetch(GOOGLE_URL, {
+            method: 'POST',
+            body: JSON.stringify({ 
+                action: "FETCH_DATA", 
+                user: encryptedAuth.user, 
+                pass: encryptedAuth.pass 
+            })
+        });
+        const text = await res.text();
         
-        const btn = document.querySelector("#lock-screen .btn-save");
-        btn.innerText = "ĐANG XÁC THỰC..."; btn.disabled = true;
-
-        const encryptedAuth = getAuthData(u, p);
-
-        try {
-            const res = await fetch(GOOGLE_URL, {
-                method: 'POST',
-                body: JSON.stringify({ 
-                    action: "FETCH_DATA", 
-                    user: encryptedAuth.user, 
-                    pass: encryptedAuth.pass 
-                })
-            });
-            const text = await res.text();
-            
-            if (text === "AUTH_FAILED") {
-                alert("⚠️ Sai tài khoản hoặc mật khẩu!");
-                btn.innerText = "XÁC THỰC"; btn.disabled = false;
-            } else {
-                AUTH = encryptedAuth;
-                localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
-                
-                document.getElementById('lock-screen').style.display = 'none';
-                document.getElementById('main-content').style.display = 'block';
-                document.getElementById('helloUser').innerText = "Chào, " + AUTH.user;
-                renderData(JSON.parse(text));
-            }
-        } catch (e) {
-            alert("Lỗi kết nối!");
+        if (text === "AUTH_FAILED") {
+            alert("⚠️ Sai tài khoản hoặc mật khẩu!");
             btn.innerText = "XÁC THỰC"; btn.disabled = false;
+        } else {
+            // CÀI ĐẶT THỜI GIAN HẾT HẠN: 24 GIỜ
+            const expireTime = new Date().getTime() + (24 * 60 * 60 * 1000);
+            AUTH = { 
+                user: encryptedAuth.user, 
+                pass: encryptedAuth.pass, 
+                expire: expireTime 
+            };
+            
+            localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
+            
+            document.getElementById('lock-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            document.getElementById('helloUser').innerText = "Chào, " + AUTH.user;
+            renderData(JSON.parse(text));
         }
+    } catch (e) {
+        alert("Lỗi kết nối!");
+        btn.innerText = "XÁC THỰC"; btn.disabled = false;
     }
+}
 
     async function refresh() {
         if (!AUTH) return;
@@ -237,16 +244,26 @@
         });
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        setInitialDate();
-        setupLoginEvents();
-        if (AUTH) {
-            document.getElementById('lock-screen').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
-            document.getElementById('helloUser').innerText = "Chào, " + AUTH.user;
-            refresh();
-        }
-    });
+document.addEventListener("DOMContentLoaded", () => {
+    setInitialDate();
+    setupLoginEvents();
+
+    const now = new Date().getTime();
+
+    // Kiểm tra: Có AUTH + Có mốc hết hạn + Chưa quá hạn
+    if (AUTH && AUTH.expire && now < AUTH.expire) {
+        document.getElementById('lock-screen').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+        document.getElementById('helloUser').innerText = "Chào, " + AUTH.user;
+        refresh();
+    } else {
+        // Nếu không thỏa mãn (quá hạn hoặc chưa login), xóa sạch dữ liệu cũ
+        localStorage.removeItem('tech_auth_v4');
+        AUTH = null;
+        document.getElementById('lock-screen').style.display = 'flex';
+        document.getElementById('main-content').style.display = 'none';
+    }
+});
 
     function renderData(data) {
         try {
