@@ -32,6 +32,20 @@
         /* Modals */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 20px; }
         .modal-content { background: var(--card); width: 100%; max-width: 380px; border-radius: 16px; border: 1px solid var(--primary); padding: 20px; }
+        input[type="date"] {
+            background: white !important;
+            color: black !important;
+            font-size: 16px;
+            padding: 10px;
+        }
+        
+        #workDateDisplay {
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
@@ -96,16 +110,37 @@
 <script>
     const GOOGLE_URL = 'https://script.google.com/macros/s/AKfycbzKOTa-gIYagGcDivR_2XaX0OnViwVwpvKjGVZ2GjVEhIKJNjSBAjzMF7rOHkEaqkN5/exec';
     let AUTH = JSON.parse(localStorage.getItem('tech_auth_v4')) || null;
-    window.currentLogs = []; // Biến tạm lưu trữ dữ liệu để tránh lỗi nội dung dài
+    window.currentLogs = [];
 
-    if (AUTH) {
-        document.addEventListener("DOMContentLoaded", () => {
+    // --- PHẦN SỬA LỖI NGÀY MẶC ĐỊNH ---
+    function setInitialDate() {
+        const now = new Date();
+        // Tạo chuỗi YYYY-MM-DD để gán vào input type="date"
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const day = now.getDate().toString().padStart(2, '0');
+        const todayISO = `${year}-${month}-${day}`;
+        
+        // Gán vào input ẩn
+        const hiddenDateInput = document.getElementById('hiddenDate');
+        hiddenDateInput.value = todayISO;
+        
+        // Hiển thị ra ô văn bản định dạng DD/MM/YYYY
+        document.getElementById('workDateDisplay').value = `${day}/${month}/${year}`;
+    }
+
+    // Chạy ngay khi trang web sẵn sàng
+    document.addEventListener("DOMContentLoaded", () => {
+        setInitialDate(); // Gọi hàm thiết lập ngày hôm nay
+        
+        if (AUTH) {
             document.getElementById('lock-screen').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
             document.getElementById('helloUser').innerText = "Chào, " + AUTH.user;
             refresh();
-        });
-    }
+        }
+    });
+    // ---------------------------------
 
     async function unlock() {
         const u = document.getElementById('userInput').value;
@@ -131,15 +166,13 @@
     function renderData(data) {
         document.getElementById('customer').innerHTML = '<option value="">-- Khách hàng --</option>' + data.customers.map(c => `<option value="${c}">${c}</option>`).join('');
         document.getElementById('techName').innerHTML = '<option value="">-- Kỹ thuật --</option>' + data.techs.map(t => `<option value="${t}">${t}</option>`).join('');
-        
-        // Lưu logs vào biến toàn cục để truy xuất theo index
         window.currentLogs = data.logs.slice(1).reverse();
         
         document.getElementById('tableBody').innerHTML = window.currentLogs.map((row, index) => `
             <tr onclick="openInfoModal(${index})">
                 <td>${formatVN(row[1])}</td>
                 <td><b style="color:var(--primary)">${row[2]}</b></td>
-                <td style="color:#94a3b8">${row[3].substring(0,30)}...</td>
+                <td style="color:#94a3b8">${row[3].toString().substring(0,30)}...</td>
                 <td>${row[4]}</td>
                 <td style="font-size:11px; font-style:italic">${row[5]||''}</td>
             </tr>
@@ -147,11 +180,9 @@
         document.getElementById('syncStatus').innerText = "Cập nhật: " + new Date().toLocaleTimeString();
     }
 
-    // Mở popup theo Index - Chấp mọi độ dài nội dung
     function openInfoModal(index) {
         const row = window.currentLogs[index];
         if(!row) return;
-
         document.getElementById('modalBody').innerHTML = `
             <p><b>Ngày thực hiện:</b> ${formatVN(row[1])}</p>
             <p><b>Khách hàng:</b> <span style="color:var(--primary)">${row[2]}</span></p>
@@ -183,8 +214,23 @@
         setTimeout(refresh, 1200);
     }
 
-    function formatVN(d) { if(!d) return ''; const dt = new Date(d); return dt.getDate().toString().padStart(2,'0')+'/'+(dt.getMonth()+1).toString().padStart(2,'0')+'/'+dt.getFullYear(); }
-    function confirmDate(v) { document.getElementById('workDateDisplay').value = formatVN(v); document.getElementById('dateModal').style.display = 'none'; }
+    // Hàm format hiển thị ngày từ YYYY-MM-DD sang DD/MM/YYYY
+    function formatVN(dStr) {
+        if (!dStr) return '';
+        // Nếu dStr là định dạng ISO (2026-02-04...)
+        const d = new Date(dStr);
+        if (isNaN(d.getTime())) return dStr;
+        const day = d.getDate().toString().padStart(2, '0');
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    function confirmDate(v) { 
+        document.getElementById('workDateDisplay').value = formatVN(v); 
+        document.getElementById('dateModal').style.display = 'none'; 
+    }
+
     function logout() { if(confirm("Bạn muốn đăng xuất?")) { localStorage.removeItem('tech_auth_v4'); location.reload(); } }
     setInterval(() => { if(AUTH) refresh(); }, 30000);
 </script>
