@@ -32,51 +32,14 @@
         /* Modals */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 20px; }
         .modal-content { background: var(--card); width: 100%; max-width: 380px; border-radius: 16px; border: 1px solid var(--primary); padding: 20px; }
-        input[type="date"] {
-            background: white !important;
-            color: black !important;
-            font-size: 16px;
-            padding: 10px;
-        }
         
-        #workDateDisplay {
-            background: rgba(0, 210, 255, 0.1);
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            font-size: 1.1rem;
-            letter-spacing: 1px;
-        }
-        /* Style cho khối Form thu gọn */
-        #formContainer {
-            display: none; /* Mặc định ẩn */
-            background: var(--card);
-            padding: 18px;
-            border-radius: 12px;
-            border: 1px solid var(--primary);
-            margin-bottom: 15px;
-            animation: slideDown 0.3s ease-out;
-        }
-        
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .btn-toggle-form {
-            background: rgba(0, 210, 255, 0.1);
-            color: var(--primary);
-            border: 1px dashed var(--primary);
-            padding: 10px;
-            width: 100%;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
+        input[type="date"] { background: white !important; color: black !important; font-size: 16px; padding: 10px; }
+        #workDateDisplay { background: rgba(0, 210, 255, 0.1); border: 1px solid var(--primary); color: var(--primary); font-size: 1.1rem; letter-spacing: 1px; }
+
+        /* Form thu gọn */
+        #formContainer { display: none; background: var(--card); padding: 18px; border-radius: 12px; border: 1px solid var(--primary); margin-bottom: 15px; animation: slideDown 0.3s ease-out; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .btn-toggle-form { background: rgba(0, 210, 255, 0.1); color: var(--primary); border: 1px dashed var(--primary); padding: 10px; width: 100%; border-radius: 8px; margin-bottom: 15px; cursor: pointer; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 10px; }
     </style>
 </head>
 <body>
@@ -94,8 +57,11 @@
     <div class="header">
         <h2 style="margin:0; font-size:1.2rem; color:var(--primary)">TECH LOGS PRO</h2>
         <div style="text-align: right">
-            <span id="helloUser" style="color:var(--primary); font-size:13px">---</span>
-            <button onclick="logout()" style="color:#ef4444; background:none; border:none; cursor:pointer; margin-left:10px">THOÁT</button>
+            <div>
+                <span id="helloUser" style="color:var(--primary); font-size:13px; font-weight:bold">---</span>
+                <button onclick="logout()" style="color:#ef4444; background:none; border:none; cursor:pointer; margin-left:10px; font-weight:bold">THOÁT</button>
+            </div>
+            <small id="syncStatus" style="font-size:10px; color:#64748b; display:block; margin-top:2px">Đang đồng bộ...</small>
         </div>
     </div>
 
@@ -127,7 +93,7 @@
 <div id="dateModal" class="modal" onclick="if(event.target==this) this.style.display='none'">
     <div class="modal-content" style="text-align:center">
         <h4 style="margin-top:0">CHỌN NGÀY LÀM</h4>
-        <input type="date" id="hiddenDate" onchange="confirmDate(this.value)" style="background:var(--primary); color:black; font-weight:bold">
+        <input type="date" id="hiddenDate" onchange="confirmDate(this.value)" style="background:var(--primary); color:black; font-weight:bold; width:100%">
         <button style="background:none; border:none; color:#888; margin-top:15px; cursor:pointer" onclick="document.getElementById('dateModal').style.display='none'">ĐÓNG</button>
     </div>
 </div>
@@ -145,35 +111,26 @@
     let AUTH = JSON.parse(localStorage.getItem('tech_auth_v4')) || null;
     window.currentLogs = [];
 
-    // 1. TỰ ĐỘNG GÁN NGÀY HÔM NAY
     function setInitialDate() {
         const now = new Date();
         const year = now.getFullYear();
         const month = (now.getMonth() + 1).toString().padStart(2, '0');
         const day = now.getDate().toString().padStart(2, '0');
         const todayISO = `${year}-${month}-${day}`;
-        
         document.getElementById('hiddenDate').value = todayISO;
         document.getElementById('workDateDisplay').value = `${day}/${month}/${year}`;
     }
 
-    // 2. LẮNG NGHE PHÍM ENTER ĐỂ ĐĂNG NHẬP
     function setupLoginEvents() {
         const inputs = [document.getElementById('userInput'), document.getElementById('passInput')];
         inputs.forEach(input => {
-            input.addEventListener("keypress", (event) => {
-                if (event.key === "Enter") {
-                    event.preventDefault();
-                    unlock(); // Gọi hàm đăng nhập
-                }
-            });
+            input.addEventListener("keypress", (e) => { if (e.key === "Enter") unlock(); });
         });
     }
 
     document.addEventListener("DOMContentLoaded", () => {
         setInitialDate();
-        setupLoginEvents(); // Kích hoạt tính năng Enter
-        
+        setupLoginEvents();
         if (AUTH) {
             document.getElementById('lock-screen').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
@@ -186,30 +143,16 @@
         const u = document.getElementById('userInput').value;
         const p = document.getElementById('passInput').value;
         if(!u || !p) return alert("Vui lòng nhập đủ!");
-        
-        // Hiệu ứng chờ khi nhấn Enter
         const btn = document.querySelector("#lock-screen .btn-save");
-        const originalText = btn.innerText;
-        btn.innerText = "ĐANG XÁC THỰC...";
-        btn.disabled = true;
-
+        btn.innerText = "ĐANG XÁC THỰC..."; btn.disabled = true;
         try {
             const res = await fetch(`${GOOGLE_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`);
             const text = await res.text();
-            if (text === "Auth Failed") {
-                alert("Sai tài khoản hoặc mật khẩu!");
-                btn.innerText = originalText;
-                btn.disabled = false;
-                return;
-            }
+            if (text === "Auth Failed") { alert("Sai tài khoản!"); btn.innerText = "XÁC THỰC"; btn.disabled = false; return; }
             AUTH = { user: u, pass: p };
             localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
             location.reload(); 
-        } catch (e) {
-            alert("Lỗi kết nối hệ thống!");
-            btn.innerText = originalText;
-            btn.disabled = false;
-        }
+        } catch (e) { alert("Lỗi kết nối!"); btn.innerText = "XÁC THỰC"; btn.disabled = false; }
     }
 
     async function refresh() {
@@ -235,6 +178,7 @@
                 <td style="font-size:11px; font-style:italic">${row[5]||''}</td>
             </tr>
         `).join('');
+        // Cập nhật dòng thời gian đồng bộ
         document.getElementById('syncStatus').innerText = "Cập nhật: " + new Date().toLocaleTimeString();
     }
 
@@ -242,12 +186,11 @@
         const row = window.currentLogs[index];
         if(!row) return;
         document.getElementById('modalBody').innerHTML = `
-            <p><b>Ngày thực hiện:</b> ${formatVN(row[1])}</p>
-            <p><b>Khách hàng:</b> <span style="color:var(--primary)">${row[2]}</span></p>
-            <p><b>Nội dung chi tiết:</b><br><span style="white-space:pre-wrap; display:block; background:rgba(0,0,0,0.2); padding:10px; border-radius:5px">${row[3]}</span></p>
-            <p><b>Kỹ thuật xử lý:</b> ${row[4]}</p>
-            <p><b>Người nhập máy:</b> ${row[5] || '---'}</p>
-            <p style="font-size:10px; color:#475569; text-align:center; border-top:1px solid var(--border); padding-top:10px">ID Hệ thống: ${new Date(row[0]).toLocaleString()}</p>
+            <p><b>Ngày:</b> ${formatVN(row[1])}</p>
+            <p><b>Khách:</b> <span style="color:var(--primary)">${row[2]}</span></p>
+            <p><b>Nội dung:</b><br><span style="white-space:pre-wrap; display:block; background:rgba(0,0,0,0.2); padding:10px; border-radius:5px">${row[3]}</span></p>
+            <p><b>Kỹ thuật:</b> ${row[4]}</p>
+            <p><b>User:</b> ${row[5] || '---'}</p>
         `;
         document.getElementById('infoModal').style.display = 'flex';
     }
@@ -256,6 +199,18 @@
         const val = document.getElementById('searchBox').value.toUpperCase();
         const rows = document.getElementById('tableBody').getElementsByTagName('tr');
         for (let r of rows) { r.style.display = r.innerText.toUpperCase().includes(val) ? "" : "none"; }
+    }
+
+    function toggleForm() {
+        const form = document.getElementById('formContainer');
+        const btn = document.getElementById('toggleBtn');
+        if (form.style.display === "none" || form.style.display === "") {
+            form.style.display = "block";
+            btn.innerHTML = "➖ THU GỌN FORM";
+        } else {
+            form.style.display = "none";
+            btn.innerHTML = "➕ NHẬP NHẬT KÝ MỚI";
+        }
     }
 
     async function saveData() {
@@ -268,8 +223,9 @@
         btn.innerText = "ĐANG LƯU..."; btn.disabled = true;
         await fetch(GOOGLE_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ user: AUTH.user, workDate: d, customer: c, tech: t, content: n }) });
         document.getElementById('content').value = ''; 
-        btn.innerText = "LƯU NHẬT KÝ MỚI"; btn.disabled = false;
-        setTimeout(refresh, 1200);
+        btn.innerText = "LƯU VÀO HỆ THỐNG"; btn.disabled = false;
+        toggleForm(); 
+        setTimeout(refresh, 1000);
     }
 
     function formatVN(dStr) {
@@ -284,43 +240,8 @@
         document.getElementById('dateModal').style.display = 'none'; 
     }
 
-    function logout() { if(confirm("Bạn muốn đăng xuất?")) { localStorage.removeItem('tech_auth_v4'); location.reload(); } }
-    setInterval(() => { if(AUTH) refresh(); }, 10000);
-    function toggleForm() {
-    const form = document.getElementById('formContainer');
-    const btn = document.getElementById('toggleBtn');
-    
-    if (form.style.display === "none" || form.style.display === "") {
-        form.style.display = "block";
-        btn.innerHTML = "➖ THU GỌN FORM";
-    } else {
-        form.style.display = "none";
-        btn.innerHTML = "➕ NHẬP NHẬT KÝ MỚI";
-    }
-}
-
-// Sửa lại hàm saveData để tự động đóng form sau khi lưu
-async function saveData() {
-    const d = document.getElementById('hiddenDate').value;
-    const c = document.getElementById('customer').value;
-    const t = document.getElementById('techName').value;
-    const n = document.getElementById('content').value;
-    if (!c || !n) return alert("Điền thiếu thông tin!");
-    
-    const btn = document.getElementById('btnSave'); 
-    btn.innerText = "ĐANG LƯU..."; btn.disabled = true;
-    
-    await fetch(GOOGLE_URL, { 
-        method: 'POST', mode: 'no-cors', 
-        body: JSON.stringify({ user: AUTH.user, workDate: d, customer: c, tech: t, content: n }) 
-    });
-    
-    document.getElementById('content').value = ''; 
-    btn.innerText = "LƯU VÀO HỆ THỐNG"; btn.disabled = false;
-    
-    toggleForm(); // Đóng form sau khi lưu thành công
-    setTimeout(refresh, 1000);
-}
+    function logout() { if(confirm("Đăng xuất?")) { localStorage.removeItem('tech_auth_v4'); location.reload(); } }
+    setInterval(() => { if(AUTH) refresh(); }, 15000);
 </script>
 </body>
 </html>
