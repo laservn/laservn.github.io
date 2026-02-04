@@ -84,9 +84,10 @@
         <table>
             <thead>
                 <tr>
+                    <th width="60">Giờ</th>
                     <th>Khách Hàng</th>
                     <th>Nội Dung</th>
-                    <th width="80">Tech</th>
+                    <th width="70">Tech</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -192,21 +193,30 @@
         } catch(e) { console.error(e); }
     }
 
-    function renderTable(logs) {
-        // Lấy tất cả dòng (bao gồm dòng 1 nếu có dữ liệu)
-        const html = logs.slice().reverse().map((row, index) => {
-            if(!row[0] || !row[1]) return '';
-            // Rút gọn nội dung hiển thị ở bảng
-            const shortCont = row[2].length > 50 ? row[2].substring(0, 50) + "..." : row[2];
-            return `
-                <tr onclick="openModal('${row[0]}','${row[1]}','${encodeURIComponent(row[2])}','${row[3]}')">
-                    <td><span class="tag">${row[1]}</span></td>
-                    <td style="font-size:13px; color:#ccc">${shortCont}</td>
-                    <td><b>${row[3] || ''}</b></td>
-                </tr>`;
-        }).join('');
-        document.getElementById('tableBody').innerHTML = html;
-    }
+function renderTable(logs) {
+    // Lấy tất cả dòng (bao gồm dòng 1 nếu có dữ liệu)
+    const html = logs.slice().reverse().map((row, index) => {
+        if(!row[0] || !row[1]) return '';
+        
+        // Tạo định dạng giờ rút gọn (ví dụ: 14:30) để bảng không bị rối
+        const dateObj = new Date(row[0]);
+        const shortTime = dateObj.getHours().toString().padStart(2, '0') + ":" + 
+                          dateObj.getMinutes().toString().padStart(2, '0');
+        const shortDate = dateObj.getDate() + "/" + (dateObj.getMonth() + 1);
+
+        // Rút gọn nội dung hiển thị ở bảng
+        const shortCont = row[2].length > 40 ? row[2].substring(0, 40) + "..." : row[2];
+        
+        return `
+            <tr onclick="openModal('${row[0]}','${row[1]}','${encodeURIComponent(row[2])}','${row[3]}')">
+                <td style="font-size:11px; color:#888; white-space:nowrap">${shortDate}<br>${shortTime}</td>
+                <td><span class="tag">${row[1]}</span></td>
+                <td style="font-size:13px; color:#ccc">${shortCont}</td>
+                <td><b>${row[3] || ''}</b></td>
+            </tr>`;
+    }).join('');
+    document.getElementById('tableBody').innerHTML = html;
+}
 
     function openModal(time, cust, cont, tech) {
         document.getElementById('mTime').innerText = new Date(time).toLocaleString('vi-VN');
