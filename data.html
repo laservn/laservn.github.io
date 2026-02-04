@@ -3,158 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tech Dashboard Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>Tech Dashboard - Stable</title>
     <style>
         :root { --primary: #00d2ff; --dark: #0f172a; --card: #1e293b; --border: rgba(255,255,255,0.1); }
-        body { font-family: 'Inter', sans-serif; background: var(--dark); color: #f8fafc; margin: 0; padding: 12px; }
-        .container { max-width: 900px; margin: auto; }
-        
-        /* Login UI */
+        body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: #f8fafc; margin: 0; padding: 12px; }
         #lock-screen { position: fixed; inset: 0; background: var(--dark); z-index: 3000; display: flex; justify-content: center; align-items: center; }
-        .login-box { width: 300px; padding: 25px; background: var(--card); border-radius: 16px; border: 1px solid var(--border); text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        
-        /* Header */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
-        .user-display { color: var(--primary); font-weight: 600; font-size: 13px; border-right: 1px solid var(--border); padding-right: 10px; margin-right: 10px; }
-        #syncStatus { font-size: 10px; color: #94a3b8; font-family: 'Courier New', monospace; }
-
-        /* Form Controls */
+        .login-box { width: 300px; padding: 25px; background: var(--card); border-radius: 16px; border: 1px solid var(--border); text-align: center; }
         input, select, textarea { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 10px; outline: none; }
         .btn-save { background: linear-gradient(45deg, var(--primary), #3a7bd5); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; }
-        
-        /* Table với kẻ khung */
-        .table-container { margin-top: 20px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--card); }
-        table { width: 100%; border-collapse: collapse; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: var(--card); border-radius: 8px; overflow: hidden; }
         th, td { padding: 12px; border: 1px solid var(--border); text-align: left; font-size: 13px; }
-        th { background: rgba(255,255,255,0.05); color: #888; font-size: 11px; }
-
-        /* Modal hiện giữa */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
-        .modal-content { background: var(--card); width: 90%; max-width: 380px; border-radius: 16px; border: 1px solid var(--primary); padding: 20px; text-align: center; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; }
     </style>
 </head>
 <body>
 
 <div id="lock-screen">
-    <div class="login-box" id="loginContent">
-        <h3 style="color:var(--primary); margin-top:0">ĐĂNG NHẬP HỆ THỐNG</h3>
+    <div class="login-box">
+        <h3 style="color:var(--primary)">HỆ THỐNG NHẬT KÝ</h3>
         <input type="text" id="userInput" placeholder="Tên đăng nhập">
         <input type="password" id="passInput" placeholder="Mật khẩu">
-        <button class="btn-save" onclick="unlock()">XÁC THỰC</button>
+        <button class="btn-save" onclick="unlock()">ĐĂNG NHẬP</button>
     </div>
 </div>
 
 <div class="container" id="main-content" style="display:none;">
     <div class="header">
-        <h2 style="margin:0; font-size:1rem; color:var(--primary)">TECH LOGS</h2>
-        <div style="text-align: right;">
-            <div style="display:flex; align-items:center;">
-                <span class="user-display" id="helloUser">---</span>
-                <button onclick="logout()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-weight:bold; font-size:12px;">THOÁT</button>
-            </div>
-            <span id="syncStatus">Đang tải...</span>
+        <div><b style="color:var(--primary)" id="helloUser">---</b></div>
+        <div style="text-align: right">
+            <button onclick="logout()" style="color:#ff4d4d; background:none; border:none; cursor:pointer; font-weight:bold">THOÁT</button><br>
+            <small id="syncStatus" style="font-size: 10px; color:#888"></small>
         </div>
     </div>
 
-    <div style="background: var(--card); padding: 18px; border-radius: 12px; border: 1px solid var(--border);">
-        <input type="text" id="workDateDisplay" readonly onclick="document.getElementById('dateModal').style.display='flex'" style="text-align:center; color:var(--primary); font-weight:bold; border: 1px solid var(--primary); cursor:pointer">
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
-            <select id="customer"><option value="">Đang tải khách...</option></select>
-            <select id="techName"><option value="">Đang tải kỹ thuật...</option></select>
-        </div>
-        <textarea id="content" placeholder="Nội dung công việc..."></textarea>
-        <button class="btn-save" id="btnSave" onclick="saveData()">LƯU NHẬT KÝ</button>
+    <input type="text" id="workDateDisplay" readonly onclick="document.getElementById('dateModal').style.display='flex'" style="text-align:center; color:var(--primary); font-weight:bold; border: 1px solid var(--primary); cursor:pointer">
+    
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
+        <select id="customer"><option>Đang tải...</option></select>
+        <select id="techName"><option>Đang tải...</option></select>
     </div>
+    <textarea id="content" placeholder="Nội dung..."></textarea>
+    <button class="btn-save" id="btnSave" onclick="saveData()">LƯU DỮ LIỆU</button>
 
-    <div class="table-container">
-        <table>
-            <thead><tr><th>Ngày</th><th>Khách</th><th>Nội dung</th><th>Tech</th><th>User</th></tr></thead>
-            <tbody id="tableBody"></tbody>
-        </table>
-    </div>
+    <table>
+        <thead><tr><th>Ngày</th><th>Khách</th><th>Nội dung</th><th>Tech</th><th>User</th></tr></thead>
+        <tbody id="tableBody"></tbody>
+    </table>
 </div>
 
-<div id="dateModal" class="modal" onclick="if(event.target.id=='dateModal') this.style.display='none'">
-    <div class="modal-content">
-        <h4 style="margin-top:0">CHỌN NGÀY LÀM</h4>
-        <input type="date" id="hiddenDate" onchange="confirmDate(this.value)" style="background:var(--primary); color:black; font-weight:bold">
-        <button style="background:none; border:none; color:#888; margin-top:10px; cursor:pointer" onclick="document.getElementById('dateModal').style.display='none'">HỦY BỎ</button>
+<div id="dateModal" class="modal" onclick="if(event.target==this) this.style.display='none'">
+    <div style="background:var(--card); padding:20px; border-radius:12px; border:1px solid var(--primary)">
+        <input type="date" id="hiddenDate" onchange="confirmDate(this.value)" style="background:var(--primary); color:black">
     </div>
 </div>
 
 <script>
-    const GOOGLE_URL = 'https://script.google.com/macros/s/AKfycbw8JsTqh3INUUkJGtuZC7rzyGPdJWM_QfnXuhwhph22gRe461yOK8D_x_Pzr7O9Mqw/exec';
-    let AUTH = null;
+    const GOOGLE_URL = 'https://script.google.com/macros/s/AKfycbzKOTa-gIYagGcDivR_2XaX0OnViwVwpvKjGVZ2GjVEhIKJNjSBAjzMF7rOHkEaqkN5/exec';
+    let AUTH = JSON.parse(localStorage.getItem('tech_auth_final')) || null;
 
-    function formatVN(d) {
-        if (!d) return '';
-        const dt = new Date(d);
-        return dt.getDate().toString().padStart(2, '0') + '/' + (dt.getMonth() + 1).toString().padStart(2, '0') + '/' + dt.getFullYear();
-    }
+    // HÀM QUAN TRỌNG: Chạy ngay lập tức khi load trang
+    (function checkInstant() {
+        if (AUTH) {
+            // Nếu có AUTH, cho xem Dashboard luôn, không chờ đợi
+            document.getElementById('lock-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            document.getElementById('helloUser').innerText = AUTH.user;
+        }
+    })();
 
-    // KHÔNG BỊ OUT KHI F5: Kiểm tra ngay khi vừa tải
-    window.onload = async () => {
+    window.onload = () => {
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('hiddenDate').value = today;
         document.getElementById('workDateDisplay').value = formatVN(today);
-        
-        const saved = localStorage.getItem('tech_auth_v3');
-        if (saved) {
-            AUTH = JSON.parse(saved);
-            document.getElementById('loginContent').innerHTML = "<p style='color:var(--primary)'>Đang xác thực lại...</p>";
-            await performLogin(AUTH.user, AUTH.pass);
-        }
+        if (AUTH) refresh(); // Tải dữ liệu ngầm
     };
 
     async function unlock() {
         const u = document.getElementById('userInput').value;
         const p = document.getElementById('passInput').value;
-        if(!u || !p) return alert("Hãy nhập đủ User và Pass");
-        await performLogin(u, p);
+        const res = await fetch(`${GOOGLE_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`);
+        const text = await res.text();
+        if (text === "Auth Failed") return alert("Sai tài khoản!");
+        
+        AUTH = { user: u, pass: p };
+        localStorage.setItem('tech_auth_final', JSON.stringify(AUTH));
+        location.reload(); // Reload để vào Dashboard sạch sẽ
     }
 
-    async function performLogin(u, p) {
+    async function refresh() {
         try {
-            const res = await fetch(`${GOOGLE_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`);
-            const text = await res.text();
-            
-            if (text === "Auth Failed") {
-                alert("Sai tên đăng nhập hoặc mật khẩu!");
-                logout_forced();
-                return;
-            }
-
-            const data = JSON.parse(text);
-            if (data.logs) {
-                AUTH = { user: u, pass: p };
-                localStorage.setItem('tech_auth_v3', JSON.stringify(AUTH));
-                document.getElementById('lock-screen').style.display = 'none';
-                document.getElementById('main-content').style.display = 'block';
-                document.getElementById('helloUser').innerText = data.currentUser;
-                renderData(data);
-            }
-        } catch (e) { 
-            console.error(e);
-            logout_forced(); 
-        }
+            const res = await fetch(`${GOOGLE_URL}?user=${encodeURIComponent(AUTH.user)}&pass=${encodeURIComponent(AUTH.pass)}&v=${Date.now()}`);
+            const data = await res.json();
+            renderData(data);
+        } catch (e) { console.log("Lỗi tải dữ liệu"); }
     }
 
     function renderData(data) {
-        document.getElementById('customer').innerHTML = '<option value="">-- Khách hàng --</option>' + data.customers.map(c => `<option value="${c}">${c}</option>`).join('');
-        document.getElementById('techName').innerHTML = '<option value="">-- Kỹ thuật --</option>' + data.techs.map(t => `<option value="${t}">${t}</option>`).join('');
-        
-        const html = data.logs.slice(1).reverse().map(row => `
-            <tr>
-                <td>${formatVN(row[1])}</td>
-                <td><b style="color:var(--primary)">${row[2]}</b></td>
-                <td style="color:#94a3b8; font-size:12px">${row[3]}</td>
-                <td>${row[4]}</td>
-                <td style="font-size:11px; font-style:italic">${row[5] || ''}</td>
-            </tr>
+        document.getElementById('customer').innerHTML = data.customers.map(c => `<option value="${c}">${c}</option>`).join('');
+        document.getElementById('techName').innerHTML = data.techs.map(t => `<option value="${t}">${t}</option>`).join('');
+        document.getElementById('tableBody').innerHTML = data.logs.slice(1).reverse().map(row => `
+            <tr><td>${formatVN(row[1])}</td><td><b>${row[2]}</b></td><td>${row[3]}</td><td>${row[4]}</td><td>${row[5]||''}</td></tr>
         `).join('');
-        document.getElementById('tableBody').innerHTML = html;
-        updateSyncTime();
+        document.getElementById('syncStatus').innerText = "Cập nhật: " + new Date().toLocaleTimeString();
     }
 
     async function saveData() {
@@ -162,38 +113,17 @@
         const c = document.getElementById('customer').value;
         const t = document.getElementById('techName').value;
         const n = document.getElementById('content').value;
-        if (!c || !n) return alert("Điền thiếu thông tin!");
-
-        const btn = document.getElementById('btnSave'); btn.innerText = "ĐANG LƯU..."; btn.disabled = true;
-        await fetch(GOOGLE_URL, { 
-            method: 'POST', mode: 'no-cors', 
-            body: JSON.stringify({ user: AUTH.user, workDate: d, customer: c, tech: t, content: n }) 
-        });
-        
-        document.getElementById('content').value = ''; btn.innerText = "LƯU NHẬT KÝ"; btn.disabled = false;
-        setTimeout(refresh, 1500);
+        const btn = document.getElementById('btnSave'); 
+        btn.innerText = "ĐANG LƯU..."; btn.disabled = true;
+        await fetch(GOOGLE_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ user: AUTH.user, workDate: d, customer: c, tech: t, content: n }) });
+        document.getElementById('content').value = ''; 
+        btn.innerText = "LƯU DỮ LIỆU"; btn.disabled = false;
+        setTimeout(refresh, 1000);
     }
 
-    async function refresh() {
-        if(!AUTH) return;
-        const res = await fetch(`${GOOGLE_URL}?user=${encodeURIComponent(AUTH.user)}&pass=${encodeURIComponent(AUTH.pass)}&v=${Date.now()}`);
-        const data = await res.json();
-        renderData(data);
-    }
-
-    function updateSyncTime() {
-        const now = new Date();
-        document.getElementById('syncStatus').innerText = "Cập nhật: " + now.toTimeString().split(' ')[0];
-    }
-
-    function confirmDate(v) {
-        document.getElementById('workDateDisplay').value = formatVN(v);
-        document.getElementById('dateModal').style.display = 'none';
-    }
-
-    function logout_forced() { localStorage.removeItem('tech_auth_v3'); location.reload(); }
-    function logout() { if(confirm("Bạn có muốn thoát không?")) logout_forced(); }
-    setInterval(() => { if(AUTH) refresh(); }, 10000);
+    function formatVN(d) { if(!d) return ''; const dt = new Date(d); return dt.getDate().toString().padStart(2,'0')+'/'+(dt.getMonth()+1).toString().padStart(2,'0')+'/'+dt.getFullYear(); }
+    function confirmDate(v) { document.getElementById('workDateDisplay').value = formatVN(v); document.getElementById('dateModal').style.display = 'none'; }
+    function logout() { localStorage.removeItem('tech_auth_final'); location.reload(); }
 </script>
 </body>
 </html>
