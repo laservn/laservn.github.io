@@ -108,19 +108,26 @@
 </div>
 
 <script>
-    // --- DÁN LINK GOOGLE SCRIPT CỦA BẠN VÀO ĐÂY ---
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby4j_Ua1OaHlSLiJNP0Q1FFAN40etQrgpuu3urdl4GeIW-aSLzEiBS-8QArKVJCIFs7/exec';
     let CURRENT_PASS = '';
 
+    // Hàm hỗ trợ định dạng ngày thành dd/mm/yyyy
+    function formatDate(dateStr) {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
+        const day = d.getDate().toString().padStart(2, '0');
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
     window.onload = () => {
-        // Mặc định ngày hôm nay
+        // Mặc định ô chọn ngày là hôm nay
         document.getElementById('workDate').value = new Date().toISOString().split('T')[0];
         
-        // KIỂM TRA GHI NHỚ ĐĂNG NHẬP
         const savedPass = localStorage.getItem('tech_key');
-        if(savedPass) {
-            autoUnlock(savedPass);
-        }
+        if(savedPass) autoUnlock(savedPass);
     };
 
     async function autoUnlock(p) {
@@ -139,33 +146,19 @@
         }
     }
 
-async function unlock() {
-    const p = document.getElementById('passInput').value;
-    if(!p) return;
-    
-    // Hiện thông báo đang xử lý để người dùng biết máy đang chạy
-    document.getElementById('lock-screen').style.opacity = "0.5";
-    
-    try {
-        const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(p)}`);
-        const text = await res.text(); // Đọc dạng text trước để kiểm tra lỗi
-        
-        if (text === "Không có quyền truy cập") {
-            alert("Mật khẩu không chính xác!");
-            document.getElementById('lock-screen').style.opacity = "1";
-        } else {
-            const data = JSON.parse(text); // Nếu pass đúng thì mới chuyển sang JSON
+    async function unlock() {
+        const p = document.getElementById('passInput').value;
+        if(!p) return;
+        try {
+            const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(p)}`);
+            const data = await res.json();
             if(data.logs) {
                 localStorage.setItem('tech_key', p);
                 CURRENT_PASS = p;
                 showMain(data);
-            }
-        }
-    } catch(e) { 
-        alert("Lỗi kết nối: Hãy kiểm tra Link Script hoặc mạng! \nChi tiết: " + e.message);
-        document.getElementById('lock-screen').style.opacity = "1";
+            } else { alert("Mật khẩu không đúng!"); }
+        } catch(e) { alert("Lỗi kết nối!"); }
     }
-}
 
     function showMain(data) {
         document.getElementById('lock-screen').style.display = 'none';
@@ -177,21 +170,52 @@ async function unlock() {
         renderTable(data.logs);
     }
 
+    function renderTable(logs) {
+        // logs[0] là tiêu đề, lấy từ logs[1] trở đi
+        const html = logs.slice(1).reverse().map(row => {
+            if(!row[0] || !row[1]) return '';
+            
+            // SỬA TẠI ĐÂY: Hiển thị Ngày/Tháng/Năm
+            const dateStr = formatDate(row[1]); 
+            const shortText = row[3].length > 35 ? row[3].substring(0, 35) + "..." : row[3];
+            
+            return `
+                <tr onclick="openModal('${row[0]}','${row[1]}','${row[2]}','${encodeURIComponent(row[3])}','${row[4]}')">
+                    <td style="font-size:11px; color:#94a3b8">${dateStr}</td>
+                    <td><span style="color:var(--primary)">${row[2]}</span></td>
+                    <td style="font-size:13px; color:#94a3b8">${shortText}</td>
+                    <td>${row[4]}</td>
+                </tr>`;
+        }).join('');
+        document.getElementById('tableBody').innerHTML = html;
+    }
+
+    function openModal(sys, work, cust, cont, tech) {
+        // Hiển thị ngày hệ thống kèm giờ
+        const sysD = new Date(sys);
+        const sysTime = sysD.getHours().toString().padStart(2, '0') + ":" + sysD.getMinutes().toString().padStart(2, '0') + " " + formatDate(sysD);
+        
+        document.getElementById('mSysTime').innerText = sysTime;
+        document.getElementById('mWorkDate').innerText = formatDate(work); // SỬA TẠI ĐÂY
+        document.getElementById('mCust').innerText = cust;
+        document.getElementById('mCont').innerText = decodeURIComponent(cont);
+        document.getElementById('mTech').innerText = tech;
+        document.getElementById('infoModal').style.display = 'flex';
+    }
+
+    // Các hàm phụ trợ (saveData, refresh, updateSyncTime, filterTable, logout, closeModal) giữ nguyên...
     async function saveData() {
         const d = document.getElementById('workDate').value;
         const c = document.getElementById('customer').value;
         const t = document.getElementById('techName').value;
         const n = document.getElementById('content').value;
         if(!d || !c || !n) return alert("Vui lòng điền đủ thông tin!");
-
         const btn = document.getElementById('btnSave');
         btn.innerText = "ĐANG LƯU..."; btn.disabled = true;
-
         await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST', mode: 'no-cors',
             body: JSON.stringify({ password: CURRENT_PASS, workDate: d, customer: c, tech: t, content: n })
         });
-        
         document.getElementById('content').value = '';
         btn.innerText = "LƯU BÁO CÁO MỚI"; btn.disabled = false;
         setTimeout(refresh, 1500);
@@ -209,32 +233,6 @@ async function unlock() {
     function updateSyncTime() {
         const now = new Date();
         document.getElementById('syncStatus').innerText = "Cập nhật: " + now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-    }
-
-    function renderTable(logs) {
-        // logs[0] là tiêu đề, lấy từ logs[1] trở đi
-        const html = logs.slice(1).reverse().map(row => {
-            if(!row[0] || !row[1]) return '';
-            const dateStr = new Date(row[1]).toLocaleDateString('vi-VN');
-            const shortText = row[3].length > 35 ? row[3].substring(0, 35) + "..." : row[3];
-            return `
-                <tr onclick="openModal('${row[0]}','${row[1]}','${row[2]}','${encodeURIComponent(row[3])}','${row[4]}')">
-                    <td>${dateStr}</td>
-                    <td><span style="color:var(--primary)">${row[2]}</span></td>
-                    <td style="font-size:13px; color:#94a3b8">${shortText}</td>
-                    <td>${row[4]}</td>
-                </tr>`;
-        }).join('');
-        document.getElementById('tableBody').innerHTML = html;
-    }
-
-    function openModal(sys, work, cust, cont, tech) {
-        document.getElementById('mSysTime').innerText = new Date(sys).toLocaleString('vi-VN');
-        document.getElementById('mWorkDate').innerText = new Date(work).toLocaleDateString('vi-VN');
-        document.getElementById('mCust').innerText = cust;
-        document.getElementById('mCont').innerText = decodeURIComponent(cont);
-        document.getElementById('mTech').innerText = tech;
-        document.getElementById('infoModal').style.display = 'flex';
     }
 
     function closeModal() { document.getElementById('infoModal').style.display = 'none'; }
