@@ -6,45 +6,43 @@
     <title>Kỹ Thuật Pro - Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #00d2ff; --secondary: #3a7bd5; --dark: #0f172a; --card: #1e293b; --text: #f8fafc; }
+        :root { --primary: #00d2ff; --secondary: #3a7bd5; --dark: #0f172a; --card: #1e293b; --text: #f8fafc; --border: rgba(255,255,255,0.1); }
         body { font-family: 'Inter', sans-serif; background: var(--dark); color: var(--text); margin: 0; padding: 12px; }
         .container { max-width: 900px; margin: auto; }
         
         /* Header */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; }
-        .sync-box { display: flex; align-items: center; gap: 12px; }
-        #syncStatus { font-size: 11px; color: #94a3b8; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
+        #syncStatus { font-size: 11px; color: #94a3b8; margin-right: 10px; }
 
-        /* Form & Inputs */
-        .glass-card { background: var(--card); padding: 18px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); }
+        /* Form */
+        .glass-card { background: var(--card); padding: 18px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        input, select, textarea { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 8px; outline: none; font-size: 14px; width: 100%; box-sizing: border-box; }
         
-        /* Ô chọn ngày đặc biệt */
-        #workDateDisplay { 
-            grid-column: span 2; cursor: pointer; text-align: center; font-weight: 600; color: var(--primary);
-            background: #0f172a url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%2300d2ff" viewBox="0 0 16 16"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>') no-repeat 5% center;
-        }
-
+        /* Ô chọn ngày 1 chạm */
+        input, select, textarea { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 8px; outline: none; font-size: 14px; width: 100%; box-sizing: border-box; }
+        input[type="date"] { grid-column: span 2; font-family: inherit; cursor: pointer; }
         textarea { grid-column: span 2; height: 80px; }
         .btn-save { grid-column: span 2; background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 600; }
 
-        /* Table */
-        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; margin-top: 15px; }
-        td { background: var(--card); padding: 12px; cursor: pointer; }
-        td:first-child { border-radius: 8px 0 0 8px; font-size: 11px; color: #94a3b8; }
-        td:last-child { border-radius: 0 8px 8px 0; font-weight: 600; color: var(--primary); }
-        .tag { background: rgba(0, 210, 255, 0.1); color: var(--primary); padding: 3px 8px; border-radius: 5px; font-size: 11px; }
+        /* Bảng lịch sử có khung */
+        .table-container { margin-top: 20px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--card); }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: rgba(0,0,0,0.2); padding: 12px; text-align: left; font-size: 11px; color: #888; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        td { padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.03); }
+        .tag { background: rgba(0, 210, 255, 0.1); color: var(--primary); padding: 3px 8px; border-radius: 5px; font-size: 11px; font-weight: 600; border: 1px solid rgba(0, 210, 255, 0.2); }
 
-        /* Modals (Lịch & Chi tiết) */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 20px; }
-        .modal-content { background: var(--card); width: 100%; max-width: 350px; padding: 25px; border-radius: 16px; border: 1px solid var(--primary); position: relative; text-align: center; }
+        /* Popup có khung */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 20px; }
+        .modal-content { background: var(--card); width: 100%; max-width: 400px; border-radius: 16px; border: 1px solid var(--primary); position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5); overflow: hidden; }
+        .modal-header { padding: 15px; border-bottom: 1px solid var(--border); text-align: center; background: rgba(0,0,0,0.1); }
+        .modal-body { padding: 20px; }
+        .m-row { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px dotted var(--border); }
+        .m-row:last-child { border-bottom: none; }
+        .m-label { font-size: 10px; color: var(--primary); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+        .m-val { font-size: 14px; line-height: 1.4; }
         
-        /* Hiệu ứng lịch hiện giữa */
-        #datePickerModal input[type="date"] { 
-            font-size: 20px; padding: 15px; margin-top: 15px; background: var(--primary); color: var(--dark); font-weight: bold;
-        }
-
         #lock-screen { position: fixed; inset: 0; background: var(--dark); z-index: 3000; display: flex; justify-content: center; align-items: center; }
     </style>
 </head>
@@ -61,55 +59,47 @@
 <div class="container" id="main-content" style="visibility: hidden;">
     <div class="header">
         <h2 style="margin:0; font-size:1.1rem; color:var(--primary)">TECH DASHBOARD</h2>
-        <div class="sync-box">
+        <div style="display: flex; align-items: center;">
             <span id="syncStatus">Đang tải...</span>
-            <button onclick="logout()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:12px">THOÁT</button>
+            <button onclick="logout()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:12px; font-weight:600">THOÁT</button>
         </div>
     </div>
 
     <div class="glass-card">
         <div class="form-grid">
-            <input type="text" id="workDateDisplay" readonly onclick="openDatePicker()" placeholder="Ngày/Tháng/Năm">
-            
-            <select id="customer"><option value="">Đang tải khách...</option></select>
-            <select id="techName"><option value="">Đang tải kỹ thuật...</option></select>
-            <textarea id="content" placeholder="Nội dung xử lý..."></textarea>
+            <input type="date" id="workDate">
+            <select id="customer"><option value="">Tải khách hàng...</option></select>
+            <select id="techName"><option value="">Tải kỹ thuật...</option></select>
+            <textarea id="content" placeholder="Mô tả nội dung xử lý..."></textarea>
             <button class="btn-save" id="btnSave" onclick="saveData()">LƯU BÁO CÁO</button>
         </div>
     </div>
 
-    <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="Tìm kiếm nhanh..." style="margin: 20px 0 10px 0;">
+    <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="Tìm khách hàng hoặc nội dung..." style="margin: 20px 0 10px 0;">
 
-    <div style="overflow-x:auto">
+    <div class="table-container">
         <table>
-            <thead><tr><th width="85">Ngày</th><th>Khách hàng</th><th>Nội dung</th><th width="60">Tech</th></tr></thead>
+            <thead><tr><th width="90">Ngày</th><th>Khách hàng</th><th>Nội dung</th><th width="70">Tech</th></tr></thead>
             <tbody id="tableBody"></tbody>
         </table>
     </div>
 </div>
 
-<div id="datePickerModal" class="modal">
-    <div class="modal-content">
-        <h3 style="color:var(--primary); margin-top:0">CHỌN NGÀY</h3>
-        <input type="date" id="hiddenDateInput" onchange="applyDate(this.value)">
-        <p style="font-size:12px; color:#888; margin-top:15px">Chọn ngày xong bảng sẽ tự đóng</p>
-        <button onclick="closeDatePicker()" style="background:none; border:none; color:white; margin-top:10px; cursor:pointer">Đóng</button>
-    </div>
-</div>
-
-<div id="infoModal" class="modal">
-    <div class="modal-content" style="text-align:left">
-        <h3 style="color:var(--primary); text-align:center">CHI TIẾT</h3>
-        <p style="font-size:10px; color:var(--primary); margin:0">NGÀY THỰC HIỆN</p>
-        <p id="mWorkDate" style="font-weight:600; margin:5px 0 15px 0"></p>
-        <p style="font-size:10px; color:var(--primary); margin:0">KHÁCH HÀNG</p>
-        <p id="mCust" style="margin:5px 0 15px 0"></p>
-        <p style="font-size:10px; color:var(--primary); margin:0">NỘI DUNG</p>
-        <p id="mCont" style="margin:5px 0 15px 0; white-space:pre-wrap"></p>
-        <p style="font-size:10px; color:var(--primary); margin:0">KỸ THUẬT</p>
-        <p id="mTech" style="margin:5px 0 15px 0"></p>
-        <p id="mSysTime" style="color:#64748b; font-size:10px; text-align:center"></p>
-        <button class="btn-save" onclick="closeModal()">ĐÓNG</button>
+<div id="infoModal" class="modal" onclick="closeModalOnOut(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h3 style="margin:0; color:var(--primary); font-size: 1rem;">CHI TIẾT NHẬT KÝ</h3>
+        </div>
+        <div class="modal-body">
+            <div class="m-row"><div class="m-label">Ngày thực hiện</div><div class="m-val" id="mWorkDate" style="font-weight:600"></div></div>
+            <div class="m-row"><div class="m-label">Khách hàng</div><div class="m-val" id="mCust"></div></div>
+            <div class="m-row"><div class="m-label">Nội dung</div><div class="m-val" id="mCont"></div></div>
+            <div class="m-row"><div class="m-label">Kỹ thuật</div><div class="m-val"><span class="tag" id="mTech"></span></div></div>
+            <div style="text-align:center; margin-top:10px">
+                <p id="mSysTime" style="color:#64748b; font-size:10px; margin-bottom:15px"></p>
+                <button class="btn-save" onclick="closeModal()" style="width:100px; padding:8px">ĐÓNG</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -123,23 +113,11 @@
         return d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getFullYear();
     }
 
-    // XỬ LÝ CHỌN NGÀY GIỮA MÀN HÌNH
-    function openDatePicker() { document.getElementById('datePickerModal').style.display = 'flex'; }
-    function closeDatePicker() { document.getElementById('datePickerModal').style.display = 'none'; }
-    function applyDate(val) {
-        if(!val) return;
-        document.getElementById('workDateDisplay').value = formatVN(val);
-        closeDatePicker();
-    }
-
     window.onload = async () => {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('hiddenDateInput').value = today;
-        document.getElementById('workDateDisplay').value = formatVN(today);
-        
+        document.getElementById('workDate').value = new Date().toISOString().split('T')[0];
         const savedPass = localStorage.getItem('tech_key');
         if (savedPass) {
-            document.getElementById('lock-box').innerHTML = "<p style='color:var(--primary)'>Đang tự động đăng nhập...</p>";
+            document.getElementById('lock-box').innerHTML = "<p style='color:var(--primary)'>Đang kết nối...</p>";
             await autoUnlock(savedPass);
         }
     };
@@ -160,7 +138,7 @@
             localStorage.setItem('tech_key', p);
             CURRENT_PASS = p;
             showMain(data);
-        } else { alert("Sai mật khẩu!"); }
+        } else { alert("Sai passcode!"); }
     }
 
     function showMain(data) {
@@ -177,10 +155,11 @@
     function renderTable(logs) {
         const html = logs.slice(1).reverse().map(row => {
             if(!row[0] || !row[1]) return '';
+            const shortText = row[3].length > 30 ? row[3].substring(0,30) + "..." : row[3];
             return `<tr onclick="openModal('${row[0]}','${row[1]}','${row[2]}','${encodeURIComponent(row[3])}','${row[4]}')">
                 <td>${formatVN(row[1])}</td>
                 <td><span class="tag">${row[2]}</span></td>
-                <td style="font-size:13px; color:#94a3b8">${row[3].substring(0,30)}...</td>
+                <td style="font-size:13px; color:#94a3b8">${shortText}</td>
                 <td>${row[4]}</td>
             </tr>`;
         }).join('');
@@ -188,11 +167,11 @@
     }
 
     async function saveData() {
-        const d = document.getElementById('hiddenDateInput').value;
+        const d = document.getElementById('workDate').value;
         const c = document.getElementById('customer').value;
         const t = document.getElementById('techName').value;
         const n = document.getElementById('content').value;
-        if (!d || !c || !n) return alert("Điền đủ thông tin!");
+        if (!d || !c || !n) return alert("Vui lòng điền đủ!");
         const btn = document.getElementById('btnSave');
         btn.innerText = "ĐANG LƯU..."; btn.disabled = true;
         await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ password: CURRENT_PASS, workDate: d, customer: c, tech: t, content: n }) });
@@ -225,12 +204,17 @@
     }
 
     function closeModal() { document.getElementById('infoModal').style.display = 'none'; }
+    
+    // Đóng khi click ra ngoài
+    function closeModalOnOut(e) { if(e.target.id === 'infoModal') closeModal(); }
+
     function filterTable() {
         const val = document.getElementById('searchBox').value.toUpperCase();
         const rows = document.getElementById('tableBody').getElementsByTagName('tr');
         for (let r of rows) { r.style.display = r.innerText.toUpperCase().includes(val) ? "" : "none"; }
     }
-    function logout() { if(confirm("Thoát và xóa ghi nhớ?")) { localStorage.removeItem('tech_key'); location.reload(); } }
+
+    function logout() { if(confirm("Thoát?")) { localStorage.removeItem('tech_key'); location.reload(); } }
     setInterval(() => { if(CURRENT_PASS) refresh(); }, 30000);
 </script>
 </body>
