@@ -3,78 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Nhật Ký Kỹ Thuật</title>
+    <title>Hệ Thống Kỹ Thuật Pro</title>
     <style>
-        :root { --primary: #2c3e50; --accent: #3498db; --bg: #f4f7f6; --danger: #e74c3c; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #333; }
+        :root { --primary: #2c3e50; --accent: #3498db; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
         .container { max-width: 1000px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        h2 { color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 20px; text-transform: uppercase; font-size: 1.2rem; }
-
         .form-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        input, textarea { padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; width: 100%; box-sizing: border-box; outline: none; }
+        select, textarea, input { padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; width: 100%; box-sizing: border-box; background: white; }
         textarea { grid-column: span 2; height: 100px; }
-        input:focus, textarea:focus { border-color: var(--accent); }
-        
-        .btn { border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; color: white; }
-        .btn-save { background: var(--accent); width: 100%; }
-        .btn-logout { background: var(--danger); font-size: 12px; padding: 5px 15px; margin-left: 10px; }
-        .btn:hover { opacity: 0.8; }
-
-        .controls { margin-top: 30px; display: flex; justify-content: space-between; align-items: center; background: #eee; padding: 10px 15px; border-radius: 8px; flex-wrap: wrap; gap: 10px; }
-        #searchBox { width: 100%; max-width: 300px; padding: 8px; }
-
-        .table-container { margin-top: 15px; overflow-x: auto; background: white; }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { background: var(--primary); color: white; padding: 12px; text-align: left; position: sticky; top: 0; }
-        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 13.5px; vertical-align: top; }
-        tr:hover { background-color: #f9f9f9; }
-
-        .tag { background: #e8f4fd; color: #3498db; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
-        .loading { text-align: center; color: var(--accent); display: none; margin: 10px; font-weight: bold; font-size: 13px; }
-        
-        #lock-screen { position: fixed; inset: 0; background: var(--primary); display: flex; justify-content: center; align-items: center; z-index: 1000; transition: 0.5s; }
-        .lock-box { background: white; padding: 30px; border-radius: 12px; text-align: center; width: 90%; max-width: 320px; }
+        .btn { border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; background: var(--accent); width: 100%; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: var(--primary); color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; }
+        .tag { background: #e8f4fd; color: #3498db; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
+        #lock-screen { position: fixed; inset: 0; background: var(--primary); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .lock-box { background: white; padding: 30px; border-radius: 12px; text-align: center; }
     </style>
 </head>
 <body>
 
 <div id="lock-screen">
-    <div class="lock-box" id="lock-box-content">
-        <h3 style="margin-top:0">KỸ THUẬT LOGIN</h3>
-        <input type="password" id="passInput" placeholder="Mật khẩu truy cập...">
-        <button class="btn btn-save" style="margin-top:15px" onclick="unlock()">ĐĂNG NHẬP</button>
+    <div class="lock-box" id="lock-content">
+        <h3>HỆ THỐNG KỸ THUẬT</h3>
+        <input type="password" id="passInput" placeholder="Mật khẩu...">
+        <button class="btn" style="margin-top:10px" onclick="unlock()">ĐĂNG NHẬP</button>
     </div>
 </div>
 
 <div class="container" id="main-content" style="display:none">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2>Nhật Ký Kỹ Thuật</h2>
-        <button class="btn btn-logout" onclick="logout()">THOÁT</button>
+    <div style="display:flex; justify-content:space-between">
+        <h2>Nhật Ký Xử Lý</h2>
+        <button onclick="logout()" style="background:none; border:none; color:red; cursor:pointer">Thoát</button>
     </div>
     
     <div class="form-group">
-        <input type="text" id="customer" placeholder="Khách hàng (VD: ASIA FEED MILLS)">
-        <input type="text" id="techName" placeholder="Kỹ thuật (VD: THỊNH)">
-        <textarea id="content" placeholder="Nội dung: Lỗi máy, linh kiện thay thế, máy mượn..."></textarea>
-        <button class="btn btn-save" onclick="saveData()">LƯU VÀO HỆ THỐNG</button>
+        <select id="customer"><option value="">Đang tải khách hàng...</option></select>
+        <select id="techName"><option value="">Đang tải kỹ thuật...</option></select>
+        <textarea id="content" placeholder="Nội dung chi tiết lỗi và cách xử lý..."></textarea>
+        <button class="btn" onclick="saveData()">LƯU THÔNG TIN</button>
     </div>
+
+    <input type="text" id="searchBox" placeholder="Tìm kiếm nhanh..." onkeyup="filterTable()" style="margin-bottom:10px">
     
-    <div id="loadingMsg" class="loading">Đang xử lý dữ liệu...</div>
-
-    <div class="controls">
-        <strong style="font-size:14px">LỊCH SỬ XỬ LÝ</strong>
-        <input type="text" id="searchBox" placeholder="Tìm kiếm nhanh..." onkeyup="filterTable()">
-    </div>
-
-    <div class="table-container">
+    <div style="overflow-x:auto">
         <table>
             <thead>
-                <tr>
-                    <th width="150">Thời gian</th>
-                    <th width="180">Khách hàng</th>
-                    <th>Nội dung chi tiết</th>
-                    <th width="100">Kỹ thuật</th>
-                </tr>
+                <tr><th>Thời gian</th><th>Khách hàng</th><th>Nội dung</th><th>Kỹ thuật</th></tr>
             </thead>
             <tbody id="tableBody"></tbody>
         </table>
@@ -82,120 +56,95 @@
 </div>
 
 <script>
-    // --- DÁN LINK GOOGLE SCRIPT CỦA BẠN VÀO ĐÂY ---
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzuMQ87pqHVXklMfXZo7QLJmJhsZwfGzK580DYIIJcaUR5oTdq74pG50_Ku8hyIDp-0/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRpmVrgb2q6IAjHQqZa33r5_cWvs_BOnmtrkvl6N9oyyJFPJkAooS02cxgKbbeT9aO/exec';
     let CURRENT_PASS = '';
 
-    // 1. Tự động kiểm tra đăng nhập khi mở trang
-    window.onload = function() {
-        const savedPass = localStorage.getItem('tech_vibe_pass');
-        if (savedPass) {
-            document.getElementById('lock-box-content').innerHTML = "Đang tự động đăng nhập...";
-            autoUnlock(savedPass);
-        }
+    window.onload = () => {
+        const p = localStorage.getItem('tech_pass');
+        if(p) autoUnlock(p);
     };
 
-    async function autoUnlock(pass) {
+    async function autoUnlock(p) {
+        document.getElementById('lock-content').innerHTML = "Đang đồng bộ dữ liệu...";
         try {
-            const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(pass)}`, { redirect: 'follow' });
+            const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(p)}`);
             const data = await res.json();
-            if (data && Array.isArray(data)) {
-                CURRENT_PASS = pass;
-                showMain(data);
-            } else {
-                localStorage.removeItem('tech_vibe_pass');
-                location.reload();
-            }
-        } catch (e) {
-            localStorage.removeItem('tech_vibe_pass');
-            location.reload();
-        }
+            CURRENT_PASS = p;
+            showMain(data);
+        } catch(e) { localStorage.removeItem('tech_pass'); location.reload(); }
     }
 
     async function unlock() {
-        const pass = document.getElementById('passInput').value;
-        if(!pass) return;
-        try {
-            const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(pass)}`, { redirect: 'follow' });
-            const text = await res.text();
-            if (text === "Không có quyền truy cập") {
-                alert("Sai mật khẩu!");
-            } else {
-                localStorage.setItem('tech_vibe_pass', pass);
-                CURRENT_PASS = pass;
-                showMain(JSON.parse(text));
-            }
-        } catch (e) { alert("Lỗi kết nối!"); }
+        const p = document.getElementById('passInput').value;
+        const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(p)}`);
+        const data = await res.json();
+        if(data.logs) {
+            localStorage.setItem('tech_pass', p);
+            CURRENT_PASS = p;
+            showMain(data);
+        } else { alert("Sai mật khẩu!"); }
     }
 
     function showMain(data) {
         document.getElementById('lock-screen').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
-        renderTable(data);
+        
+        // Đổ dữ liệu vào Dropdown Khách hàng
+        const cSelect = document.getElementById('customer');
+        cSelect.innerHTML = '<option value="">-- Chọn Khách Hàng --</option>' + 
+            data.customers.map(c => `<option value="${c}">${c}</option>`).join('');
+            
+        // Đổ dữ liệu vào Dropdown Kỹ thuật
+        const tSelect = document.getElementById('techName');
+        tSelect.innerHTML = '<option value="">-- Chọn Kỹ Thuật --</option>' + 
+            data.techs.map(t => `<option value="${t}">${t}</option>`).join('');
+
+        renderTable(data.logs);
     }
 
     async function saveData() {
-        const customer = document.getElementById('customer').value;
-        const tech = document.getElementById('techName').value;
-        const content = document.getElementById('content').value;
-        if(!customer || !content) return alert("Vui lòng điền đủ Khách hàng và Nội dung");
+        const c = document.getElementById('customer').value;
+        const t = document.getElementById('techName').value;
+        const n = document.getElementById('content').value;
+        if(!c || !n) return alert("Thiếu thông tin!");
 
-        document.getElementById('loadingMsg').style.display = 'block';
         await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
-            body: JSON.stringify({ password: CURRENT_PASS, customer: customer, tech: tech, content: content })
+            body: JSON.stringify({ password: CURRENT_PASS, customer: c, tech: t, content: n })
         });
-
-        document.getElementById('customer').value = '';
-        document.getElementById('content').value = '';
-        document.getElementById('loadingMsg').style.display = 'none';
-        setTimeout(refreshData, 2000);
-    }
-
-    async function refreshData() {
-        try {
-            const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(CURRENT_PASS)}&v=${new Date().getTime()}`);
-            const data = await res.json();
-            renderTable(data);
-        } catch (e) { console.error("Refresh lỗi"); }
-    }
-
-    function renderTable(data) {
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '';
-        if (!data || data.length < 1) return;
         
-        data.slice().reverse().forEach(row => {
-            if(!row[1] && !row[2]) return;
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td style="color:#888; font-size:12px">${new Date(row[0]).toLocaleString('vi-VN')}</td>
+        document.getElementById('content').value = '';
+        setTimeout(refresh, 2000);
+    }
+
+    async function refresh() {
+        const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(CURRENT_PASS)}&v=${new Date().getTime()}`);
+        const data = await res.json();
+        renderTable(data.logs);
+    }
+
+    function renderTable(logs) {
+        const html = logs.slice(1).reverse().map(row => `
+            <tr>
+                <td>${new Date(row[0]).toLocaleString('vi-VN')}</td>
                 <td><span class="tag">${row[1]}</span></td>
-                <td style="white-space: pre-wrap;">${row[2]}</td>
-                <td><strong>${row[3] || ''}</strong></td>
-            `;
-            tbody.appendChild(tr);
-        });
+                <td style="white-space:pre-wrap">${row[2]}</td>
+                <td><b>${row[3]}</b></td>
+            </tr>`).join('');
+        document.getElementById('tableBody').innerHTML = html;
     }
 
     function filterTable() {
-        const input = document.getElementById("searchBox").value.toUpperCase();
-        const rows = document.getElementById("tableBody").getElementsByTagName("tr");
-        for (let row of rows) {
-            row.style.display = row.innerText.toUpperCase().includes(input) ? "" : "none";
-        }
+        const val = document.getElementById('searchBox').value.toUpperCase();
+        const rows = document.getElementById('tableBody').getElementsByTagName('tr');
+        for (let r of rows) { r.style.display = r.innerText.toUpperCase().includes(val) ? "" : "none"; }
     }
 
-    function logout() {
-        if(confirm("Thoát và xóa đăng nhập trên máy này?")) {
-            localStorage.removeItem('tech_vibe_pass');
-            location.reload();
-        }
-    }
-
-    // Tự động làm mới mỗi 5 phút
-    setInterval(() => { if(CURRENT_PASS) refreshData(); }, 10000);
+    function logout() { localStorage.removeItem('tech_pass'); location.reload(); }
+    
+    // Tự động làm mới mỗi 1 phút
+    setInterval(refresh, 60000);
 </script>
 </body>
 </html>
