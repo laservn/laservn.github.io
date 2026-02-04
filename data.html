@@ -149,35 +149,29 @@
 async function unlock() {
     const u = document.getElementById('userInput').value.trim();
     const p = document.getElementById('passInput').value.trim();
-    
     if(!u || !p) return alert("Vui lòng nhập đủ!");
     
     const btn = document.querySelector("#lock-screen .btn-save");
     btn.innerText = "ĐANG XÁC THỰC..."; btn.disabled = true;
 
     try {
-        // Thêm v=${Date.now()} để ép server cập nhật mới, không lấy cache cũ
-        const res = await fetch(`${GOOGLE_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}&v=${Date.now()}`);
+        const res = await fetch(GOOGLE_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: "FETCH_DATA", user: u, pass: p })
+        });
         const text = await res.text();
         
-        // Nếu Server trả về chữ AUTH_FAILED hoặc rỗng thì chặn lại ngay
-        if (text.includes("AUTH_FAILED") || text.trim() === "") {
-            alert("⚠️ Tài khoản hoặc Mật khẩu không chính xác!");
+        if (text === "AUTH_FAILED") {
+            alert("⚠️ Sai tài khoản hoặc mật khẩu!");
             btn.innerText = "XÁC THỰC"; btn.disabled = false;
-            return;
-        }
-
-        // Kiểm tra xem dữ liệu trả về có phải là JSON hợp lệ không (có chứa logs không)
-        if (text.includes("logs")) {
+        } else {
+            const data = JSON.parse(text);
             AUTH = { user: u, pass: p };
             localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
             location.reload(); 
-        } else {
-            throw new Error("Dữ liệu không hợp lệ");
         }
-        
     } catch (e) {
-        alert("Lỗi hệ thống hoặc sai mật khẩu!");
+        alert("Lỗi kết nối!");
         btn.innerText = "XÁC THỰC"; btn.disabled = false;
     }
 }
@@ -185,20 +179,15 @@ async function unlock() {
 async function refresh() {
     if (!AUTH) return;
     try {
-        const response = await fetch(`${GOOGLE_URL}?user=${encodeURIComponent(AUTH.user)}&pass=${encodeURIComponent(AUTH.pass)}&v=${Date.now()}`);
+        const response = await fetch(GOOGLE_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: "FETCH_DATA", user: AUTH.user, pass: AUTH.pass })
+        });
         const text = await response.text();
-
-        // Nếu sai pass hoặc lỗi xác thực từ Script
-        if (text.includes("AUTH_FAILED")) {
-            console.warn("Xác thực thất bại");
-            return;
+        if (text !== "AUTH_FAILED") {
+            renderData(JSON.parse(text));
         }
-
-        const data = JSON.parse(text);
-        renderData(data);
-    } catch (e) {
-        console.log("Lỗi tải dữ liệu:", e);
-    }
+    } catch (e) { console.log("Lỗi tải dữ liệu"); }
 }
 function renderData(data) {
     try {
@@ -280,19 +269,34 @@ function renderData(data) {
     }
 
     async function saveData() {
-        const d = document.getElementById('hiddenDate').value;
-        const c = document.getElementById('customer').value;
-        const t = document.getElementById('techName').value;
-        const n = document.getElementById('content').value;
-        if (!c || !n) return alert("Điền thiếu thông tin!");
-        const btn = document.getElementById('btnSave'); 
-        btn.innerText = "ĐANG LƯU..."; btn.disabled = true;
-        await fetch(GOOGLE_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ user: AUTH.user, workDate: d, customer: c, tech: t, content: n }) });
+    const d = document.getElementById('hiddenDate').value;
+    const c = document.getElementById('customer').value;
+    const t = document.getElementById('techName').value;
+    const n = document.getElementById('content').value;
+    
+    if (!c || !n) return alert("Điền thiếu thông tin!");
+    const btn = document.getElementById('btnSave'); 
+    btn.innerText = "ĐANG LƯU..."; btn.disabled = true;
+
+    try {
+        await fetch(GOOGLE_URL, { 
+            method: 'POST', 
+            body: JSON.stringify({ 
+                action: "SAVE_LOG",
+                user: AUTH.user, 
+                pass: AUTH.pass, // Gửi pass để xác thực quyền ghi
+                workDate: d, 
+                customer: c, 
+                tech: t, 
+                content: n 
+            }) 
+        });
         document.getElementById('content').value = ''; 
         btn.innerText = "LƯU VÀO HỆ THỐNG"; btn.disabled = false;
         toggleForm(); 
-        setTimeout(refresh, 1000);
-    }
+        refresh();
+    } catch(e) { alert("Lỗi khi lưu!"); btn.disabled = false; }
+}
 
     function formatVN(dStr) {
         if (!dStr) return '';
