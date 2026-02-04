@@ -340,7 +340,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function logout() { if(confirm("Đăng xuất?")) { localStorage.removeItem('tech_auth_v4'); location.reload(); } }
-    setInterval(() => { if(AUTH) refresh(); }, 15000);
+    setInterval(() => { if(AUTH) refresh(); }, 30000); // 30 giây là con số "vàng" cho hiệu năng
 </script>
 </body>
 </html>
