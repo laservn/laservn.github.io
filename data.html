@@ -3,18 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tech Dashboard - Stable</title>
+    <title>Tech Dashboard - Full Options</title>
     <style>
         :root { --primary: #00d2ff; --dark: #0f172a; --card: #1e293b; --border: rgba(255,255,255,0.1); }
         body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: #f8fafc; margin: 0; padding: 12px; }
+        
+        /* Màn hình khóa */
         #lock-screen { position: fixed; inset: 0; background: var(--dark); z-index: 3000; display: flex; justify-content: center; align-items: center; }
         .login-box { width: 300px; padding: 25px; background: var(--card); border-radius: 16px; border: 1px solid var(--border); text-align: center; }
+        
+        /* Layout */
+        .container { max-width: 900px; margin: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; }
         input, select, textarea { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 10px; outline: none; }
         .btn-save { background: linear-gradient(45deg, var(--primary), #3a7bd5); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: var(--card); border-radius: 8px; overflow: hidden; }
-        th, td { padding: 12px; border: 1px solid var(--border); text-align: left; font-size: 13px; }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; }
+        
+        /* Table */
+        .table-container { margin-top: 20px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; background: var(--card); }
+        th, td { padding: 12px; border: 1px solid var(--border); text-align: left; font-size: 13px; cursor: pointer; }
+        tr:hover td { background: rgba(255,255,255,0.05); }
+
+        /* Modals chung */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 20px; }
+        .modal-content { background: var(--card); width: 100%; max-width: 380px; border-radius: 16px; border: 1px solid var(--primary); padding: 20px; position: relative; }
     </style>
 </head>
 <body>
@@ -38,23 +50,35 @@
     </div>
 
     <input type="text" id="workDateDisplay" readonly onclick="document.getElementById('dateModal').style.display='flex'" style="text-align:center; color:var(--primary); font-weight:bold; border: 1px solid var(--primary); cursor:pointer">
-    
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
         <select id="customer"><option>Đang tải...</option></select>
         <select id="techName"><option>Đang tải...</option></select>
     </div>
-    <textarea id="content" placeholder="Nội dung..."></textarea>
+    <textarea id="content" placeholder="Nội dung công việc..."></textarea>
     <button class="btn-save" id="btnSave" onclick="saveData()">LƯU DỮ LIỆU</button>
 
-    <table>
-        <thead><tr><th>Ngày</th><th>Khách</th><th>Nội dung</th><th>Tech</th><th>User</th></tr></thead>
-        <tbody id="tableBody"></tbody>
-    </table>
+    <div class="table-container">
+        <table>
+            <thead><tr><th>Ngày</th><th>Khách</th><th>Nội dung</th><th>Tech</th><th>User</th></tr></thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
 </div>
 
 <div id="dateModal" class="modal" onclick="if(event.target==this) this.style.display='none'">
-    <div style="background:var(--card); padding:20px; border-radius:12px; border:1px solid var(--primary)">
-        <input type="date" id="hiddenDate" onchange="confirmDate(this.value)" style="background:var(--primary); color:black">
+    <div class="modal-content" style="text-align:center">
+        <h4 style="margin-top:0">CHỌN NGÀY LÀM</h4>
+        <input type="date" id="hiddenDate" onchange="confirmDate(this.value)" style="background:var(--primary); color:black; font-weight:bold">
+        <button style="background:none; border:none; color:#888; margin-top:15px; cursor:pointer" onclick="document.getElementById('dateModal').style.display='none'">ĐÓNG</button>
+    </div>
+</div>
+
+<div id="infoModal" class="modal" onclick="if(event.target==this) this.style.display='none'">
+    <div class="modal-content">
+        <h3 style="color:var(--primary); text-align:center; margin-top:0">CHI TIẾT NHẬT KÝ</h3>
+        <div id="modalBody" style="font-size:14px; line-height:1.6; border-top: 1px solid var(--border); padding-top:15px;">
+            </div>
+        <button class="btn-save" style="margin-top:20px" onclick="document.getElementById('infoModal').style.display='none'">ĐÓNG</button>
     </div>
 </div>
 
@@ -62,21 +86,20 @@
     const GOOGLE_URL = 'https://script.google.com/macros/s/AKfycbzKOTa-gIYagGcDivR_2XaX0OnViwVwpvKjGVZ2GjVEhIKJNjSBAjzMF7rOHkEaqkN5/exec';
     let AUTH = JSON.parse(localStorage.getItem('tech_auth_final')) || null;
 
-    // HÀM QUAN TRỌNG: Chạy ngay lập tức khi load trang
-    (function checkInstant() {
-        if (AUTH) {
-            // Nếu có AUTH, cho xem Dashboard luôn, không chờ đợi
+    // Cơ chế chống Out: Kiểm tra ngay lập tức
+    if (AUTH) {
+        document.addEventListener("DOMContentLoaded", () => {
             document.getElementById('lock-screen').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
-            document.getElementById('helloUser').innerText = AUTH.user;
-        }
-    })();
+            document.getElementById('helloUser').innerText = "Chào, " + AUTH.user;
+            refresh();
+        });
+    }
 
     window.onload = () => {
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('hiddenDate').value = today;
         document.getElementById('workDateDisplay').value = formatVN(today);
-        if (AUTH) refresh(); // Tải dữ liệu ngầm
     };
 
     async function unlock() {
@@ -88,7 +111,7 @@
         
         AUTH = { user: u, pass: p };
         localStorage.setItem('tech_auth_final', JSON.stringify(AUTH));
-        location.reload(); // Reload để vào Dashboard sạch sẽ
+        location.reload(); 
     }
 
     async function refresh() {
@@ -102,10 +125,34 @@
     function renderData(data) {
         document.getElementById('customer').innerHTML = data.customers.map(c => `<option value="${c}">${c}</option>`).join('');
         document.getElementById('techName').innerHTML = data.techs.map(t => `<option value="${t}">${t}</option>`).join('');
-        document.getElementById('tableBody').innerHTML = data.logs.slice(1).reverse().map(row => `
-            <tr><td>${formatVN(row[1])}</td><td><b>${row[2]}</b></td><td>${row[3]}</td><td>${row[4]}</td><td>${row[5]||''}</td></tr>
-        `).join('');
+        
+        document.getElementById('tableBody').innerHTML = data.logs.slice(1).reverse().map(row => {
+            // Chuẩn bị dữ liệu cho Popup
+            const rowData = JSON.stringify(row).replace(/"/g, '&quot;');
+            return `<tr onclick="openInfoModal('${rowData}')">
+                <td>${formatVN(row[1])}</td>
+                <td><b>${row[2]}</b></td>
+                <td style="color:#94a3b8">${row[3].substring(0,20)}...</td>
+                <td>${row[4]}</td>
+                <td style="font-size:11px">${row[5]||''}</td>
+            </tr>`;
+        }).join('');
         document.getElementById('syncStatus').innerText = "Cập nhật: " + new Date().toLocaleTimeString();
+    }
+
+    // Hàm mở Popup chi tiết
+    function openInfoModal(jsonStr) {
+        const row = JSON.parse(jsonStr);
+        document.getElementById('modalBody').innerHTML = `
+            <p><b>Ngày:</b> ${formatVN(row[1])}</p>
+            <p><b>Khách hàng:</b> ${row[2]}</p>
+            <p><b>Nội dung:</b><br>${row[3]}</p>
+            <p><b>Kỹ thuật:</b> ${row[4]}</p>
+            <p><b>Người nhập:</b> ${row[5] || '---'}</p>
+            <hr style="border:0; border-top:1px solid var(--border)">
+            <p style="font-size:11px; color:#888; text-align:center">Lưu hệ thống: ${new Date(row[0]).toLocaleString()}</p>
+        `;
+        document.getElementById('infoModal').style.display = 'flex';
     }
 
     async function saveData() {
@@ -124,6 +171,7 @@
     function formatVN(d) { if(!d) return ''; const dt = new Date(d); return dt.getDate().toString().padStart(2,'0')+'/'+(dt.getMonth()+1).toString().padStart(2,'0')+'/'+dt.getFullYear(); }
     function confirmDate(v) { document.getElementById('workDateDisplay').value = formatVN(v); document.getElementById('dateModal').style.display = 'none'; }
     function logout() { localStorage.removeItem('tech_auth_final'); location.reload(); }
+    setInterval(() => { if(AUTH) refresh(); }, 10000);
 </script>
 </body>
 </html>
