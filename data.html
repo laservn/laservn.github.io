@@ -112,26 +112,34 @@
     let AUTH = JSON.parse(localStorage.getItem('tech_auth_v4')) || null;
     window.currentLogs = [];
 
-    // --- PHẦN SỬA LỖI NGÀY MẶC ĐỊNH ---
+    // 1. TỰ ĐỘNG GÁN NGÀY HÔM NAY
     function setInitialDate() {
         const now = new Date();
-        // Tạo chuỗi YYYY-MM-DD để gán vào input type="date"
         const year = now.getFullYear();
         const month = (now.getMonth() + 1).toString().padStart(2, '0');
         const day = now.getDate().toString().padStart(2, '0');
         const todayISO = `${year}-${month}-${day}`;
         
-        // Gán vào input ẩn
-        const hiddenDateInput = document.getElementById('hiddenDate');
-        hiddenDateInput.value = todayISO;
-        
-        // Hiển thị ra ô văn bản định dạng DD/MM/YYYY
+        document.getElementById('hiddenDate').value = todayISO;
         document.getElementById('workDateDisplay').value = `${day}/${month}/${year}`;
     }
 
-    // Chạy ngay khi trang web sẵn sàng
+    // 2. LẮNG NGHE PHÍM ENTER ĐỂ ĐĂNG NHẬP
+    function setupLoginEvents() {
+        const inputs = [document.getElementById('userInput'), document.getElementById('passInput')];
+        inputs.forEach(input => {
+            input.addEventListener("keypress", (event) => {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    unlock(); // Gọi hàm đăng nhập
+                }
+            });
+        });
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
-        setInitialDate(); // Gọi hàm thiết lập ngày hôm nay
+        setInitialDate();
+        setupLoginEvents(); // Kích hoạt tính năng Enter
         
         if (AUTH) {
             document.getElementById('lock-screen').style.display = 'none';
@@ -140,18 +148,35 @@
             refresh();
         }
     });
-    // ---------------------------------
 
     async function unlock() {
         const u = document.getElementById('userInput').value;
         const p = document.getElementById('passInput').value;
         if(!u || !p) return alert("Vui lòng nhập đủ!");
-        const res = await fetch(`${GOOGLE_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`);
-        const text = await res.text();
-        if (text === "Auth Failed") return alert("Sai tài khoản!");
-        AUTH = { user: u, pass: p };
-        localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
-        location.reload(); 
+        
+        // Hiệu ứng chờ khi nhấn Enter
+        const btn = document.querySelector("#lock-screen .btn-save");
+        const originalText = btn.innerText;
+        btn.innerText = "ĐANG XÁC THỰC...";
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(`${GOOGLE_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`);
+            const text = await res.text();
+            if (text === "Auth Failed") {
+                alert("Sai tài khoản hoặc mật khẩu!");
+                btn.innerText = originalText;
+                btn.disabled = false;
+                return;
+            }
+            AUTH = { user: u, pass: p };
+            localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
+            location.reload(); 
+        } catch (e) {
+            alert("Lỗi kết nối hệ thống!");
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
     }
 
     async function refresh() {
@@ -214,16 +239,11 @@
         setTimeout(refresh, 1200);
     }
 
-    // Hàm format hiển thị ngày từ YYYY-MM-DD sang DD/MM/YYYY
     function formatVN(dStr) {
         if (!dStr) return '';
-        // Nếu dStr là định dạng ISO (2026-02-04...)
         const d = new Date(dStr);
         if (isNaN(d.getTime())) return dStr;
-        const day = d.getDate().toString().padStart(2, '0');
-        const month = (d.getMonth() + 1).toString().padStart(2, '0');
-        const year = d.getFullYear();
-        return `${day}/${month}/${year}`;
+        return d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getFullYear();
     }
 
     function confirmDate(v) { 
