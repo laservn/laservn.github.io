@@ -32,21 +32,6 @@
         /* Modals */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 20px; }
         .modal-content { background: var(--card); width: 100%; max-width: 380px; border-radius: 16px; border: 1px solid var(--primary); padding: 20px; }
-        /* Màu cho ô hiển thị ngày */
-        #workDateDisplay { 
-            background: rgba(0, 210, 255, 0.1) !important; 
-            border: 1px solid var(--primary) !important; 
-            color: var(--primary) !important; 
-            font-weight: bold; 
-            text-align: center;
-            cursor: pointer;
-        }
-        
-        /* Sửa lỗi ô date bị đen/khó nhìn trên một số trình duyệt */
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(1); /* Làm icon lịch màu trắng dễ nhìn */
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -95,7 +80,7 @@
 <div id="dateModal" class="modal" onclick="if(event.target==this) this.style.display='none'">
     <div class="modal-content" style="text-align:center">
         <h4 style="margin-top:0">CHỌN NGÀY LÀM</h4>
-        <input type="date" id="hiddenDate" onchange="confirmDate(this.value)" style="background:#fff; color:#000; font-weight:bold; width: 100%;">
+        <input type="date" id="hiddenDate" onchange="confirmDate(this.value)" style="background:var(--primary); color:black; font-weight:bold">
         <button style="background:none; border:none; color:#888; margin-top:15px; cursor:pointer" onclick="document.getElementById('dateModal').style.display='none'">ĐÓNG</button>
     </div>
 </div>
@@ -202,40 +187,6 @@
     function confirmDate(v) { document.getElementById('workDateDisplay').value = formatVN(v); document.getElementById('dateModal').style.display = 'none'; }
     function logout() { if(confirm("Bạn muốn đăng xuất?")) { localStorage.removeItem('tech_auth_v4'); location.reload(); } }
     setInterval(() => { if(AUTH) refresh(); }, 30000);
-
-    // Hàm lấy ngày hiện tại định dạng YYYY-MM-DD để gán vào input date
-function getTodayISO() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    const day = now.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
-
-window.onload = () => {
-    // 1. Gán giá trị ISO cho input ẩn
-    const todayISO = getTodayISO();
-    document.getElementById('hiddenDate').value = todayISO;
-    
-    // 2. Gán giá trị hiển thị VN cho ô hiển thị
-    document.getElementById('workDateDisplay').value = formatVN(todayISO);
-    
-    // 3. Nếu đã đăng nhập thì tải dữ liệu
-    if (AUTH) {
-        // (Phần check AUTH này đã có trong mã trước của bạn)
-    }
-};
-
-// Sửa lại hàm formatVN để đảm bảo không trả về rỗng
-function formatVN(dStr) {
-    if (!dStr) return '';
-    const parts = dStr.split('-');
-    if (parts.length === 3) {
-        return `${parts[2]}/${parts[1]}/${parts[0]}`; // Chuyển YYYY-MM-DD thành DD/MM/YYYY
-    }
-    const dt = new Date(dStr);
-    return dt.getDate().toString().padStart(2, '0') + '/' + (dt.getMonth() + 1).toString().padStart(2, '0') + '/' + dt.getFullYear();
-}
 </script>
 </body>
 </html>
