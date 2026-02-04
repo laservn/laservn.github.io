@@ -12,36 +12,34 @@
         
         /* Header */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
-        #syncStatus { font-size: 11px; color: #94a3b8; margin-right: 10px; }
+        #syncStatus { font-size: 11px; color: #94a3b8; }
 
-        /* Form */
+        /* Form & Inputs */
         .glass-card { background: var(--card); padding: 18px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        input, select, textarea { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 8px; outline: none; font-size: 14px; width: 100%; box-sizing: border-box; }
         
         /* Ô chọn ngày 1 chạm */
-        input, select, textarea { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 8px; outline: none; font-size: 14px; width: 100%; box-sizing: border-box; }
-        input[type="date"] { grid-column: span 2; font-family: inherit; cursor: pointer; }
+        #workDateDisplay { grid-column: span 2; cursor: pointer; text-align: center; color: var(--primary); font-weight: 600; border: 1px solid var(--primary); }
         textarea { grid-column: span 2; height: 80px; }
         .btn-save { grid-column: span 2; background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 600; }
 
         /* Bảng lịch sử có khung */
         .table-container { margin-top: 20px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--card); }
         table { width: 100%; border-collapse: collapse; }
-        th { background: rgba(0,0,0,0.2); padding: 12px; text-align: left; font-size: 11px; color: #888; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        th { background: rgba(0,0,0,0.2); padding: 12px; text-align: left; font-size: 11px; color: #888; border-bottom: 1px solid var(--border); }
         td { padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
-        tr:last-child td { border-bottom: none; }
         tr:hover td { background: rgba(255,255,255,0.03); }
-        .tag { background: rgba(0, 210, 255, 0.1); color: var(--primary); padding: 3px 8px; border-radius: 5px; font-size: 11px; font-weight: 600; border: 1px solid rgba(0, 210, 255, 0.2); }
+        .tag { background: rgba(0, 210, 255, 0.1); color: var(--primary); padding: 3px 8px; border-radius: 5px; font-size: 11px; border: 1px solid rgba(0, 210, 255, 0.2); }
 
-        /* Popup có khung */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 20px; }
-        .modal-content { background: var(--card); width: 100%; max-width: 400px; border-radius: 16px; border: 1px solid var(--primary); position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5); overflow: hidden; }
-        .modal-header { padding: 15px; border-bottom: 1px solid var(--border); text-align: center; background: rgba(0,0,0,0.1); }
+        /* Popups (Lịch & Chi tiết) */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 20px; }
+        .modal-content { background: var(--card); width: 100%; max-width: 350px; border-radius: 16px; border: 1px solid var(--primary); position: relative; overflow: hidden; animation: zoomIn 0.2s ease-out; }
+        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
         .modal-body { padding: 20px; }
-        .m-row { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px dotted var(--border); }
-        .m-row:last-child { border-bottom: none; }
-        .m-label { font-size: 10px; color: var(--primary); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
-        .m-val { font-size: 14px; line-height: 1.4; }
+        .m-row { margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+        .m-label { font-size: 10px; color: var(--primary); font-weight: 700; text-transform: uppercase; }
         
         #lock-screen { position: fixed; inset: 0; background: var(--dark); z-index: 3000; display: flex; justify-content: center; align-items: center; }
     </style>
@@ -50,15 +48,15 @@
 
 <div id="lock-screen">
     <div class="glass-card" style="width: 280px; text-align: center;" id="lock-box">
-        <h3 style="color:var(--primary)">SECURITY LOGIN</h3>
-        <input type="password" id="passInput" placeholder="Passcode..." style="text-align:center">
+        <h3 style="color:var(--primary)">HỆ THỐNG KỸ THUẬT</h3>
+        <input type="password" id="passInput" placeholder="Mật khẩu...">
         <button class="btn-save" onclick="unlock()" style="margin-top:15px">TRUY CẬP</button>
     </div>
 </div>
 
 <div class="container" id="main-content" style="visibility: hidden;">
     <div class="header">
-        <h2 style="margin:0; font-size:1.1rem; color:var(--primary)">TECH DASHBOARD</h2>
+        <h2 style="margin:0; font-size:1.1rem; color:var(--primary)">DASHBOARD</h2>
         <div style="display: flex; align-items: center;">
             <span id="syncStatus">Đang tải...</span>
             <button onclick="logout()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:12px; font-weight:600">THOÁT</button>
@@ -67,15 +65,15 @@
 
     <div class="glass-card">
         <div class="form-grid">
-            <input type="date" id="workDate">
-            <select id="customer"><option value="">Tải khách hàng...</option></select>
-            <select id="techName"><option value="">Tải kỹ thuật...</option></select>
-            <textarea id="content" placeholder="Mô tả nội dung xử lý..."></textarea>
+            <input type="text" id="workDateDisplay" readonly onclick="openDatePicker()" placeholder="Ngày/Tháng/Năm">
+            <select id="customer"><option value="">Đang tải khách...</option></select>
+            <select id="techName"><option value="">Đang tải kỹ thuật...</option></select>
+            <textarea id="content" placeholder="Nội dung chi tiết xử lý..."></textarea>
             <button class="btn-save" id="btnSave" onclick="saveData()">LƯU BÁO CÁO</button>
         </div>
     </div>
 
-    <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="Tìm khách hàng hoặc nội dung..." style="margin: 20px 0 10px 0;">
+    <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="Tìm nhanh khách hàng, nội dung..." style="margin: 20px 0 10px 0;">
 
     <div class="table-container">
         <table>
@@ -85,20 +83,26 @@
     </div>
 </div>
 
-<div id="infoModal" class="modal" onclick="closeModalOnOut(event)">
+<div id="dateModal" class="modal" onclick="closeDatePicker(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <div class="modal-header">
-            <h3 style="margin:0; color:var(--primary); font-size: 1rem;">CHI TIẾT NHẬT KÝ</h3>
+        <div class="modal-body" style="text-align:center">
+            <h3 style="color:var(--primary); margin-top:0">CHỌN NGÀY LÀM</h3>
+            <input type="date" id="hiddenDate" onchange="confirmDate(this.value)" style="font-size: 1.2rem; background: var(--primary); color: var(--dark);">
+            <button onclick="document.getElementById('dateModal').style.display='none'" style="margin-top:20px; background:none; border:1px solid #555; color:#888; padding:8px 20px; border-radius:5px">Hủy</button>
         </div>
+    </div>
+</div>
+
+<div id="infoModal" class="modal" onclick="closeInfoModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-body">
-            <div class="m-row"><div class="m-label">Ngày thực hiện</div><div class="m-val" id="mWorkDate" style="font-weight:600"></div></div>
-            <div class="m-row"><div class="m-label">Khách hàng</div><div class="m-val" id="mCust"></div></div>
-            <div class="m-row"><div class="m-label">Nội dung</div><div class="m-val" id="mCont"></div></div>
-            <div class="m-row"><div class="m-label">Kỹ thuật</div><div class="m-val"><span class="tag" id="mTech"></span></div></div>
-            <div style="text-align:center; margin-top:10px">
-                <p id="mSysTime" style="color:#64748b; font-size:10px; margin-bottom:15px"></p>
-                <button class="btn-save" onclick="closeModal()" style="width:100px; padding:8px">ĐÓNG</button>
-            </div>
+            <h3 style="color:var(--primary); text-align:center; margin-top:0">CHI TIẾT NHẬT KÝ</h3>
+            <div class="m-row"><div class="m-label">Ngày thực hiện</div><div id="mWorkDate" style="font-weight:600"></div></div>
+            <div class="m-row"><div class="m-label">Khách hàng</div><div id="mCust"></div></div>
+            <div class="m-row"><div class="m-label">Nội dung</div><div id="mCont" style="font-size:14px; white-space:pre-wrap"></div></div>
+            <div class="m-row"><div class="m-label">Kỹ thuật</div><span class="tag" id="mTech"></span></div>
+            <p id="mSysTime" style="color:#64748b; font-size:10px; text-align:center; margin:15px 0 0 0"></p>
+            <button class="btn-save" onclick="document.getElementById('infoModal').style.display='none'" style="margin-top:15px">ĐÓNG</button>
         </div>
     </div>
 </div>
@@ -113,13 +117,24 @@
         return d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getFullYear();
     }
 
+    // Xử lý chọn ngày
+    function openDatePicker() { document.getElementById('dateModal').style.display = 'flex'; }
+    function closeDatePicker(e) { if(e.target.id === 'dateModal') e.target.style.display = 'none'; }
+    function confirmDate(val) {
+        if(!val) return;
+        document.getElementById('workDateDisplay').value = formatVN(val);
+        document.getElementById('dateModal').style.display = 'none';
+    }
+
+    // Đóng Popup chi tiết khi click ngoài
+    function closeInfoModal(e) { if(e.target.id === 'infoModal') e.target.style.display = 'none'; }
+
     window.onload = async () => {
-        document.getElementById('workDate').value = new Date().toISOString().split('T')[0];
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('hiddenDate').value = today;
+        document.getElementById('workDateDisplay').value = formatVN(today);
         const savedPass = localStorage.getItem('tech_key');
-        if (savedPass) {
-            document.getElementById('lock-box').innerHTML = "<p style='color:var(--primary)'>Đang kết nối...</p>";
-            await autoUnlock(savedPass);
-        }
+        if (savedPass) await autoUnlock(savedPass);
     };
 
     async function autoUnlock(p) {
@@ -138,14 +153,13 @@
             localStorage.setItem('tech_key', p);
             CURRENT_PASS = p;
             showMain(data);
-        } else { alert("Sai passcode!"); }
+        } else { alert("Sai mật khẩu!"); }
     }
 
     function showMain(data) {
         document.getElementById('lock-screen').style.display = 'none';
         const main = document.getElementById('main-content');
-        main.style.visibility = 'visible';
-        main.style.display = 'block';
+        main.style.visibility = 'visible'; main.style.display = 'block';
         document.getElementById('customer').innerHTML = '<option value="">-- Khách hàng --</option>' + data.customers.map(c => `<option value="${c}">${c}</option>`).join('');
         document.getElementById('techName').innerHTML = '<option value="">-- Kỹ thuật --</option>' + data.techs.map(t => `<option value="${t}">${t}</option>`).join('');
         renderTable(data.logs);
@@ -155,11 +169,10 @@
     function renderTable(logs) {
         const html = logs.slice(1).reverse().map(row => {
             if(!row[0] || !row[1]) return '';
-            const shortText = row[3].length > 30 ? row[3].substring(0,30) + "..." : row[3];
             return `<tr onclick="openModal('${row[0]}','${row[1]}','${row[2]}','${encodeURIComponent(row[3])}','${row[4]}')">
                 <td>${formatVN(row[1])}</td>
                 <td><span class="tag">${row[2]}</span></td>
-                <td style="font-size:13px; color:#94a3b8">${shortText}</td>
+                <td style="font-size:13px; color:#94a3b8">${row[3].substring(0,30)}...</td>
                 <td>${row[4]}</td>
             </tr>`;
         }).join('');
@@ -167,16 +180,14 @@
     }
 
     async function saveData() {
-        const d = document.getElementById('workDate').value;
+        const d = document.getElementById('hiddenDate').value;
         const c = document.getElementById('customer').value;
         const t = document.getElementById('techName').value;
         const n = document.getElementById('content').value;
-        if (!d || !c || !n) return alert("Vui lòng điền đủ!");
-        const btn = document.getElementById('btnSave');
-        btn.innerText = "ĐANG LƯU..."; btn.disabled = true;
+        if (!d || !c || !n) return alert("Điền đủ thông tin!");
+        const btn = document.getElementById('btnSave'); btn.innerText = "ĐANG LƯU..."; btn.disabled = true;
         await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ password: CURRENT_PASS, workDate: d, customer: c, tech: t, content: n }) });
-        document.getElementById('content').value = '';
-        btn.innerText = "LƯU BÁO CÁO"; btn.disabled = false;
+        document.getElementById('content').value = ''; btn.innerText = "LƯU BÁO CÁO"; btn.disabled = false;
         setTimeout(refresh, 1500);
     }
 
@@ -184,8 +195,7 @@
         try {
             const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(CURRENT_PASS)}&v=${new Date().getTime()}`);
             const data = await res.json();
-            renderTable(data.logs);
-            updateSyncTime();
+            renderTable(data.logs); updateSyncTime();
         } catch (e) {}
     }
 
@@ -203,11 +213,6 @@
         document.getElementById('infoModal').style.display = 'flex';
     }
 
-    function closeModal() { document.getElementById('infoModal').style.display = 'none'; }
-    
-    // Đóng khi click ra ngoài
-    function closeModalOnOut(e) { if(e.target.id === 'infoModal') closeModal(); }
-
     function filterTable() {
         const val = document.getElementById('searchBox').value.toUpperCase();
         const rows = document.getElementById('tableBody').getElementsByTagName('tr');
@@ -215,7 +220,7 @@
     }
 
     function logout() { if(confirm("Thoát?")) { localStorage.removeItem('tech_key'); location.reload(); } }
-    setInterval(() => { if(CURRENT_PASS) refresh(); }, 30000);
+    setInterval(() => { if(CURRENT_PASS) refresh(); }, 10000);
 </script>
 </body>
 </html>
