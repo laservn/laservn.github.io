@@ -221,7 +221,7 @@ function renderData(data) {
             
             // Logic 100 ký tự: Chỉ thêm ... nếu dài hơn 100
             let displayContent = contentRaw.length > 100 
-                ? contentRaw.substring(0, 100) + "..." 
+                ? contentRaw.substring(0, 30) + "..." 
                 : contentRaw;
 
             return `
