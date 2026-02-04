@@ -54,7 +54,8 @@
 
     <div class="glass-card">
         <div class="form-grid">
-            <input type="date" id="workDate">
+            <input type="text" id="workDateDisplay" placeholder="Ngày/Tháng/Năm" onclick="document.getElementById('workDate').showPicker()" readonly>
+            <input type="date" id="workDate" style="display:none" onchange="updateDateDisplay(this.value)">
             <select id="customer"><option value="">Đang tải khách...</option></select>
             <select id="techName"><option value="">Đang tải kỹ thuật...</option></select>
             <textarea id="content" placeholder="Nội dung xử lý..."></textarea>
@@ -99,6 +100,24 @@
         const d = new Date(dateStr);
         return d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getFullYear();
     }
+        // Hàm cập nhật hiển thị khi chọn ngày xong
+    function updateDateDisplay(val) {
+        if (!val) return;
+        document.getElementById('workDateDisplay').value = formatVN(val);
+    }
+    
+    // Cập nhật lại window.onload để hiển thị ngày hôm nay ngay khi mở trang
+    window.onload = async () => {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('workDate').value = today;
+        document.getElementById('workDateDisplay').value = formatVN(today);
+        
+        const savedPass = localStorage.getItem('tech_key');
+        if (savedPass) {
+            document.getElementById('lock-box').innerHTML = "<p style='color:var(--primary)'>Đang đăng nhập...</p>";
+            await autoUnlock(savedPass);
+        }
+    };
 
     // TỰ ĐỘNG KIỂM TRA ĐĂNG NHẬP NGAY KHI LOAD TRANG
     window.onload = async () => {
