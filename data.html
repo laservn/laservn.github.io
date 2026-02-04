@@ -209,7 +209,7 @@ function renderTable(logs) {
         
         return `
             <tr onclick="openModal('${row[0]}','${row[1]}','${encodeURIComponent(row[2])}','${row[3]}')">
-                <td style="font-size:11px; color:#888; white-space:nowrap">${shortDate}<br>${shortTime}</td>
+                <td style="font-size:15px; color:#888; white-space:nowrap"><b>${shortDate}</b><br>${shortTime}</td>
                 <td><span class="tag">${row[1]}</span></td>
                 <td style="font-size:13px; color:#ccc">${shortCont}</td>
                 <td><b>${row[3] || ''}</b></td>
