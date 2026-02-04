@@ -155,7 +155,7 @@ async function unlock() {
             btn.innerText = "XÁC THỰC"; btn.disabled = false;
         } else {
             // CÀI ĐẶT THỜI GIAN HẾT HẠN: 24 GIỜ
-            const expireTime = new Date().getTime() + (0.01 * 60 * 60 * 1000);
+            const expireTime = new Date().getTime() + (24 * 60 * 60 * 1000);
             AUTH = { 
                 user: encryptedAuth.user, 
                 pass: encryptedAuth.pass, 
