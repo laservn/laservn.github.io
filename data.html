@@ -64,26 +64,33 @@
         if(p) autoUnlock(p);
     };
 
-    async function autoUnlock(p) {
-        document.getElementById('lock-content').innerHTML = "Đang đồng bộ dữ liệu...";
-        try {
-            const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(p)}`);
-            const data = await res.json();
-            CURRENT_PASS = p;
-            showMain(data);
-        } catch(e) { localStorage.removeItem('tech_pass'); location.reload(); }
-    }
-
-    async function unlock() {
-        const p = document.getElementById('passInput').value;
+async function autoUnlock(p) {
+    document.getElementById('lock-content').innerHTML = "Đang đồng bộ dữ liệu...";
+    try {
         const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(p)}`);
         const data = await res.json();
-        if(data.logs) {
+        if (data && data.logs) { // Kiểm tra xem có mục logs không
+            CURRENT_PASS = p;
+            showMain(data);
+        } else {
+            localStorage.removeItem('tech_pass');
+            location.reload();
+        }
+    } catch(e) { console.error(e); }
+}
+
+async function unlock() {
+    const p = document.getElementById('passInput').value;
+    try {
+        const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(p)}`);
+        const data = await res.json();
+        if(data && data.logs) { // Kiểm tra đúng cấu trúc Object
             localStorage.setItem('tech_pass', p);
             CURRENT_PASS = p;
             showMain(data);
-        } else { alert("Sai mật khẩu!"); }
-    }
+        } else { alert("Mật khẩu không đúng!"); }
+    } catch(e) { alert("Lỗi kết nối!"); }
+}
 
     function showMain(data) {
         document.getElementById('lock-screen').style.display = 'none';
@@ -118,11 +125,15 @@
         setTimeout(refresh, 2000);
     }
 
-    async function refresh() {
+async function refresh() {
+    try {
         const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(CURRENT_PASS)}&v=${new Date().getTime()}`);
         const data = await res.json();
-        renderTable(data.logs);
-    }
+        if (data && data.logs) {
+            renderTable(data.logs);
+        }
+    } catch (e) { console.error("Refresh lỗi"); }
+}
 
     function renderTable(logs) {
         const html = logs.slice(1).reverse().map(row => `
