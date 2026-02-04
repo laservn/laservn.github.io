@@ -139,17 +139,33 @@
         }
     }
 
-    async function unlock() {
-        const p = document.getElementById('passInput').value;
-        if(!p) return;
+async function unlock() {
+    const p = document.getElementById('passInput').value;
+    if(!p) return;
+    
+    // Hiện thông báo đang xử lý để người dùng biết máy đang chạy
+    document.getElementById('lock-screen').style.opacity = "0.5";
+    
+    try {
         const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(p)}`);
-        const data = await res.json();
-        if(data.logs) {
-            localStorage.setItem('tech_key', p); // GHI NHỚ ĐĂNG NHẬP
-            CURRENT_PASS = p;
-            showMain(data);
-        } else { alert("Mật khẩu không đúng!"); }
+        const text = await res.text(); // Đọc dạng text trước để kiểm tra lỗi
+        
+        if (text === "Không có quyền truy cập") {
+            alert("Mật khẩu không chính xác!");
+            document.getElementById('lock-screen').style.opacity = "1";
+        } else {
+            const data = JSON.parse(text); // Nếu pass đúng thì mới chuyển sang JSON
+            if(data.logs) {
+                localStorage.setItem('tech_key', p);
+                CURRENT_PASS = p;
+                showMain(data);
+            }
+        }
+    } catch(e) { 
+        alert("Lỗi kết nối: Hãy kiểm tra Link Script hoặc mạng! \nChi tiết: " + e.message);
+        document.getElementById('lock-screen').style.opacity = "1";
     }
+}
 
     function showMain(data) {
         document.getElementById('lock-screen').style.display = 'none';
