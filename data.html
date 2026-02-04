@@ -191,23 +191,37 @@ async function unlock() {
         } catch (e) { console.log("Lỗi tải dữ liệu"); }
     }
 
-    function renderData(data) {
-        document.getElementById('customer').innerHTML = '<option value="">-- Khách hàng --</option>' + data.customers.map(c => `<option value="${c}">${c}</option>`).join('');
-        document.getElementById('techName').innerHTML = '<option value="">-- Kỹ thuật --</option>' + data.techs.map(t => `<option value="${t}">${t}</option>`).join('');
-        window.currentLogs = data.logs.slice(1).reverse();
-        
-        document.getElementById('tableBody').innerHTML = window.currentLogs.map((row, index) => `
+function renderData(data) {
+    // Cập nhật danh sách khách và tech vào các ô select
+    if (data.customers) {
+        document.getElementById('customer').innerHTML = '<option value="">-- Khách hàng --</option>' + 
+            data.customers.map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+    if (data.techs) {
+        document.getElementById('techName').innerHTML = '<option value="">-- Kỹ thuật --</option>' + 
+            data.techs.map(t => `<option value="${t}">${t}</option>`).join('');
+    }
+
+    window.currentLogs = data.logs.slice(1).reverse();
+    
+    document.getElementById('tableBody').innerHTML = window.currentLogs.map((row, index) => {
+        const fullText = row[3] ? row[3].toString() : "";
+        // Logic hiển thị 100 ký tự
+        const displayText = fullText.length > 100 ? fullText.substring(0, 100) + "..." : fullText;
+
+        return `
             <tr onclick="openInfoModal(${index})">
                 <td>${formatVN(row[1])}</td>
                 <td><b style="color:var(--primary)">${row[2]}</b></td>
-                <td>${row[3].toString().length > 100 ? row[3].toString().substring(0, 100) + '...' : row[3]}</td>
+                <td style="color:#94a3b8; font-size:12px">${displayText}</td>
                 <td>${row[4]}</td>
                 <td style="font-size:11px; font-style:italic">${row[5]||''}</td>
             </tr>
-        `).join('');
-        // Cập nhật dòng thời gian đồng bộ
-        document.getElementById('syncStatus').innerText = "Cập nhật: " + new Date().toLocaleTimeString();
-    }
+        `;
+    }).join('');
+
+    document.getElementById('syncStatus').innerText = "Cập nhật: " + new Date().toLocaleTimeString();
+}
 
     function openInfoModal(index) {
         const row = window.currentLogs[index];
