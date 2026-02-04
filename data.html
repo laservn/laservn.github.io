@@ -192,35 +192,51 @@ async function unlock() {
     }
 
 function renderData(data) {
-    // Cập nhật danh sách khách và tech vào các ô select
-    if (data.customers) {
-        document.getElementById('customer').innerHTML = '<option value="">-- Khách hàng --</option>' + 
-            data.customers.map(c => `<option value="${c}">${c}</option>`).join('');
+    try {
+        // 1. Cập nhật danh sách khách hàng và kỹ thuật vào ô chọn
+        if (data.customers) {
+            document.getElementById('customer').innerHTML = '<option value="">-- Khách hàng --</option>' + 
+                data.customers.map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+        if (data.techs) {
+            document.getElementById('techName').innerHTML = '<option value="">-- Kỹ thuật --</option>' + 
+                data.techs.map(t => `<option value="${t}">${t}</option>`).join('');
+        }
+
+        // 2. Xử lý nhật ký
+        window.currentLogs = data.logs.slice(1).reverse();
+        
+        const html = window.currentLogs.map((row, index) => {
+            // Kiểm tra an toàn: nếu nội dung trống thì gán chuỗi rỗng
+            let contentRaw = row[3] ? row[3].toString() : "";
+            
+            // Logic 100 ký tự: Chỉ thêm ... nếu dài hơn 100
+            let displayContent = contentRaw.length > 100 
+                ? contentRaw.substring(0, 100) + "..." 
+                : contentRaw;
+
+            return `
+                <tr onclick="openInfoModal(${index})">
+                    <td>${formatVN(row[1])}</td>
+                    <td><b style="color:var(--primary)">${row[2] || ''}</b></td>
+                    <td style="color:#94a3b8; font-size:12px; line-height:1.4">${displayContent}</td>
+                    <td>${row[4] || ''}</td>
+                    <td style="font-size:11px; font-style:italic">${row[5] || ''}</td>
+                </tr>
+            `;
+        }).join('');
+
+        document.getElementById('tableBody').innerHTML = html;
+
+        // 3. Cập nhật trạng thái đồng bộ ngay dưới tên User
+        const statusEl = document.getElementById('syncStatus');
+        if (statusEl) {
+            statusEl.innerText = "Cập nhật: " + new Date().toLocaleTimeString();
+        }
+
+    } catch (err) {
+        console.error("Lỗi hiển thị dữ liệu:", err);
     }
-    if (data.techs) {
-        document.getElementById('techName').innerHTML = '<option value="">-- Kỹ thuật --</option>' + 
-            data.techs.map(t => `<option value="${t}">${t}</option>`).join('');
-    }
-
-    window.currentLogs = data.logs.slice(1).reverse();
-    
-    document.getElementById('tableBody').innerHTML = window.currentLogs.map((row, index) => {
-        const fullText = row[3] ? row[3].toString() : "";
-        // Logic hiển thị 100 ký tự
-        const displayText = fullText.length > 100 ? fullText.substring(0, 100) + "..." : fullText;
-
-        return `
-            <tr onclick="openInfoModal(${index})">
-                <td>${formatVN(row[1])}</td>
-                <td><b style="color:var(--primary)">${row[2]}</b></td>
-                <td style="color:#94a3b8; font-size:12px">${displayText}</td>
-                <td>${row[4]}</td>
-                <td style="font-size:11px; font-style:italic">${row[5]||''}</td>
-            </tr>
-        `;
-    }).join('');
-
-    document.getElementById('syncStatus').innerText = "Cập nhật: " + new Date().toLocaleTimeString();
 }
 
     function openInfoModal(index) {
