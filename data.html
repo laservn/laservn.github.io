@@ -139,21 +139,42 @@
         }
     });
 
-    async function unlock() {
-        const u = document.getElementById('userInput').value;
-        const p = document.getElementById('passInput').value;
-        if(!u || !p) return alert("Vui lòng nhập đủ!");
-        const btn = document.querySelector("#lock-screen .btn-save");
-        btn.innerText = "ĐANG XÁC THỰC..."; btn.disabled = true;
-        try {
-            const res = await fetch(`${GOOGLE_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`);
-            const text = await res.text();
-            if (text === "Auth Failed") { alert("Sai tài khoản!"); btn.innerText = "XÁC THỰC"; btn.disabled = false; return; }
-            AUTH = { user: u, pass: p };
-            localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
-            location.reload(); 
-        } catch (e) { alert("Lỗi kết nối!"); btn.innerText = "XÁC THỰC"; btn.disabled = false; }
+async function unlock() {
+    const u = document.getElementById('userInput').value.trim();
+    const p = document.getElementById('passInput').value.trim();
+    
+    if(!u || !p) return alert("Vui lòng nhập đủ tài khoản và mật khẩu!");
+    
+    const btn = document.querySelector("#lock-screen .btn-save");
+    const originalText = btn.innerText;
+    btn.innerText = "ĐANG XÁC THỰC..."; 
+    btn.disabled = true;
+
+    try {
+        // Thêm v=${Date.now()} để tránh trình duyệt lấy kết quả cũ (cache)
+        const res = await fetch(`${GOOGLE_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}&v=${Date.now()}`);
+        const text = await res.text();
+        
+        // KIỂM TRA NGHIÊM NGẶT: 
+        // Chỉ khi Server trả về chính xác tên User (không phải "Auth Failed") mới cho vào
+        if (text.trim() === "Auth Failed" || text.trim() === "" || text.includes("Error")) {
+            alert("Sai tài khoản hoặc mật khẩu! Vui lòng thử lại.");
+            btn.innerText = originalText;
+            btn.disabled = false;
+            return;
+        }
+
+        // Nếu hợp lệ, Server thường trả về chính tên User đó
+        AUTH = { user: text.trim(), pass: p }; 
+        localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
+        location.reload(); 
+        
+    } catch (e) {
+        alert("Lỗi kết nối hệ thống! Kiểm tra mạng hoặc URL Script.");
+        btn.innerText = originalText;
+        btn.disabled = false;
     }
+}
 
     async function refresh() {
         if(!AUTH) return;
