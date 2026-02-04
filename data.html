@@ -252,11 +252,11 @@ function renderData(data) {
         const row = window.currentLogs[index];
         if(!row) return;
         document.getElementById('modalBody').innerHTML = `
-            <p><b>Ngày:</b> ${formatVN(row[1])}</p>
+            <p><b>Ngày:</b> <span style="color:var(--primary)">${formatVN(row[1])}</span></p>
             <p><b>Khách:</b> <span style="color:var(--primary)">${row[2]}</span></p>
             <p><b>Nội dung:</b><br><span style="white-space:pre-wrap; display:block; background:rgba(0,0,0,0.2); padding:10px; border-radius:5px">${row[3]}</span></p>
-            <p><b>Kỹ thuật:</b> ${row[4]}</p>
-            <p><b>User:</b> ${row[5] || '---'}</p>
+            <p><b>Kỹ thuật:</b> <span style="color:var(--primary)">${row[4]}</span></p>
+            <p><b>User:</b> <span style="color:var(--primary)">${row[5] || '---'}</span></p>
         `;
         document.getElementById('infoModal').style.display = 'flex';
     }
