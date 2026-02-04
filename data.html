@@ -40,6 +40,13 @@
         #formContainer { display: none; background: var(--card); padding: 18px; border-radius: 12px; border: 1px solid var(--primary); margin-bottom: 15px; animation: slideDown 0.3s ease-out; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .btn-toggle-form { background: rgba(0, 210, 255, 0.1); color: var(--primary); border: 1px dashed var(--primary); padding: 10px; width: 100%; border-radius: 8px; margin-bottom: 15px; cursor: pointer; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        /* Giúp nội dung dài không làm vỡ bảng, tự xuống dòng gọn gàng */
+        td:nth-child(3) {
+            max-width: 250px; /* Giới hạn chiều rộng tối đa cho cột nội dung */
+            white-space: normal; 
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
     </style>
 </head>
 <body>
@@ -180,7 +187,7 @@ async function unlock() {
         try {
             const res = await fetch(`${GOOGLE_URL}?user=${encodeURIComponent(AUTH.user)}&pass=${encodeURIComponent(AUTH.pass)}&v=${Date.now()}`);
             const data = await res.json();
-            renderData(data);
+            (data);
         } catch (e) { console.log("Lỗi tải dữ liệu"); }
     }
 
@@ -193,7 +200,7 @@ async function unlock() {
             <tr onclick="openInfoModal(${index})">
                 <td>${formatVN(row[1])}</td>
                 <td><b style="color:var(--primary)">${row[2]}</b></td>
-                <td style="color:#94a3b8">${row[3].toString().substring(0,30)}...</td>
+                <td>${row[3].toString().length > 100 ? row[3].toString().substring(0, 100) + '...' : row[3]}</td>
                 <td>${row[4]}</td>
                 <td style="font-size:11px; font-style:italic">${row[5]||''}</td>
             </tr>
