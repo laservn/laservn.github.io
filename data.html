@@ -88,16 +88,16 @@
 <div id="infoModal" class="modal" onclick="if(event.target==this) this.style.display='none'">
     <div class="modal-content">
         <h3 style="color:var(--primary); text-align:center; margin-top:0">CHI TIẾT NHẬT KÝ</h3>
-        <div id="modalBody" style="font-size:14px; line-height:1.6; border-top: 1px solid var(--border); padding-top:15px; color:#cbd5e1"></div>
+        <div id="modalBody" style="font-size:14px; line-height:1.6; border-top: 1px solid var(--border); padding-top:15px; color:#cbd5e1; max-height: 400px; overflow-y: auto;"></div>
         <button class="btn-save" style="margin-top:20px" onclick="document.getElementById('infoModal').style.display='none'">ĐÓNG CỬA SỔ</button>
     </div>
 </div>
 
 <script>
-    const GOOGLE_URL = 'https://script.google.com/macros/s/AKfycbzKOTa-gIYagGcDivR_2XaX0OnViwVwpvKjGVZ2GjVEhIKJNjSBAjzMF7rOHkEaqkN5/exec';
+    const GOOGLE_URL = 'DÁN_LINK_WEB_APP_CỦA_BẠN';
     let AUTH = JSON.parse(localStorage.getItem('tech_auth_v4')) || null;
+    window.currentLogs = []; // Biến tạm lưu trữ dữ liệu để tránh lỗi nội dung dài
 
-    // CHỐNG OUT: Kiểm tra ngay lập tức khi mở trang
     if (AUTH) {
         document.addEventListener("DOMContentLoaded", () => {
             document.getElementById('lock-screen').style.display = 'none';
@@ -107,12 +107,6 @@
         });
     }
 
-    window.onload = () => {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('hiddenDate').value = today;
-        document.getElementById('workDateDisplay').value = formatVN(today);
-    };
-
     async function unlock() {
         const u = document.getElementById('userInput').value;
         const p = document.getElementById('passInput').value;
@@ -120,7 +114,6 @@
         const res = await fetch(`${GOOGLE_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`);
         const text = await res.text();
         if (text === "Auth Failed") return alert("Sai tài khoản!");
-        
         AUTH = { user: u, pass: p };
         localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
         location.reload(); 
@@ -139,28 +132,33 @@
         document.getElementById('customer').innerHTML = '<option value="">-- Khách hàng --</option>' + data.customers.map(c => `<option value="${c}">${c}</option>`).join('');
         document.getElementById('techName').innerHTML = '<option value="">-- Kỹ thuật --</option>' + data.techs.map(t => `<option value="${t}">${t}</option>`).join('');
         
-        document.getElementById('tableBody').innerHTML = data.logs.slice(1).reverse().map(row => {
-            const rowData = JSON.stringify(row).replace(/"/g, '&quot;');
-            return `<tr onclick="openInfoModal('${rowData}')">
+        // Lưu logs vào biến toàn cục để truy xuất theo index
+        window.currentLogs = data.logs.slice(1).reverse();
+        
+        document.getElementById('tableBody').innerHTML = window.currentLogs.map((row, index) => `
+            <tr onclick="openInfoModal(${index})">
                 <td>${formatVN(row[1])}</td>
                 <td><b style="color:var(--primary)">${row[2]}</b></td>
                 <td style="color:#94a3b8">${row[3].substring(0,30)}...</td>
                 <td>${row[4]}</td>
                 <td style="font-size:11px; font-style:italic">${row[5]||''}</td>
-            </tr>`;
-        }).join('');
+            </tr>
+        `).join('');
         document.getElementById('syncStatus').innerText = "Cập nhật: " + new Date().toLocaleTimeString();
     }
 
-    function openInfoModal(jsonStr) {
-        const row = JSON.parse(jsonStr);
+    // Mở popup theo Index - Chấp mọi độ dài nội dung
+    function openInfoModal(index) {
+        const row = window.currentLogs[index];
+        if(!row) return;
+
         document.getElementById('modalBody').innerHTML = `
             <p><b>Ngày thực hiện:</b> ${formatVN(row[1])}</p>
             <p><b>Khách hàng:</b> <span style="color:var(--primary)">${row[2]}</span></p>
-            <p><b>Nội dung chi tiết:</b><br><span style="white-space:pre-wrap">${row[3]}</span></p>
+            <p><b>Nội dung chi tiết:</b><br><span style="white-space:pre-wrap; display:block; background:rgba(0,0,0,0.2); padding:10px; border-radius:5px">${row[3]}</span></p>
             <p><b>Kỹ thuật xử lý:</b> ${row[4]}</p>
             <p><b>Người nhập máy:</b> ${row[5] || '---'}</p>
-            <p style="font-size:10px; color:#475569; text-align:center; border-top:1px solid var(--border); padding-top:10px">ID Hệ thống: ${row[0]}</p>
+            <p style="font-size:10px; color:#475569; text-align:center; border-top:1px solid var(--border); padding-top:10px">ID Hệ thống: ${new Date(row[0]).toLocaleString()}</p>
         `;
         document.getElementById('infoModal').style.display = 'flex';
     }
@@ -187,8 +185,8 @@
 
     function formatVN(d) { if(!d) return ''; const dt = new Date(d); return dt.getDate().toString().padStart(2,'0')+'/'+(dt.getMonth()+1).toString().padStart(2,'0')+'/'+dt.getFullYear(); }
     function confirmDate(v) { document.getElementById('workDateDisplay').value = formatVN(v); document.getElementById('dateModal').style.display = 'none'; }
-    function logout() { if(confirm("Bạn muốn thoát và xóa ghi nhớ đăng nhập?")) { localStorage.removeItem('tech_auth_v4'); location.reload(); } }
-    setInterval(() => { if(AUTH) refresh(); }, 10000);
+    function logout() { if(confirm("Bạn muốn đăng xuất?")) { localStorage.removeItem('tech_auth_v4'); location.reload(); } }
+    setInterval(() => { if(AUTH) refresh(); }, 30000);
 </script>
 </body>
 </html>
