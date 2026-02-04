@@ -23,6 +23,7 @@
             margin: 0; 
             padding: 12px; 
             line-height: 1.5;
+            -webkit-tap-highlight-color: transparent;
         }
         
         /* Login Screen */
@@ -33,45 +34,43 @@
         .container { max-width: 900px; margin: auto; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px; }
         
-        /* Forms & Inputs */
+        /* Inputs */
         input, select, textarea { 
             background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; 
-            border-radius: 10px; width: 100%; box-sizing: border-box; margin-bottom: 12px; outline: none; transition: border 0.3s;
+            border-radius: 10px; width: 100%; box-sizing: border-box; margin-bottom: 12px; outline: none; transition: 0.3s; font-size: 14px;
         }
-        input:focus { border-color: var(--primary); }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(0, 210, 255, 0.2); }
         
         .btn-save { 
             background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; 
-            padding: 14px; border-radius: 10px; cursor: pointer; font-weight: 600; width: 100%; transition: opacity 0.2s;
+            padding: 14px; border-radius: 10px; cursor: pointer; font-weight: 600; width: 100%; transition: transform 0.1s;
         }
+        .btn-save:active { transform: scale(0.98); }
         .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
         
-        /* Professional Table Style */
+        /* Professional Table */
         .table-container { 
             margin-top: 15px; border: 1px solid var(--border); border-radius: 12px; 
-            overflow: hidden; background: var(--card); box-shadow: 0 4px 20px rgba(0,0,0,0.3); 
+            overflow-x: auto; background: var(--card); box-shadow: 0 4px 20px rgba(0,0,0,0.3); 
         }
-        table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 600px; }
         th { 
             background: #111827; color: var(--text-muted); font-size: 11px; font-weight: 600; 
             text-transform: uppercase; letter-spacing: 0.05em; padding: 14px 12px; border-bottom: 2px solid var(--border); text-align: left;
         }
         td { padding: 14px 12px; border-bottom: 1px solid var(--border); font-size: 13px; cursor: pointer; transition: 0.2s; }
         tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
-        tbody tr:hover td { background: rgba(0, 210, 255, 0.08); color: white; }
+        tbody tr:hover td { background: rgba(0, 210, 255, 0.08); }
 
-        /* Badges */
         .badge-tech { background: rgba(58, 123, 213, 0.2); color: #93c5fd; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
         .badge-user { color: var(--text-muted); font-size: 11px; font-family: monospace; }
 
         /* Modals */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 20px; }
-        .modal-content { background: var(--card); width: 100%; max-width: 400px; border-radius: 20px; border: 1px solid var(--primary); padding: 25px; box-shadow: 0 0 30px rgba(0,210,255,0.2); }
+        .modal-content { background: var(--card); width: 100%; max-width: 400px; border-radius: 20px; border: 1px solid var(--primary); padding: 25px; }
         
         #workDateDisplay { background: rgba(0, 210, 255, 0.1); border: 1px solid var(--primary); color: var(--primary); font-weight: bold; cursor: pointer; text-align: center; }
-
         .btn-toggle-form { background: rgba(0, 210, 255, 0.05); color: var(--primary); border: 1px dashed var(--primary); padding: 12px; width: 100%; border-radius: 10px; margin-bottom: 15px; cursor: pointer; font-weight: 600; }
-        
         #searchBox { border: 1px solid var(--primary); background: rgba(0, 210, 255, 0.05); margin-top: 10px; }
     </style>
 </head>
@@ -79,47 +78,42 @@
 
 <div id="lock-screen">
     <div class="login-box">
-        <h2 style="color:var(--primary); margin:0 0 20px 0; letter-spacing: 1px;">XÁC THỰC</h2>
+        <h2 style="color:var(--primary); margin:0 0 20px 0;">TECH LOGS PRO</h2>
         <input type="text" id="userInput" placeholder="Tên đăng nhập">
         <input type="password" id="passInput" placeholder="Mật khẩu">
-        <button class="btn-save" id="btnLogin" onclick="unlock()">ĐĂNG NHẬP HỆ THỐNG</button>
+        <button class="btn-save" id="btnLogin" onclick="unlock()">ĐĂNG NHẬP</button>
     </div>
 </div>
 
 <div class="container" id="main-content" style="display:none;">
     <div class="header">
-        <h2 style="margin:0; font-size:1.3rem; color:var(--primary); font-weight: 600;">TECH LOGS <span style="font-weight:100; color:white">PRO</span></h2>
+        <h2 style="margin:0; font-size:1.3rem; color:var(--primary);">TECH LOGS <span style="color:white">PRO</span></h2>
         <div style="text-align: right">
             <span id="helloUser" style="color:var(--primary); font-size:13px; font-weight:600">---</span>
             <button onclick="logout()" style="color:#ef4444; background:none; border:none; cursor:pointer; margin-left:12px; font-size:12px; font-weight:bold">THOÁT</button>
-            <small id="syncStatus" style="font-size:10px; color:var(--text-muted); display:block; margin-top:4px">Đang kết nối...</small>
+            <small id="syncStatus" style="font-size:10px; color:var(--text-muted); display:block; margin-top:4px">Đang đồng bộ...</small>
         </div>
     </div>
 
-    <button class="btn-toggle-form" id="toggleBtn" onclick="toggleForm()">➕ TẠO NHẬT KÝ MỚI</button>
+    <button class="btn-toggle-form" id="toggleBtn" onclick="toggleForm()">➕ NHẬP NHẬT KÝ MỚI</button>
 
     <div id="formContainer" style="display:none; background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
         <input type="text" id="workDateDisplay" readonly onclick="document.getElementById('dateModal').style.display='flex'">
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <select id="customer"><option>Tải khách hàng...</option></select>
-            <select id="techName"><option>Tải kỹ thuật...</option></select>
+            <select id="customer"><option value="">Tải khách hàng...</option></select>
+            <select id="techName"><option value="">Tải kỹ thuật...</option></select>
         </div>
-        <textarea id="content" placeholder="Mô tả chi tiết công việc thực hiện..." style="height:100px"></textarea>
-        <button class="btn-save" id="btnSave" onclick="saveData()">XÁC NHẬN LƯU DỮ LIỆU</button>
-        <button onclick="toggleForm()" style="background:none; border:none; color:var(--text-muted); width:100%; margin-top:10px; cursor:pointer; font-size:13px">Hủy bỏ</button>
+        <textarea id="content" placeholder="Mô tả công việc thực hiện..." style="height:100px"></textarea>
+        <button class="btn-save" id="btnSave" onclick="saveData()">LƯU NHẬT KÝ</button>
     </div>
 
-    <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="🔍 Tìm kiếm nhanh khách hàng, nội dung hoặc kỹ thuật...">
+    <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="🔍 Tìm kiếm nhanh...">
     
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th>Ngày</th>
-                    <th>Khách hàng</th>
-                    <th>Nội dung</th>
-                    <th>Kỹ thuật</th>
-                    <th>User</th>
+                    <th>Ngày</th><th>Khách</th><th>Nội dung</th><th>Tech</th><th>User</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -137,7 +131,7 @@
 
 <div id="infoModal" class="modal" onclick="if(event.target==this) this.style.display='none'">
     <div class="modal-content">
-        <h3 style="color:var(--primary); text-align:center; margin:0 0 20px 0">CHI TIẾT NHẬT KÝ</h3>
+        <h3 style="color:var(--primary); text-align:center; margin:0 0 20px 0">CHI TIẾT</h3>
         <div id="modalBody"></div>
         <button class="btn-save" style="margin-top:25px" onclick="document.getElementById('infoModal').style.display='none'">ĐÓNG</button>
     </div>
@@ -145,15 +139,15 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js"></script>
 <script>
-    const GOOGLE_URL = 'https://script.google.com/macros/s/AKfycbwCp7VrriqxYhbiuyJYUWfbSfGzA21lgMYnEHiZUzoJWQkDSfZIyhY2MdGoTW5ijhG5/exec';
+    const GOOGLE_URL = 'URL_CUA_BAN_TAI_DAY'; // <-- Dán URL Web App của bạn vào đây
     let AUTH = JSON.parse(localStorage.getItem('tech_auth_v4')) || null;
     window.currentLogs = [];
 
-    // Khởi tạo ứng dụng
     document.addEventListener("DOMContentLoaded", () => {
         setInitialDate();
-        setupEvents();
         checkSession();
+        // Lắng nghe sự kiện Enter cho login
+        document.getElementById('passInput').addEventListener("keypress", (e) => { if(e.key === "Enter") unlock(); });
     });
 
     function checkSession() {
@@ -162,25 +156,23 @@
             showApp();
             refresh();
         } else {
-            logout(false);
+            // Không reload ở đây, chỉ hiện màn hình login
+            localStorage.removeItem('tech_auth_v4');
+            AUTH = null;
+            document.getElementById('lock-screen').style.display = 'flex';
+            document.getElementById('main-content').style.display = 'none';
         }
-    }
-
-    function setupEvents() {
-        const pInput = document.getElementById('passInput');
-        pInput.addEventListener("keypress", (e) => { if (e.key === "Enter") unlock(); });
     }
 
     async function unlock() {
         const u = document.getElementById('userInput').value.trim();
         const p = document.getElementById('passInput').value.trim();
-        if(!u || !p) return alert("Vui lòng nhập tài khoản và mật khẩu!");
+        if(!u || !p) return alert("Nhập đủ tài khoản/mật khẩu!");
         
         const btn = document.getElementById('btnLogin');
         btn.innerText = "ĐANG XÁC THỰC..."; btn.disabled = true;
 
         const passHash = md5(p); 
-
         try {
             const res = await fetch(GOOGLE_URL, {
                 method: 'POST',
@@ -189,9 +181,10 @@
             const text = await res.text();
             
             if (text === "AUTH_FAILED") {
-                alert("❌ Thông tin đăng nhập không chính xác!");
-                btn.innerText = "ĐĂNG NHẬP HỆ THỐNG"; btn.disabled = false;
+                alert("❌ Sai tài khoản hoặc mật khẩu!");
+                btn.innerText = "ĐĂNG NHẬP"; btn.disabled = false;
             } else {
+                // Đăng nhập thành công, lưu phiên 24h
                 AUTH = { user: u, pass: passHash, expire: new Date().getTime() + (24 * 60 * 60 * 1000) };
                 localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
                 showApp();
@@ -199,7 +192,7 @@
             }
         } catch (e) {
             alert("Lỗi kết nối Server!");
-            btn.innerText = "ĐĂNG NHẬP HỆ THỐNG"; btn.disabled = false;
+            btn.innerText = "ĐĂNG NHẬP"; btn.disabled = false;
         }
     }
 
@@ -210,8 +203,8 @@
                 method: 'POST',
                 body: JSON.stringify({ action: "FETCH_DATA", user: AUTH.user, pass: AUTH.pass })
             });
-            const text = await response.text();
-            if (text !== "AUTH_FAILED") renderData(JSON.parse(text));
+            const data = await response.json();
+            if (data !== "AUTH_FAILED") renderData(data);
         } catch (e) { console.warn("Sync failed"); }
     }
 
@@ -221,7 +214,7 @@
         const t = document.getElementById('techName').value;
         const n = document.getElementById('content').value.trim();
         
-        if (!c || !n || !t) return alert("Vui lòng nhập đầy đủ thông tin!");
+        if (!c || !n || !t) return alert("Vui lòng điền đủ thông tin!");
         const btn = document.getElementById('btnSave'); 
         btn.innerText = "ĐANG LƯU..."; btn.disabled = true;
 
@@ -231,56 +224,49 @@
                 body: JSON.stringify({ action: "SAVE_LOG", user: AUTH.user, pass: AUTH.pass, workDate: d, customer: c, tech: t, content: n }) 
             });
             document.getElementById('content').value = ''; 
-            btn.innerText = "XÁC NHẬN LƯU DỮ LIỆU"; btn.disabled = false;
+            btn.innerText = "LƯU NHẬT KÝ"; btn.disabled = false;
             toggleForm(); 
-            refresh();
+            refresh(); // Tải lại bảng ngay lập tức
         } catch(e) { 
-            alert("Lỗi khi lưu dữ liệu!"); 
-            btn.innerText = "XÁC NHẬN LƯU DỮ LIỆU"; btn.disabled = false; 
+            alert("Lỗi khi lưu!"); 
+            btn.innerText = "LƯU NHẬT KÝ"; btn.disabled = false; 
         }
     }
 
     function renderData(data) {
-        try {
-            if (data.customers) {
-                document.getElementById('customer').innerHTML = '<option value="">-- Khách hàng --</option>' + 
-                    data.customers.map(c => `<option value="${c}">${c}</option>`).join('');
-            }
-            if (data.techs) {
-                document.getElementById('techName').innerHTML = '<option value="">-- Kỹ thuật --</option>' + 
-                    data.techs.map(t => `<option value="${t}">${t}</option>`).join('');
-            }
+        if (data.customers) {
+            document.getElementById('customer').innerHTML = '<option value="">-- Khách hàng --</option>' + 
+                data.customers.map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+        if (data.techs) {
+            document.getElementById('techName').innerHTML = '<option value="">-- Kỹ thuật --</option>' + 
+                data.techs.map(t => `<option value="${t}">${t}</option>`).join('');
+        }
 
-            window.currentLogs = data.logs.slice(1).reverse();
-            const html = window.currentLogs.map((row, index) => {
-                let content = row[3] || "";
-                let displayContent = content.length > 45 ? content.substring(0, 45) + "..." : content;
-                return `
-                    <tr onclick="openInfoModal(${index})">
-                        <td style="white-space:nowrap; color:var(--text-muted)">${formatVN(row[1])}</td>
-                        <td><b style="color:var(--primary)">${row[2] || ''}</b></td>
-                        <td style="color:#cbd5e1">${displayContent}</td>
-                        <td><span class="badge-tech">${row[4] || ''}</span></td>
-                        <td><span class="badge-user">@${row[5] || ''}</span></td>
-                    </tr>
-                `;
-            }).join('');
-            document.getElementById('tableBody').innerHTML = html;
-            document.getElementById('syncStatus').innerText = "Cập nhật: " + new Date().toLocaleTimeString();
-        } catch (err) { console.error("Render error", err); }
+        window.currentLogs = data.logs.slice(1).reverse();
+        const html = window.currentLogs.map((row, index) => `
+            <tr onclick="openInfoModal(${index})">
+                <td style="color:var(--text-muted)">${formatVN(row[1])}</td>
+                <td><b style="color:var(--primary)">${row[2] || ''}</b></td>
+                <td style="color:#cbd5e1">${(row[3]||"").substring(0,40)}${(row[3]||"").length>40?'...':''}</td>
+                <td><span class="badge-tech">${row[4] || ''}</span></td>
+                <td><span class="badge-user">@${row[5] || ''}</span></td>
+            </tr>
+        `).join('');
+        document.getElementById('tableBody').innerHTML = html;
+        document.getElementById('syncStatus').innerText = "Cập nhật: " + new Date().toLocaleTimeString();
     }
 
     function openInfoModal(index) {
         const row = window.currentLogs[index];
         document.getElementById('modalBody').innerHTML = `
             <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border)">
-                <p style="margin:0 0 10px 0"><b>🗓️ Ngày:</b> ${formatVN(row[1])}</p>
-                <p style="margin:0 0 10px 0"><b>🏢 Khách:</b> <span style="color:var(--primary)">${row[2]}</span></p>
-                <p style="margin:0 0 10px 0"><b>🛠️ Kỹ thuật:</b> ${row[4]}</p>
-                <p style="margin:0 0 10px 0"><b>👤 Người nhập:</b> ${row[5]}</p>
-                <hr style="border:0; border-top:1px solid var(--border); margin:15px 0">
-                <p><b>📝 Nội dung công việc:</b></p>
-                <div style="white-space:pre-wrap; color:#fff; line-height:1.6">${row[3]}</div>
+                <p><b>🗓️ Ngày:</b> ${formatVN(row[1])}</p>
+                <p><b>🏢 Khách:</b> ${row[2]}</p>
+                <p><b>🛠️ Tech:</b> ${row[4]} | <b>👤 User:</b> ${row[5]}</p>
+                <hr style="border:0; border-top:1px solid var(--border); margin:10px 0">
+                <p><b>📝 Nội dung:</b></p>
+                <div style="white-space:pre-wrap; color:#fff">${row[3]}</div>
             </div>
         `;
         document.getElementById('infoModal').style.display = 'flex';
@@ -292,10 +278,14 @@
         document.getElementById('helloUser').innerText = "Chào, " + AUTH.user;
     }
 
-    function logout(confirmNeeded = true) {
-        if (confirmNeeded && !confirm("Bạn muốn đăng xuất?")) return;
+    function logout() {
+        if (!confirm("Bạn muốn đăng xuất?")) return;
         localStorage.removeItem('tech_auth_v4');
-        location.reload();
+        AUTH = null;
+        document.getElementById('lock-screen').style.display = 'flex';
+        document.getElementById('main-content').style.display = 'none';
+        document.getElementById('userInput').value = '';
+        document.getElementById('passInput').value = '';
     }
 
     function setInitialDate() {
@@ -318,10 +308,9 @@
 
     function toggleForm() {
         const f = document.getElementById('formContainer');
-        const b = document.getElementById('toggleBtn');
         const isHidden = f.style.display === "none";
         f.style.display = isHidden ? "block" : "none";
-        b.innerHTML = isHidden ? "➖ THU GỌN FORM" : "➕ TẠO NHẬT KÝ MỚI";
+        document.getElementById('toggleBtn').innerHTML = isHidden ? "➖ THU GỌN FORM" : "➕ NHẬP NHẬT KÝ MỚI";
     }
 
     function filterTable() {
@@ -330,7 +319,7 @@
         for (let r of rows) { r.style.display = r.innerText.toUpperCase().includes(v) ? "" : "none"; }
     }
 
-    setInterval(refresh, 30000);
+    setInterval(refresh, 30000); // 30s cập nhật ngầm
 </script>
 </body>
 </html>
