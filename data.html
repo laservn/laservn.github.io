@@ -3,55 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Kỹ Thuật Pro</title>
+    <title>Kỹ Thuật Pro Max - Dashboard</title>
     <style>
-        :root { --primary: #2c3e50; --accent: #3498db; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .form-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        select, textarea, input { padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; width: 100%; box-sizing: border-box; background: white; }
-        textarea { grid-column: span 2; height: 100px; }
-        .btn { border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; background: var(--accent); width: 100%; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background: var(--primary); color: white; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; }
-        .tag { background: #e8f4fd; color: #3498db; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
-        #lock-screen { position: fixed; inset: 0; background: var(--primary); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .lock-box { background: white; padding: 30px; border-radius: 12px; text-align: center; }
+        :root { --primary: #00d2ff; --secondary: #3a7bd5; --dark: #1a1a2e; --card: #16213e; --text: #e9ecef; }
+        body { font-family: 'Inter', sans-serif; background: var(--dark); color: var(--text); margin: 0; padding: 15px; }
+        .container { max-width: 1100px; margin: auto; }
+        
+        /* Header */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .header h2 { margin: 0; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.5rem; }
+        
+        /* Input Form */
+        .glass-card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        select, textarea, input { background: #0f3460; border: 1px solid #162447; color: white; padding: 12px; border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s; }
+        select:focus, textarea:focus, input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 210, 255, 0.3); }
+        textarea { grid-column: span 2; height: 80px; }
+        .btn-save { grid-column: span 2; background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; }
+        
+        /* Table Style */
+        .table-section { margin-top: 30px; overflow-x: auto; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+        th { padding: 15px; text-align: left; font-size: 12px; text-transform: uppercase; color: #888; }
+        td { background: var(--card); padding: 15px; transition: 0.3s; cursor: pointer; }
+        td:first-child { border-radius: 10px 0 0 10px; }
+        td:last-child { border-radius: 0 10px 10px 0; }
+        tr:hover td { background: #1f4068; transform: translateY(-2px); }
+        .tag { background: rgba(0, 210, 255, 0.1); color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; }
+
+        /* Popup (Modal) */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-content { background: var(--card); width: 90%; max-width: 500px; padding: 30px; border-radius: 20px; border: 1px solid var(--primary); position: relative; animation: slideUp 0.3s; }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 25px; cursor: pointer; color: #888; }
+        .modal-item { margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; }
+        .modal-label { font-size: 11px; color: var(--primary); text-transform: uppercase; font-weight: bold; }
+        .modal-value { font-size: 15px; margin-top: 5px; line-height: 1.5; }
+
+        /* Search & Filter */
+        .search-bar { width: 100%; max-width: 300px; margin-bottom: 10px; background: var(--card); }
+
+        /* Lock Screen */
+        #lock-screen { position: fixed; inset: 0; background: var(--dark); z-index: 3000; display: flex; justify-content: center; align-items: center; }
+        .lock-box { background: var(--card); padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body>
 
 <div id="lock-screen">
-    <div class="lock-box" id="lock-content">
-        <h3>HỆ THỐNG KỸ THUẬT</h3>
-        <input type="password" id="passInput" placeholder="Mật khẩu...">
-        <button class="btn" style="margin-top:10px" onclick="unlock()">ĐĂNG NHẬP</button>
+    <div class="lock-box" id="lock-box-content">
+        <h2 style="color:var(--primary); margin-bottom:20px">KỸ THUẬT LOGIN</h2>
+        <input type="password" id="passInput" placeholder="Passcode..." style="width:200px; text-align:center"><br><br>
+        <button class="btn-save" onclick="unlock()" style="padding: 10px 40px">TRUY CẬP</button>
     </div>
 </div>
 
 <div class="container" id="main-content" style="display:none">
-    <div style="display:flex; justify-content:space-between">
-        <h2>Nhật Ký Xử Lý</h2>
-        <button onclick="logout()" style="background:none; border:none; color:red; cursor:pointer">Thoát</button>
-    </div>
-    
-    <div class="form-group">
-        <select id="customer"><option value="">Đang tải khách hàng...</option></select>
-        <select id="techName"><option value="">Đang tải kỹ thuật...</option></select>
-        <textarea id="content" placeholder="Nội dung chi tiết lỗi và cách xử lý..."></textarea>
-        <button class="btn" onclick="saveData()">LƯU THÔNG TIN</button>
+    <div class="header">
+        <h2>TECHNICAL LOGS</h2>
+        <div>
+            <span id="syncStatus" style="font-size: 10px; color: #555; margin-right:10px"></span>
+            <button onclick="logout()" style="background:none; border:none; color:var(--primary); cursor:pointer">Đăng xuất</button>
+        </div>
     </div>
 
-    <input type="text" id="searchBox" placeholder="Tìm kiếm nhanh..." onkeyup="filterTable()" style="margin-bottom:10px">
-    
-    <div style="overflow-x:auto">
+    <div class="glass-card">
+        <div class="form-grid">
+            <select id="customer"><option value="">Đang tải khách hàng...</option></select>
+            <select id="techName"><option value="">Đang tải kỹ thuật...</option></select>
+            <textarea id="content" placeholder="Mô tả chi tiết nội dung công việc hoặc tình trạng lỗi máy..."></textarea>
+            <button class="btn-save" id="btnSave" onclick="saveData()">LƯU NHẬT KÝ</button>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="font-size: 14px; color: #888;">LỊCH SỬ GẦN ĐÂY</h3>
+            <input type="text" id="searchBox" class="search-bar" placeholder="Tìm kiếm nhanh..." onkeyup="filterTable()">
+        </div>
         <table>
             <thead>
-                <tr><th>Thời gian</th><th>Khách hàng</th><th>Nội dung</th><th>Kỹ thuật</th></tr>
+                <tr>
+                    <th>Khách Hàng</th>
+                    <th>Nội Dung</th>
+                    <th width="80">Tech</th>
+                </tr>
             </thead>
             <tbody id="tableBody"></tbody>
         </table>
+    </div>
+</div>
+
+<div id="infoModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3 style="margin-top:0; color:var(--primary)">Chi Tiết Công Việc</h3>
+        <div class="modal-item">
+            <div class="modal-label">Thời gian xử lý</div>
+            <div class="modal-value" id="mTime"></div>
+        </div>
+        <div class="modal-item">
+            <div class="modal-label">Khách hàng</div>
+            <div class="modal-value" id="mCust" style="font-weight:bold"></div>
+        </div>
+        <div class="modal-item">
+            <div class="modal-label">Nội dung chi tiết</div>
+            <div class="modal-value" id="mCont"></div>
+        </div>
+        <div class="modal-item" style="border:none">
+            <div class="modal-label">Kỹ thuật viên</div>
+            <div class="modal-value"><span class="tag" id="mTech"></span></div>
+        </div>
     </div>
 </div>
 
@@ -60,50 +122,41 @@
     let CURRENT_PASS = '';
 
     window.onload = () => {
-        const p = localStorage.getItem('tech_pass');
+        const p = localStorage.getItem('tech_pass_v2');
         if(p) autoUnlock(p);
     };
 
-async function autoUnlock(p) {
-    document.getElementById('lock-content').innerHTML = "Đang đồng bộ dữ liệu...";
-    try {
-        const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(p)}`);
-        const data = await res.json();
-        if (data && data.logs) { // Kiểm tra xem có mục logs không
+    async function autoUnlock(p) {
+        document.getElementById('lock-box-content').innerHTML = "SYSTEM SYNCING...";
+        try {
+            const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(p)}`);
+            const data = await res.json();
             CURRENT_PASS = p;
             showMain(data);
-        } else {
-            localStorage.removeItem('tech_pass');
-            location.reload();
-        }
-    } catch(e) { console.error(e); }
-}
+        } catch(e) { localStorage.removeItem('tech_pass_v2'); location.reload(); }
+    }
 
-async function unlock() {
-    const p = document.getElementById('passInput').value;
-    try {
-        const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(p)}`);
-        const data = await res.json();
-        if(data && data.logs) { // Kiểm tra đúng cấu trúc Object
-            localStorage.setItem('tech_pass', p);
-            CURRENT_PASS = p;
-            showMain(data);
-        } else { alert("Mật khẩu không đúng!"); }
-    } catch(e) { alert("Lỗi kết nối!"); }
-}
+    async function unlock() {
+        const p = document.getElementById('passInput').value;
+        try {
+            const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(p)}`);
+            const data = await res.json();
+            if(data.logs) {
+                localStorage.setItem('tech_pass_v2', p);
+                CURRENT_PASS = p;
+                showMain(data);
+            } else { alert("Mật khẩu không đúng!"); }
+        } catch(e) { alert("Lỗi kết nối!"); }
+    }
 
     function showMain(data) {
         document.getElementById('lock-screen').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
         
-        // Đổ dữ liệu vào Dropdown Khách hàng
-        const cSelect = document.getElementById('customer');
-        cSelect.innerHTML = '<option value="">-- Chọn Khách Hàng --</option>' + 
+        document.getElementById('customer').innerHTML = '<option value="">-- Chọn Khách Hàng --</option>' + 
             data.customers.map(c => `<option value="${c}">${c}</option>`).join('');
             
-        // Đổ dữ liệu vào Dropdown Kỹ thuật
-        const tSelect = document.getElementById('techName');
-        tSelect.innerHTML = '<option value="">-- Chọn Kỹ Thuật --</option>' + 
+        document.getElementById('techName').innerHTML = '<option value="">-- Chọn Kỹ Thuật --</option>' + 
             data.techs.map(t => `<option value="${t}">${t}</option>`).join('');
 
         renderTable(data.logs);
@@ -113,7 +166,10 @@ async function unlock() {
         const c = document.getElementById('customer').value;
         const t = document.getElementById('techName').value;
         const n = document.getElementById('content').value;
-        if(!c || !n) return alert("Thiếu thông tin!");
+        if(!c || !n) return alert("Vui lòng điền đủ thông tin!");
+
+        document.getElementById('btnSave').innerText = "ĐANG LƯU...";
+        document.getElementById('btnSave').disabled = true;
 
         await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
@@ -122,29 +178,46 @@ async function unlock() {
         });
         
         document.getElementById('content').value = '';
-        setTimeout(refresh, 2000);
+        document.getElementById('btnSave').innerText = "LƯU NHẬT KÝ";
+        document.getElementById('btnSave').disabled = false;
+        setTimeout(refresh, 1500);
     }
 
-async function refresh() {
-    try {
-        const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(CURRENT_PASS)}&v=${new Date().getTime()}`);
-        const data = await res.json();
-        if (data && data.logs) {
+    async function refresh() {
+        try {
+            const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(CURRENT_PASS)}&v=${new Date().getTime()}`);
+            const data = await res.json();
             renderTable(data.logs);
-        }
-    } catch (e) { console.error("Refresh lỗi"); }
-}
+            document.getElementById('syncStatus').innerText = "Đã cập nhật: " + new Date().toLocaleTimeString();
+        } catch(e) { console.error(e); }
+    }
 
     function renderTable(logs) {
-        const html = logs.slice(1).reverse().map(row => `
-            <tr>
-                <td>${new Date(row[0]).toLocaleString('vi-VN')}</td>
-                <td><span class="tag">${row[1]}</span></td>
-                <td style="white-space:pre-wrap">${row[2]}</td>
-                <td><b>${row[3]}</b></td>
-            </tr>`).join('');
+        // Lấy tất cả dòng (bao gồm dòng 1 nếu có dữ liệu)
+        const html = logs.slice().reverse().map((row, index) => {
+            if(!row[0] || !row[1]) return '';
+            // Rút gọn nội dung hiển thị ở bảng
+            const shortCont = row[2].length > 50 ? row[2].substring(0, 50) + "..." : row[2];
+            return `
+                <tr onclick="openModal('${row[0]}','${row[1]}','${encodeURIComponent(row[2])}','${row[3]}')">
+                    <td><span class="tag">${row[1]}</span></td>
+                    <td style="font-size:13px; color:#ccc">${shortCont}</td>
+                    <td><b>${row[3] || ''}</b></td>
+                </tr>`;
+        }).join('');
         document.getElementById('tableBody').innerHTML = html;
     }
+
+    function openModal(time, cust, cont, tech) {
+        document.getElementById('mTime').innerText = new Date(time).toLocaleString('vi-VN');
+        document.getElementById('mCust').innerText = cust;
+        document.getElementById('mCont').innerText = decodeURIComponent(cont);
+        document.getElementById('mTech').innerText = tech;
+        document.getElementById('infoModal').style.display = 'flex';
+    }
+
+    function closeModal() { document.getElementById('infoModal').style.display = 'none'; }
+    window.onclick = (e) => { if(e.target == document.getElementById('infoModal')) closeModal(); }
 
     function filterTable() {
         const val = document.getElementById('searchBox').value.toUpperCase();
@@ -152,10 +225,9 @@ async function refresh() {
         for (let r of rows) { r.style.display = r.innerText.toUpperCase().includes(val) ? "" : "none"; }
     }
 
-    function logout() { localStorage.removeItem('tech_pass'); location.reload(); }
-    
-    // Tự động làm mới mỗi 1 phút
-    setInterval(refresh, 60000);
+    function logout() { localStorage.removeItem('tech_pass_v2'); location.reload(); }
+    setInterval(refresh, 10000); // 30 giây làm mới 1 lần
+    window.onfocus = () => { if(CURRENT_PASS) refresh(); };
 </script>
 </body>
 </html>
