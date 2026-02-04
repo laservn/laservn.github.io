@@ -3,93 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kỹ Thuật Pro - Quản Lý Nhật Ký</title>
+    <title>Kỹ Thuật Pro - Nhật Ký</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #00d2ff; --secondary: #3a7bd5; --dark: #0f172a; --card: #1e293b; --text: #f8fafc; }
-        body { font-family: 'Inter', sans-serif; background: var(--dark); color: var(--text); margin: 0; padding: 12px; line-height: 1.5; }
+        body { font-family: 'Inter', sans-serif; background: var(--dark); color: var(--text); margin: 0; padding: 12px; }
         .container { max-width: 900px; margin: auto; }
         
-        /* Header & Sync Status */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; }
-        .header h2 { margin: 0; font-size: 1.1rem; letter-spacing: 1px; color: var(--primary); }
         .sync-box { display: flex; align-items: center; gap: 12px; }
-        #syncStatus { font-size: 11px; color: #94a3b8; font-weight: 500; }
-        .btn-logout { background: none; border: 1px solid #ef4444; color: #ef4444; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: 0.3s; }
-        .btn-logout:hover { background: #ef4444; color: white; }
-
-        /* Card & Forms */
+        #syncStatus { font-size: 11px; color: #94a3b8; }
+        
         .glass-card { background: var(--card); padding: 18px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         input, select, textarea { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 8px; outline: none; font-size: 14px; width: 100%; box-sizing: border-box; }
         input[type="date"] { grid-column: span 2; }
         textarea { grid-column: span 2; height: 80px; resize: none; }
-        .btn-save { grid-column: span 2; background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-top: 5px; }
+        .btn-save { grid-column: span 2; background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; }
 
-        /* Table Area */
-        .search-box { width: 100%; margin: 20px 0 10px 0; }
-        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
-        th { padding: 8px; text-align: left; font-size: 10px; color: #64748b; text-transform: uppercase; }
-        td { background: var(--card); padding: 12px; cursor: pointer; border-top: 1px solid rgba(255,255,255,0.03); }
+        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; margin-top: 15px; }
+        td { background: var(--card); padding: 12px; cursor: pointer; }
         td:first-child { border-radius: 8px 0 0 8px; font-size: 11px; color: #94a3b8; }
         td:last-child { border-radius: 0 8px 8px 0; font-weight: 600; color: var(--primary); }
-        tr:hover td { background: #2d3748; }
+        .tag { background: rgba(0, 210, 255, 0.1); color: var(--primary); padding: 3px 8px; border-radius: 5px; font-size: 11px; }
 
-        /* Popup Modal */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 20px; }
-        .modal-content { background: var(--card); width: 100%; max-width: 400px; padding: 20px; border-radius: 16px; border: 1px solid var(--primary); position: relative; }
-        .close-btn { position: absolute; top: 12px; right: 15px; font-size: 24px; cursor: pointer; color: #64748b; }
-        .m-item { margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
-        .m-label { font-size: 10px; color: var(--primary); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
-        .m-val { font-size: 14px; white-space: pre-wrap; }
-
-        /* Lock Screen */
         #lock-screen { position: fixed; inset: 0; background: var(--dark); z-index: 3000; display: flex; justify-content: center; align-items: center; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 20px; }
+        .modal-content { background: var(--card); width: 100%; max-width: 400px; padding: 25px; border-radius: 16px; border: 1px solid var(--primary); position: relative; }
+        .close-btn { position: absolute; top: 12px; right: 15px; font-size: 24px; cursor: pointer; color: #64748b; }
     </style>
 </head>
 <body>
 
 <div id="lock-screen">
-    <div class="glass-card" style="width: 280px; text-align: center;">
+    <div class="glass-card" style="width: 280px; text-align: center;" id="lock-box">
         <h3 style="color:var(--primary); margin-top:0">SECURITY LOGIN</h3>
         <input type="password" id="passInput" placeholder="Passcode..." style="text-align:center">
-        <button class="btn-save" onclick="unlock()" style="margin-top:15px">XÁC THỰC</button>
+        <button class="btn-save" onclick="unlock()" style="margin-top:15px">TRUY CẬP</button>
     </div>
 </div>
 
-<div class="container" id="main-content" style="display:none">
+<div class="container" id="main-content" style="visibility: hidden;">
     <div class="header">
-        <h2>TECHNICAL LOGS</h2>
+        <h2 style="margin:0; font-size:1.1rem; color:var(--primary)">TECH DASHBOARD</h2>
         <div class="sync-box">
-            <span id="syncStatus">Đang chờ...</span>
-            <button class="btn-logout" onclick="logout()">THOÁT</button>
+            <span id="syncStatus">Đang tải...</span>
+            <button onclick="logout()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:12px">THOÁT</button>
         </div>
     </div>
 
     <div class="glass-card">
         <div class="form-grid">
             <input type="date" id="workDate">
-            <select id="customer"><option value="">Tải dữ liệu...</option></select>
-            <select id="techName"><option value="">Tải dữ liệu...</option></select>
-            <textarea id="content" placeholder="Mô tả nội dung xử lý..."></textarea>
-            <button class="btn-save" id="btnSave" onclick="saveData()">LƯU BÁO CÁO MỚI</button>
+            <select id="customer"><option value="">Đang tải khách...</option></select>
+            <select id="techName"><option value="">Đang tải kỹ thuật...</option></select>
+            <textarea id="content" placeholder="Nội dung xử lý..."></textarea>
+            <button class="btn-save" id="btnSave" onclick="saveData()">LƯU BÁO CÁO</button>
         </div>
     </div>
 
-    <div class="search-box">
-        <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="Gõ để tìm kiếm nhanh...">
-    </div>
+    <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="Tìm kiếm nhanh..." style="margin: 20px 0 10px 0;">
 
     <div style="overflow-x:auto">
         <table>
-            <thead>
-                <tr>
-                    <th width="80">Ngày làm</th>
-                    <th>Khách hàng</th>
-                    <th>Nội dung</th>
-                    <th width="60">Tech</th>
-                </tr>
-            </thead>
+            <thead><tr><th width="85">Ngày</th><th>Khách hàng</th><th>Nội dung</th><th width="60">Tech</th></tr></thead>
             <tbody id="tableBody"></tbody>
         </table>
     </div>
@@ -98,12 +75,17 @@
 <div id="infoModal" class="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeModal()">&times;</span>
-        <h3 style="margin-top:0; color:var(--primary); font-size: 1.1rem;">CHI TIẾT NHẬT KÝ</h3>
-        <div class="m-item"><div class="m-label">Ngày thực hiện</div><div class="m-val" id="mWorkDate" style="font-weight:600"></div></div>
-        <div class="m-item"><div class="m-label">Khách hàng</div><div class="m-val" id="mCust"></div></div>
-        <div class="m-item"><div class="m-label">Nội dung xử lý</div><div class="m-val" id="mCont"></div></div>
-        <div class="m-item"><div class="m-label">Kỹ thuật viên</div><div class="m-val" id="mTech"></div></div>
-        <div class="m-item" style="border:none"><div class="m-label">Giờ hệ thống đã lưu</div><div class="m-val" id="mSysTime" style="color:#64748b; font-size:12px"></div></div>
+        <h3 style="margin-top:0; color:var(--primary)">CHI TIẾT NHẬT KÝ</h3>
+        <p style="font-size:10px; color:var(--primary); margin:0">NGÀY THỰC HIỆN</p>
+        <p id="mWorkDate" style="font-weight:600; margin:5px 0 15px 0"></p>
+        <p style="font-size:10px; color:var(--primary); margin:0">KHÁCH HÀNG</p>
+        <p id="mCust" style="margin:5px 0 15px 0"></p>
+        <p style="font-size:10px; color:var(--primary); margin:0">NỘI DUNG</p>
+        <p id="mCont" style="margin:5px 0 15px 0; font-size:14px; white-space:pre-wrap"></p>
+        <p style="font-size:10px; color:var(--primary); margin:0">KỸ THUẬT</p>
+        <p id="mTech" style="margin:5px 0 15px 0"></p>
+        <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1)">
+        <p id="mSysTime" style="color:#64748b; font-size:11px; margin:0"></p>
     </div>
 </div>
 
@@ -111,113 +93,86 @@
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby4j_Ua1OaHlSLiJNP0Q1FFAN40etQrgpuu3urdl4GeIW-aSLzEiBS-8QArKVJCIFs7/exec';
     let CURRENT_PASS = '';
 
-    // Hàm hỗ trợ định dạng ngày thành dd/mm/yyyy
-    function formatDate(dateStr) {
+    // Hàm định dạng ngày Việt Nam
+    function formatVN(dateStr) {
         if (!dateStr) return '';
         const d = new Date(dateStr);
-        if (isNaN(d.getTime())) return dateStr;
-        const day = d.getDate().toString().padStart(2, '0');
-        const month = (d.getMonth() + 1).toString().padStart(2, '0');
-        const year = d.getFullYear();
-        return `${day}/${month}/${year}`;
+        return d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getFullYear();
     }
 
-    window.onload = () => {
-        // Mặc định ô chọn ngày là hôm nay
+    // TỰ ĐỘNG KIỂM TRA ĐĂNG NHẬP NGAY KHI LOAD TRANG
+    window.onload = async () => {
         document.getElementById('workDate').value = new Date().toISOString().split('T')[0];
-        
         const savedPass = localStorage.getItem('tech_key');
-        if(savedPass) autoUnlock(savedPass);
+        if (savedPass) {
+            document.getElementById('lock-box').innerHTML = "<p style='color:var(--primary)'>Đang đăng nhập...</p>";
+            await autoUnlock(savedPass);
+        }
     };
 
     async function autoUnlock(p) {
-        document.getElementById('syncStatus').innerText = "Đang kết nối...";
         try {
             const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(p)}`);
             const data = await res.json();
-            if(data.logs) { 
-                CURRENT_PASS = p; 
-                showMain(data); 
-                updateSyncTime();
+            if (data.logs) {
+                CURRENT_PASS = p;
+                showMain(data);
             } else { logout(); }
-        } catch(e) { 
-            document.getElementById('syncStatus').innerText = "Lỗi kết nối";
-            localStorage.removeItem('tech_key'); 
-        }
+        } catch (e) { logout(); }
     }
 
     async function unlock() {
         const p = document.getElementById('passInput').value;
-        if(!p) return;
-        try {
-            const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(p)}`);
-            const data = await res.json();
-            if(data.logs) {
-                localStorage.setItem('tech_key', p);
-                CURRENT_PASS = p;
-                showMain(data);
-            } else { alert("Mật khẩu không đúng!"); }
-        } catch(e) { alert("Lỗi kết nối!"); }
+        if (!p) return;
+        const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(p)}`);
+        const data = await res.json();
+        if (data.logs) {
+            localStorage.setItem('tech_key', p);
+            CURRENT_PASS = p;
+            showMain(data);
+        } else { alert("Sai mật khẩu!"); }
     }
 
     function showMain(data) {
         document.getElementById('lock-screen').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
+        const main = document.getElementById('main-content');
+        main.style.visibility = 'visible';
+        main.style.display = 'block';
+        
         document.getElementById('customer').innerHTML = '<option value="">-- Khách hàng --</option>' + 
             data.customers.map(c => `<option value="${c}">${c}</option>`).join('');
         document.getElementById('techName').innerHTML = '<option value="">-- Kỹ thuật --</option>' + 
             data.techs.map(t => `<option value="${t}">${t}</option>`).join('');
         renderTable(data.logs);
+        updateSyncTime();
     }
 
     function renderTable(logs) {
-        // logs[0] là tiêu đề, lấy từ logs[1] trở đi
         const html = logs.slice(1).reverse().map(row => {
             if(!row[0] || !row[1]) return '';
-            
-            // SỬA TẠI ĐÂY: Hiển thị Ngày/Tháng/Năm
-            const dateStr = formatDate(row[1]); 
-            const shortText = row[3].length > 35 ? row[3].substring(0, 35) + "..." : row[3];
-            
-            return `
-                <tr onclick="openModal('${row[0]}','${row[1]}','${row[2]}','${encodeURIComponent(row[3])}','${row[4]}')">
-                    <td style="font-size:11px; color:#94a3b8">${dateStr}</td>
-                    <td><span style="color:var(--primary)">${row[2]}</span></td>
-                    <td style="font-size:13px; color:#94a3b8">${shortText}</td>
-                    <td>${row[4]}</td>
-                </tr>`;
+            const shortText = row[3].length > 30 ? row[3].substring(0, 30) + "..." : row[3];
+            return `<tr onclick="openModal('${row[0]}','${row[1]}','${row[2]}','${encodeURIComponent(row[3])}','${row[4]}')">
+                <td>${formatVN(row[1])}</td>
+                <td><span class="tag">${row[2]}</span></td>
+                <td style="font-size:13px; color:#94a3b8">${shortText}</td>
+                <td>${row[4]}</td>
+            </tr>`;
         }).join('');
         document.getElementById('tableBody').innerHTML = html;
     }
 
-    function openModal(sys, work, cust, cont, tech) {
-        // Hiển thị ngày hệ thống kèm giờ
-        const sysD = new Date(sys);
-        const sysTime = sysD.getHours().toString().padStart(2, '0') + ":" + sysD.getMinutes().toString().padStart(2, '0') + " " + formatDate(sysD);
-        
-        document.getElementById('mSysTime').innerText = sysTime;
-        document.getElementById('mWorkDate').innerText = formatDate(work); // SỬA TẠI ĐÂY
-        document.getElementById('mCust').innerText = cust;
-        document.getElementById('mCont').innerText = decodeURIComponent(cont);
-        document.getElementById('mTech').innerText = tech;
-        document.getElementById('infoModal').style.display = 'flex';
-    }
-
-    // Các hàm phụ trợ (saveData, refresh, updateSyncTime, filterTable, logout, closeModal) giữ nguyên...
     async function saveData() {
         const d = document.getElementById('workDate').value;
         const c = document.getElementById('customer').value;
         const t = document.getElementById('techName').value;
         const n = document.getElementById('content').value;
-        if(!d || !c || !n) return alert("Vui lòng điền đủ thông tin!");
+        if (!d || !c || !n) return alert("Điền đủ thông tin!");
+
         const btn = document.getElementById('btnSave');
         btn.innerText = "ĐANG LƯU..."; btn.disabled = true;
-        await fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST', mode: 'no-cors',
-            body: JSON.stringify({ password: CURRENT_PASS, workDate: d, customer: c, tech: t, content: n })
-        });
+        await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ password: CURRENT_PASS, workDate: d, customer: c, tech: t, content: n }) });
         document.getElementById('content').value = '';
-        btn.innerText = "LƯU BÁO CÁO MỚI"; btn.disabled = false;
+        btn.innerText = "LƯU BÁO CÁO"; btn.disabled = false;
         setTimeout(refresh, 1500);
     }
 
@@ -227,7 +182,7 @@
             const data = await res.json();
             renderTable(data.logs);
             updateSyncTime();
-        } catch(e) { document.getElementById('syncStatus').innerText = "Mất kết nối"; }
+        } catch (e) {}
     }
 
     function updateSyncTime() {
@@ -235,9 +190,19 @@
         document.getElementById('syncStatus').innerText = "Cập nhật: " + now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
     }
 
+    function openModal(sys, work, cust, cont, tech) {
+        const sysD = new Date(sys);
+        document.getElementById('mSysTime').innerText = "Hệ thống lưu lúc: " + sysD.getHours() + ":" + sysD.getMinutes() + " " + formatVN(sysD);
+        document.getElementById('mWorkDate').innerText = formatVN(work);
+        document.getElementById('mCust').innerText = cust;
+        document.getElementById('mCont').innerText = decodeURIComponent(cont);
+        document.getElementById('mTech').innerText = tech;
+        document.getElementById('infoModal').style.display = 'flex';
+    }
+
     function closeModal() { document.getElementById('infoModal').style.display = 'none'; }
     window.onclick = (e) => { if(e.target == document.getElementById('infoModal')) closeModal(); }
-
+    
     function filterTable() {
         const val = document.getElementById('searchBox').value.toUpperCase();
         const rows = document.getElementById('tableBody').getElementsByTagName('tr');
@@ -245,14 +210,13 @@
     }
 
     function logout() {
-        if(confirm("Xóa ghi nhớ đăng nhập và thoát?")) {
+        if(confirm("Xóa ghi nhớ và thoát?")) {
             localStorage.removeItem('tech_key');
             location.reload();
         }
     }
-
-    setInterval(() => { if(CURRENT_PASS) refresh(); }, 30000);
-    window.onfocus = () => { if(CURRENT_PASS) refresh(); };
+    
+    setInterval(() => { if(CURRENT_PASS) refresh(); }, 10000);
 </script>
 </body>
 </html>
