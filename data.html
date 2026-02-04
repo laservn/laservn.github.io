@@ -95,6 +95,45 @@
     background-color: var(--primary);
     border-radius: 10px;
 }
+        /* Responsive cho bảng chi tiết trong Modal */
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Mặc định 2 cột */
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding: 6px 0;
+}
+
+.detail-label {
+    color: var(--text-muted);
+    width: 80px;
+    flex-shrink: 0;
+}
+
+.detail-value {
+    color: var(--primary);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* KHI MÀN HÌNH NHỎ (Dưới 480px - Điện thoại) */
+@media (max-width: 480px) {
+    .detail-grid {
+        grid-template-columns: 1fr; /* Chuyển về 1 cột duy nhất */
+    }
+    .detail-value {
+        white-space: normal; /* Cho phép xuống dòng nếu tên quá dài trên mobile */
+    }
+}
         #workDateDisplay { background: rgba(0, 210, 255, 0.1); border: 1px solid var(--primary); color: var(--primary); font-weight: bold; cursor: pointer; text-align: center; }
         .btn-toggle-form { background: rgba(0, 210, 255, 0.05); color: var(--primary); border: 1px dashed var(--primary); padding: 12px; width: 100%; border-radius: 10px; margin-bottom: 15px; cursor: pointer; font-weight: 600; }
         #searchBox { border: 1px solid var(--primary); background: rgba(0, 210, 255, 0.05); margin-top: 10px; }
@@ -289,24 +328,29 @@ function openInfoModal(index) {
 
     document.getElementById('modalBody').innerHTML = `
         <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border)">
-            <table style="width:100%; border-collapse: collapse; font-size: 13px;">
-                <tr>
-                    <td style="padding: 6px 0; color: var(--text-muted); width: 20%;">🗓️ Ngày:</td>
-                    <td style="padding: 6px 0; color: var(--primary); font-weight: 600; width: 30%;">${formatVN(row[1])}</td>
-                    <td style="padding: 6px 0; color: var(--text-muted); width: 20%;">🏢 Khách:</td>
-                    <td style="padding: 6px 0; color: var(--primary); font-weight: 600; width: 30%;">${row[2]}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 6px 0; color: var(--text-muted);">🛠️ Tech:</td>
-                    <td style="padding: 6px 0; color: #fff; font-weight: 500;">${row[4]}</td>
-                    <td style="padding: 6px 0; color: var(--text-muted);">👤 User:</td>
-                    <td style="padding: 6px 0; color: #fff; font-weight: 500;">${row[5] || '---'}</td>
-                </tr>
-            </table>
+            
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <span class="detail-label">🗓️ Ngày:</span>
+                    <span class="detail-value">${formatVN(row[1])}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">🏢 Khách:</span>
+                    <span class="detail-value">${row[2]}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">🛠️ Tech:</span>
+                    <span class="detail-value" style="color:#fff">${row[4]}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">👤 User:</span>
+                    <span class="detail-value" style="color:#fff">${row[5] || '---'}</span>
+                </div>
+            </div>
 
-            <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
-                <p style="margin: 0 0 8px 0; color: var(--text-muted); font-size: 13px;">📝 Nội dung chi tiết:</p>
-                <div style="white-space: pre-wrap; color: #fff; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; line-height: 1.6; border: 1px solid rgba(255,255,255,0.05); font-size: 14px;">
+            <div style="margin-top: 5px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
+                <p style="margin: 0 0 8px 0; color: var(--text-muted); font-size: 12px; font-weight:600">📝 NỘI DUNG CHI TIẾT:</p>
+                <div style="white-space: pre-wrap; color: #fff; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 10px; line-height: 1.6; border: 1px solid rgba(255,255,255,0.05); font-size: 14px;">
                     ${row[3]}
                 </div>
             </div>
