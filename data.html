@@ -143,36 +143,35 @@ async function unlock() {
     const u = document.getElementById('userInput').value.trim();
     const p = document.getElementById('passInput').value.trim();
     
-    if(!u || !p) return alert("Vui lòng nhập đủ tài khoản và mật khẩu!");
+    if(!u || !p) return alert("Vui lòng nhập đủ!");
     
     const btn = document.querySelector("#lock-screen .btn-save");
-    const originalText = btn.innerText;
-    btn.innerText = "ĐANG XÁC THỰC..."; 
-    btn.disabled = true;
+    btn.innerText = "ĐANG XÁC THỰC..."; btn.disabled = true;
 
     try {
-        // Thêm v=${Date.now()} để tránh trình duyệt lấy kết quả cũ (cache)
+        // Thêm v=${Date.now()} để ép server cập nhật mới, không lấy cache cũ
         const res = await fetch(`${GOOGLE_URL}?user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}&v=${Date.now()}`);
         const text = await res.text();
         
-        // KIỂM TRA NGHIÊM NGẶT: 
-        // Chỉ khi Server trả về chính xác tên User (không phải "Auth Failed") mới cho vào
-        if (text.trim() === "Auth Failed" || text.trim() === "" || text.includes("Error")) {
-            alert("Sai tài khoản hoặc mật khẩu! Vui lòng thử lại.");
-            btn.innerText = originalText;
-            btn.disabled = false;
+        // Nếu Server trả về chữ AUTH_FAILED hoặc rỗng thì chặn lại ngay
+        if (text.includes("AUTH_FAILED") || text.trim() === "") {
+            alert("⚠️ Tài khoản hoặc Mật khẩu không chính xác!");
+            btn.innerText = "XÁC THỰC"; btn.disabled = false;
             return;
         }
 
-        // Nếu hợp lệ, Server thường trả về chính tên User đó
-        AUTH = { user: text.trim(), pass: p }; 
-        localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
-        location.reload(); 
+        // Kiểm tra xem dữ liệu trả về có phải là JSON hợp lệ không (có chứa logs không)
+        if (text.includes("logs")) {
+            AUTH = { user: u, pass: p };
+            localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
+            location.reload(); 
+        } else {
+            throw new Error("Dữ liệu không hợp lệ");
+        }
         
     } catch (e) {
-        alert("Lỗi kết nối hệ thống! Kiểm tra mạng hoặc URL Script.");
-        btn.innerText = originalText;
-        btn.disabled = false;
+        alert("Lỗi hệ thống hoặc sai mật khẩu!");
+        btn.innerText = "XÁC THỰC"; btn.disabled = false;
     }
 }
 
