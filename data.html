@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Private Vibe Journal</title>
+    <style>
+        :root { --bg: #0f0c29; --accent: #9d50bb; --text: #e0d7ff; --glass: rgba(255, 255, 255, 0.05); }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Courier New', monospace; background: #0f0c29; color: var(--text); overflow: hidden; }
+        #snow-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+        #lock-screen { position: fixed; inset: 0; background: #0f0c29; display: flex; justify-content: center; align-items: center; z-index: 100; transition: 1s; }
+        #main-content { display: none; opacity: 0; transition: 1.5s; width: 90%; max-width: 500px; z-index: 10; position: relative; margin: auto; }
+        .container { background: var(--glass); backdrop-filter: blur(20px); padding: 2rem; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center; }
+        input, textarea { width: 100%; padding: 15px; margin: 10px 0; background: rgba(0,0,0,0.4); border: 1px solid var(--accent); color: #fff; border-radius: 15px; box-sizing: border-box; outline: none; font-family: inherit; }
+        .btn { background: var(--accent); color: white; border: none; padding: 12px 30px; border-radius: 25px; cursor: pointer; transition: 0.4s; letter-spacing: 2px; font-weight: bold; }
+        .btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--accent); }
+        #history { margin-top: 20px; max-height: 250px; overflow-y: auto; text-align: left; }
+        .note { background: rgba(255, 255, 255, 0.03); padding: 12px; margin-bottom: 10px; border-radius: 10px; border-left: 3px solid var(--accent); font-size: 0.85rem; }
+        .loading { font-size: 0.8rem; opacity: 0.5; display: none; margin: 10px; }
+    </style>
+</head>
+<body>
+
+<canvas id="snow-canvas"></canvas>
+
+<div id="lock-screen">
+    <div style="text-align: center;">
+        <h2 style="letter-spacing: 5px; font-weight: 300;">VIBE PASSCODE</h2>
+        <input type="password" id="passInput" style="width: 200px; text-align: center;" placeholder="••••">
+        <br><button class="btn" onclick="unlock()">ACCESS</button>
+    </div>
+</div>
+
+<div id="main-content">
+    <div class="container">
+        <h1 style="letter-spacing: 10px; font-size: 1.2rem;">JOURNAL</h1>
+        <textarea id="noteInput" placeholder="Điều gì đang diễn ra..."></textarea>
+        <button class="btn" onclick="saveToCloud()">SAVE</button>
+        <div id="loadingMsg" class="loading">Sychronizing with Cloud...</div>
+        <div id="history"></div>
+    </div>
+</div>
+
+<audio id="bgMusic" loop src="https://lofi.stream.laut.fm/lofi"></audio>
+
+<script>
+    // --- 2. DÁN LINK GOOGLE SCRIPT CỦA BẠN VÀO ĐÂY ---
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyG6zKPyvpxMe0rUEcFIFHqc9y-Tto3vBUDpHRGbXkdVtLSWPHQJoWajjbUfivHmNA6/exec'; 
+    let CURRENT_PASS = '';
+
+    // Hiệu ứng tuyết rơi
+    const canvas = document.getElementById('snow-canvas');
+    const ctx = canvas.getContext('2d');
+    let dots = [];
+    function initSnow() {
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        dots = Array.from({length: 80}, () => ({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, s: Math.random()*2+1, v: Math.random()*1+0.5 }));
+    }
+    function drawSnow() {
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        ctx.fillStyle = "rgba(157, 80, 187, 0.4)";
+        dots.forEach(d => {
+            ctx.beginPath(); ctx.arc(d.x, d.y, d.s, 0, Math.PI*2); ctx.fill();
+            d.y += d.v; if(d.y > canvas.height) d.y = -10;
+        });
+        requestAnimationFrame(drawSnow);
+    }
+    window.onload = initSnow; window.onresize = initSnow; drawSnow();
+
+    // Logic chính
+    async function unlock() {
+        const input = document.getElementById('passInput');
+        const pass = input.value;
+        if(!pass) return;
+
+        try {
+            const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(pass)}`, { redirect: 'follow' });
+            const text = await res.text();
+            
+            if (text === "Không có quyền truy cập") {
+                alert("Sai mật khẩu!");
+            } else {
+                CURRENT_PASS = pass;
+                document.getElementById('lock-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('lock-screen').style.display = 'none';
+                    document.getElementById('main-content').style.display = 'block';
+                    setTimeout(() => document.getElementById('main-content').style.opacity = '1', 50);
+                    document.getElementById('bgMusic').play();
+                    renderHistory(JSON.parse(text));
+                }, 800);
+            }
+        } catch (e) { alert("Lỗi kết nối Script!"); }
+    }
+
+    async function saveToCloud() {
+        const note = document.getElementById('noteInput').value.trim();
+        if(!note) return;
+        document.getElementById('loadingMsg').style.display = 'block';
+        
+        await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify({ password: CURRENT_PASS, content: note })
+        });
+
+        document.getElementById('noteInput').value = "";
+        document.getElementById('loadingMsg').style.display = 'none';
+        setTimeout(refreshHistory, 1500);
+    }
+
+    async function refreshHistory() {
+        const res = await fetch(`${GOOGLE_SCRIPT_URL}?password=${encodeURIComponent(CURRENT_PASS)}`, { redirect: 'follow' });
+        const data = await res.json();
+        renderHistory(data);
+    }
+
+    function renderHistory(data) {
+        const h = document.getElementById('history');
+        h.innerHTML = data.reverse().map(row => row[1] ? `<div class="note"><small style="color:var(--accent)">${new Date(row[0]).toLocaleString('vi-VN')}</small><br>${row[1]}</div>` : '').join('');
+    }
+</script>
+</body>
+</html>
