@@ -67,8 +67,34 @@
 
         /* Modals */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 20px; }
-        .modal-content { background: var(--card); width: 100%; max-width: 700px; max-height: 80%; border-radius: 20px; border: 1px solid var(--primary); padding: 25px; }
-        
+        .modal-content { 
+    background: var(--card); 
+    width: 90%;            /* Chiếm 90% chiều ngang màn hình di động */
+    max-width: 600px;      /* Nhưng không quá 600px trên máy tính (cho to ra) */
+    border-radius: 20px; 
+    border: 1px solid var(--primary); 
+    padding: 25px; 
+    
+    /* Xử lý chiều cao và thanh cuộn */
+    max-height: 85vh;      /* Giới hạn chiều cao tối đa 85% chiều cao màn hình */
+    display: flex;         /* Sử dụng flex để quản lý nội dung bên trong */
+    flex-direction: column;
+}
+
+#modalBody {
+    overflow-y: auto;      /* TỰ ĐỘNG hiện thanh cuộn nếu nội dung dài hơn max-height */
+    margin-top: 15px;
+    padding-right: 5px;    /* Tránh nội dung đè lên thanh cuộn */
+}
+
+/* Làm cho thanh cuộn trông chuyên nghiệp hơn (tùy chọn) */
+#modalBody::-webkit-scrollbar {
+    width: 6px;
+}
+#modalBody::-webkit-scrollbar-thumb {
+    background-color: var(--primary);
+    border-radius: 10px;
+}
         #workDateDisplay { background: rgba(0, 210, 255, 0.1); border: 1px solid var(--primary); color: var(--primary); font-weight: bold; cursor: pointer; text-align: center; }
         .btn-toggle-form { background: rgba(0, 210, 255, 0.05); color: var(--primary); border: 1px dashed var(--primary); padding: 12px; width: 100%; border-radius: 10px; margin-bottom: 15px; cursor: pointer; font-weight: 600; }
         #searchBox { border: 1px solid var(--primary); background: rgba(0, 210, 255, 0.05); margin-top: 10px; }
