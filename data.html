@@ -341,35 +341,45 @@ async function unlock() {
     }
 }
 
-    function applyPermissions() {
-    const toggleBtn = document.getElementById('toggleBtn');
-    const formContainer = document.getElementById('formContainer');
+function applyPermissions() {
+    const btn = document.getElementById('toggleBtn');
+    const form = document.getElementById('formContainer');
 
     if (USER_ROLE === "VIEWER") {
-        const btn = document.getElementById('toggleBtn');
-        const form = document.getElementById('formContainer');
-        if (btn) btn.remove();  // Xóa sổ hoàn toàn khỏi màn hình
-        if (form) form.remove(); // Xóa luôn cả Form nhập
+        // Chỉ ẩn đi chứ không xóa để tránh lỗi null ở lần refresh sau
+        if (btn) btn.style.display = "none";
+        if (form) form.style.display = "none";
+        
+        // Cẩn thận hơn: Vô hiệu hóa khả năng gọi form từ console
+        window.toggleForm = function() { 
+            showToast("Bạn không có quyền này", "error"); 
+        };
     } else {
-        toggleBtn.style.display = "block"; // Admin thì hiện ra
+        // Nếu là ADMIN, đảm bảo nút bấm hiện ra
+        if (btn) btn.style.display = "block";
     }
 }
     
-    async function refresh() {
-        if (!AUTH || document.hidden) return;
-        try {
-            const response = await fetch(GOOGLE_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: "FETCH_DATA", user: AUTH.user, pass: AUTH.pass })
-            });
-            const data = await response.json();
-            if (data !== "AUTH_FAILED") {
-                USER_ROLE = data.role; // Cập nhật lại quyền từ server
-                renderData(data);
-                applyPermissions(); // Cập nhật lại giao diện
-            }
-        } catch (e) { console.warn("Sync failed"); }
+async function refresh() {
+    // Không refresh khi: chưa đăng nhập, trang bị ẩn, hoặc ĐANG MỞ FORM NHẬP
+    const form = document.getElementById('formContainer');
+    if (!AUTH || document.hidden || (form && form.style.display === "block")) return;
+
+    try {
+        const response = await fetch(GOOGLE_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: "FETCH_DATA", user: AUTH.user, pass: AUTH.pass })
+        });
+        const data = await response.json();
+        if (data && data !== "AUTH_FAILED") {
+            USER_ROLE = data.role;
+            renderData(data);
+            applyPermissions();
+        }
+    } catch (e) { 
+        console.warn("Đồng bộ định kỳ thất bại"); 
     }
+}
 
 async function saveData() {
     // 1. Lấy dữ liệu từ form
