@@ -120,6 +120,50 @@
 }
 
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Container chứa các thông báo ở giữa màn hình */
+#toast-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Căn giữa tuyệt đối */
+    z-index: 10000; /* Nằm trên cả loading overlay */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none; /* Không chặn click vào bên dưới nếu không cần */
+}
+
+.toast {
+    background: rgba(30, 41, 59, 0.95); /* Màu card tối sang trọng */
+    color: white;
+    padding: 16px 28px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column; /* Icon ở trên, chữ ở dưới cho trang trọng */
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    animation: toastPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    min-width: 200px;
+    text-align: center;
+}
+
+.toast.error { border-bottom: 3px solid #ef4444; }
+.toast.success { border-bottom: 3px solid #10b981; }
+.toast.info { border-bottom: 3px solid var(--primary); }
+
+@keyframes toastPop {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes toastFadeOut {
+    to { transform: scale(0.8); opacity: 0; }
+}
         
     </style>
 </head>
@@ -233,7 +277,7 @@
 async function unlock() {
     const u = document.getElementById('userInput').value.trim();
     const p = document.getElementById('passInput').value.trim();
-    if(!u || !p) return alert("Nhập đủ tài khoản/mật khẩu!");
+    if(!u || !p) return showToast("Nhập đủ tài khoản/mật khẩu!", "error");
     
     showLoading(true, "ĐANG XÁC THỰC..."); // Bật hiệu ứng
 
@@ -247,7 +291,7 @@ async function unlock() {
         showLoading(false); // Tắt hiệu ứng
 
         if (text === "AUTH_FAILED") {
-            alert("❌ Sai tài khoản hoặc mật khẩu!");
+            showToast("Sai tài khoản hoặc mật khẩu!", "error");
         } else {
             AUTH = { user: u, pass: md5(p), expire: new Date().getTime() + (24 * 60 * 60 * 1000) };
             localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
@@ -256,7 +300,7 @@ async function unlock() {
         }
     } catch (e) {
         showLoading(false);
-        alert("Lỗi kết nối Server!");
+        showToast("Lỗi kết nối máy chủ!", "error");
     }
 }
 
@@ -284,7 +328,7 @@ async function saveData() {
     
     // 2. Kiểm tra dữ liệu bắt buộc
     if (!c || !n || !t) {
-        return alert("Vui lòng điền đủ: Khách hàng, Kỹ thuật và Nội dung!");
+        return showToast("Vui lòng điền đủ: Khách hàng, Kỹ thuật và Nội dung!", "error");
     }
     
     const btn = document.getElementById('btnSave'); 
@@ -316,6 +360,7 @@ async function saveData() {
         showLoading(false);
 
         if (result.includes("Thành công")) {
+            showToast("Đã lưu nhật ký thành công!", "success");
             // Xóa nội dung sau khi lưu
             document.getElementById('content').value = ''; 
             document.getElementById('note').value = '';
@@ -325,13 +370,13 @@ async function saveData() {
             toggleForm(); // Đóng form nhập
             refresh();    // Tải lại bảng ngay lập tức
         } else {
-            alert("Lỗi từ server: " + result);
+            showToast("Lỗi từ máy chủ: " + result, "error");
             btn.disabled = false;
         }
     } catch (e) { 
         // 5. Xử lý khi có lỗi kết nối
         showLoading(false);
-        alert("Lỗi kết nối! Vui lòng kiểm tra mạng."); 
+        showToast("Lỗi kết nối! Vui lòng kiểm tra mạng.", "error");
         btn.disabled = false; 
     }
 }
@@ -415,11 +460,13 @@ function renderData(data) {
         document.getElementById('helloUser').innerText = "Chào, " + AUTH.user;
     }
 
-    function logout() {
-        if (!confirm("Bạn muốn đăng xuất?")) return;
+function logout() {
+    showToast("Đã đăng xuất hệ thống", "info");
+    setTimeout(() => {
         localStorage.removeItem('tech_auth_v4');
         location.reload();
-    }
+    }, 1000);
+}
 
     function setInitialDate() {
         const iso = new Date().toISOString().split('T')[0];
@@ -468,6 +515,29 @@ function renderData(data) {
             bar.style.width = '0%';
         }, 300);
     }
+}
+    function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    let icon = 'ℹ️';
+    let iconColor = 'var(--primary)';
+    if(type === 'error') { icon = '⚠️'; iconColor = '#ef4444'; }
+    if(type === 'success') { icon = '✅'; iconColor = '#10b981'; }
+    
+    toast.innerHTML = `
+        <div style="font-size: 30px; margin-bottom: 5px;">${icon}</div>
+        <div style="font-size: 14px; font-weight: 600; letter-spacing: 0.5px;">${message.toUpperCase()}</div>
+    `;
+    
+    container.appendChild(toast);
+
+    // Tự động biến mất sau 2.5 giây
+    setTimeout(() => {
+        toast.style.animation = 'toastFadeOut 0.2s ease-in forwards';
+        setTimeout(() => toast.remove(), 200);
+    }, 2500);
 }
 
     setInterval(refresh, 30000); 
