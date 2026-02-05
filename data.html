@@ -276,13 +276,33 @@
         }
     }
 
-    function renderData(data) {
-        if (data.customers) document.getElementById('customer').innerHTML = '<option value="">-- Khách hàng --</option>' + data.customers.map(c => `<option value="${c}">${c}</option>`).join('');
-        if (data.techs) document.getElementById('techName').innerHTML = '<option value="">-- Kỹ thuật --</option>' + data.techs.map(t => `<option value="${t}">${t}</option>`).join('');
-        if (data.machineTypes) document.getElementById('machineType').innerHTML = '<option value="">-- Loại máy --</option>' + data.machineTypes.map(m => `<option value="${m}">${m}</option>`).join('');
-        if (data.supports) document.getElementById('supportType').innerHTML = '<option value="">-- Hỗ trợ --</option>' + data.supports.map(s => `<option value="${s}">${s}</option>`).join('');
+function renderData(data) {
+        // Hàm hỗ trợ cập nhật dropdown mà không làm mất vị trí đang chọn
+        const updateDropdown = (id, newData, defaultText) => {
+            const select = document.getElementById(id);
+            const currentValue = select.value; // Lưu lại giá trị đang chọn
+            
+            // Chuyển dữ liệu mới thành chuỗi HTML để so sánh
+            const newHtml = `<option value="">-- ${defaultText} --</option>` + 
+                            newData.map(item => `<option value="${item}">${item}</option>`).join('');
+            
+            // CHỈ cập nhật nếu dữ liệu mới khác dữ liệu cũ
+            if (select.innerHTML !== newHtml) {
+                select.innerHTML = newHtml;
+                // Sau khi nạp mới, nếu giá trị cũ vẫn tồn tại trong danh sách mới thì chọn lại
+                if ([...select.options].some(opt => opt.value === currentValue)) {
+                    select.value = currentValue;
+                }
+            }
+        };
 
-        // Thứ tự cột trong Sheet: [0:Hệ thống, 1:Làm, 2:Khách, 3:Máy, 4:Hỗ trợ, 5:Nội dung, 6:Kỹ thuật, 7:User, 8:Ghi chú]
+        // Cập nhật các dropdown thông minh hơn
+        if (data.customers) updateDropdown('customer', data.customers, 'Khách hàng');
+        if (data.techs) updateDropdown('techName', data.techs, 'Kỹ thuật');
+        if (data.machineTypes) updateDropdown('machineType', data.machineTypes, 'Loại máy');
+        if (data.supports) updateDropdown('supportType', data.supports, 'Hỗ trợ');
+
+        // Phần render bảng dữ liệu (giữ nguyên logic cũ nhưng tối ưu tốc độ)
         window.currentLogs = data.logs.slice(1).reverse();
         const html = window.currentLogs.map((row, index) => `
             <tr onclick="openInfoModal(${index})">
@@ -294,7 +314,12 @@
                 <td><span class="badge-tech">${row[6] || ''}</span></td>
             </tr>
         `).join('');
-        document.getElementById('tableBody').innerHTML = html;
+        
+        const tableBody = document.getElementById('tableBody');
+        if (tableBody.innerHTML !== html) {
+            tableBody.innerHTML = html;
+        }
+        
         document.getElementById('syncStatus').innerText = "Cập nhật: " + new Date().toLocaleTimeString();
     }
 
