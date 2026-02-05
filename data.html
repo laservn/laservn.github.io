@@ -302,7 +302,7 @@
             showApp();
             refresh();
             // Chào mừng nhẹ nhàng khi vào lại app
-            showToast(`Hệ thống đã sẵn sàng, ${AUTH.user}!`, "info");
+            showToast(`Chào ${AUTH.user}! Hệ thống đã sẵn sàng`, "success");
         } else {
             localStorage.removeItem('tech_auth_v4');
             AUTH = null;
@@ -337,7 +337,7 @@ async function unlock() {
             renderData(data); // Đưa dữ liệu vào bảng
             applyPermissions(); // Gọi hàm kiểm tra quyền ẩn/hiện nút
             // --- THÊM DÒNG NÀY ĐỂ CHÀO MỪNG ---
-            showToast(`Chào mừng ${u} trở lại!`, "success");
+            showToast(`Chào mừng ${u} trở lại!`, "welcome");
             // ---------------------------------
         }
     } catch (e) {
@@ -605,6 +605,7 @@ function logout() {
     let iconColor = 'var(--primary)';
     if(type === 'error') { icon = '⚠️'; iconColor = '#ef4444'; }
     if(type === 'success') { icon = '✅'; iconColor = '#10b981'; }
+    if(type === 'welcome') { icon = '🎉'; }
     
     toast.innerHTML = `
         <div style="font-size: 30px; margin-bottom: 5px;">${icon}</div>
