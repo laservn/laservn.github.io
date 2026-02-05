@@ -85,10 +85,51 @@
         #workDateDisplay { background: rgba(0, 210, 255, 0.1); border: 1px solid var(--primary); color: var(--primary); font-weight: bold; cursor: pointer; text-align: center; }
         .btn-toggle-form { background: rgba(0, 210, 255, 0.05); color: var(--primary); border: 1px dashed var(--primary); padding: 12px; width: 100%; border-radius: 10px; margin-bottom: 15px; cursor: pointer; font-weight: 600; }
         #searchBox { border: 1px solid var(--primary); background: rgba(0, 210, 255, 0.05); margin-top: 10px; }
+        /* Thanh tiến trình chạy ở đỉnh đầu */
+#top-progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(to right, var(--primary), #fff);
+    z-index: 9999;
+    transition: width 0.3s;
+    width: 0%;
+    display: none;
+    box-shadow: 0 0 10px var(--primary);
+}
+
+/* Lớp phủ mờ giữa màn hình khi đang lưu */
+#loading-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 4000;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner {
+    width: 40px; height: 40px;
+    border: 4px solid rgba(255,255,255,0.1);
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+}
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
     </style>
 </head>
 <body>
-
+<div id="top-progress"></div>
+<div id="loading-overlay">
+    <div class="spinner"></div>
+    <div id="loading-text" style="color:var(--primary); font-weight:600; font-size:14px;">ĐANG XỬ LÝ...</div>
+</div>
+    
 <div id="lock-screen">
     <div class="login-box">
         <h2 style="color:var(--primary); margin:0 0 20px 0;">TECH LOGS PRO</h2>
@@ -189,36 +230,35 @@
         }
     }
 
-    async function unlock() {
-        const u = document.getElementById('userInput').value.trim();
-        const p = document.getElementById('passInput').value.trim();
-        if(!u || !p) return alert("Nhập đủ tài khoản/mật khẩu!");
-        
-        const btn = document.getElementById('btnLogin');
-        btn.innerText = "ĐANG XÁC THỰC..."; btn.disabled = true;
+async function unlock() {
+    const u = document.getElementById('userInput').value.trim();
+    const p = document.getElementById('passInput').value.trim();
+    if(!u || !p) return alert("Nhập đủ tài khoản/mật khẩu!");
+    
+    showLoading(true, "ĐANG XÁC THỰC..."); // Bật hiệu ứng
 
-        const passHash = md5(p); 
-        try {
-            const res = await fetch(GOOGLE_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: "FETCH_DATA", user: u, pass: passHash })
-            });
-            const text = await res.text();
-            
-            if (text === "AUTH_FAILED") {
-                alert("❌ Sai tài khoản hoặc mật khẩu!");
-                btn.innerText = "ĐĂNG NHẬP"; btn.disabled = false;
-            } else {
-                AUTH = { user: u, pass: passHash, expire: new Date().getTime() + (24 * 60 * 60 * 1000) };
-                localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
-                showApp();
-                renderData(JSON.parse(text));
-            }
-        } catch (e) {
-            alert("Lỗi kết nối Server!");
-            btn.innerText = "ĐĂNG NHẬP"; btn.disabled = false;
+    try {
+        const res = await fetch(GOOGLE_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: "FETCH_DATA", user: u, pass: md5(p) })
+        });
+        const text = await res.text();
+        
+        showLoading(false); // Tắt hiệu ứng
+
+        if (text === "AUTH_FAILED") {
+            alert("❌ Sai tài khoản hoặc mật khẩu!");
+        } else {
+            AUTH = { user: u, pass: md5(p), expire: new Date().getTime() + (24 * 60 * 60 * 1000) };
+            localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
+            showApp();
+            renderData(JSON.parse(text));
         }
+    } catch (e) {
+        showLoading(false);
+        alert("Lỗi kết nối Server!");
     }
+}
 
     async function refresh() {
         if (!AUTH || document.hidden) return;
@@ -232,52 +272,69 @@
         } catch (e) { console.warn("Sync failed"); }
     }
 
-    async function saveData() {
-        const d = document.getElementById('hiddenDate').value;
-        const c = document.getElementById('customer').value;
-        const t = document.getElementById('techName').value;
-        const m = document.getElementById('machineType').value;
-        const s = document.getElementById('supportType').value;
-        const n = document.getElementById('content').value.trim();
-        const note = document.getElementById('note').value.trim();
-        
-        if (!c || !n || !t) return alert("Vui lòng điền đủ: Khách hàng, Kỹ thuật và Nội dung!");
-        
-        const btn = document.getElementById('btnSave'); 
-        btn.innerText = "ĐANG LƯU..."; btn.disabled = true;
-
-        try {
-            const res = await fetch(GOOGLE_URL, { 
-                method: 'POST', 
-                body: JSON.stringify({ 
-                    action: "SAVE_LOG", 
-                    user: AUTH.user, 
-                    pass: AUTH.pass, 
-                    workDate: d, 
-                    customer: c, 
-                    tech: t, 
-                    machineType: m,
-                    support: s,
-                    content: n,
-                    note: note
-                }) 
-            });
-            const result = await res.text();
-            if(result.includes("Thành công")) {
-                document.getElementById('content').value = ''; 
-                document.getElementById('note').value = '';
-                btn.innerText = "LƯU NHẬT KÝ"; btn.disabled = false;
-                toggleForm(); 
-                refresh();
-            } else {
-                alert("Lỗi: " + result);
-                btn.innerText = "LƯU NHẬT KÝ"; btn.disabled = false;
-            }
-        } catch(e) { 
-            alert("Lỗi kết nối!"); 
-            btn.innerText = "LƯU NHẬT KÝ"; btn.disabled = false; 
-        }
+async function saveData() {
+    // 1. Lấy dữ liệu từ form
+    const d = document.getElementById('hiddenDate').value;
+    const c = document.getElementById('customer').value;
+    const t = document.getElementById('techName').value;
+    const m = document.getElementById('machineType').value;
+    const s = document.getElementById('supportType').value;
+    const n = document.getElementById('content').value.trim();
+    const note = document.getElementById('note').value.trim();
+    
+    // 2. Kiểm tra dữ liệu bắt buộc
+    if (!c || !n || !t) {
+        return alert("Vui lòng điền đủ: Khách hàng, Kỹ thuật và Nội dung!");
     }
+    
+    const btn = document.getElementById('btnSave'); 
+
+    // 3. Kích hoạt trạng thái ĐANG XỬ LÝ
+    showLoading(true, "ĐANG LƯU NHẬT KÝ..."); 
+    btn.disabled = true; // Chặn bấm liên tiếp
+
+    try {
+        const res = await fetch(GOOGLE_URL, { 
+            method: 'POST', 
+            body: JSON.stringify({ 
+                action: "SAVE_LOG", 
+                user: AUTH.user, 
+                pass: AUTH.pass, 
+                workDate: d, 
+                customer: c, 
+                tech: t, 
+                machineType: m,
+                support: s,
+                content: n,
+                note: note
+            }) 
+        });
+
+        const result = await res.text();
+
+        // 4. Kết thúc xử lý (tắt loading)
+        showLoading(false);
+
+        if (result.includes("Thành công")) {
+            // Xóa nội dung sau khi lưu
+            document.getElementById('content').value = ''; 
+            document.getElementById('note').value = '';
+            
+            // Thông báo nhỏ hoặc cập nhật giao diện
+            btn.disabled = false;
+            toggleForm(); // Đóng form nhập
+            refresh();    // Tải lại bảng ngay lập tức
+        } else {
+            alert("Lỗi từ server: " + result);
+            btn.disabled = false;
+        }
+    } catch (e) { 
+        // 5. Xử lý khi có lỗi kết nối
+        showLoading(false);
+        alert("Lỗi kết nối! Vui lòng kiểm tra mạng."); 
+        btn.disabled = false; 
+    }
+}
 
 function renderData(data) {
         // Hàm hỗ trợ cập nhật dropdown thông minh
@@ -393,6 +450,25 @@ function renderData(data) {
         const rows = document.getElementById('tableBody').getElementsByTagName('tr');
         for (let r of rows) { r.style.display = r.innerText.toUpperCase().includes(v) ? "" : "none"; }
     }
+
+    function showLoading(status, text = "ĐANG XỬ LÝ...") {
+    const overlay = document.getElementById('loading-overlay');
+    const bar = document.getElementById('top-progress');
+    document.getElementById('loading-text').innerText = text;
+    
+    if(status) {
+        overlay.style.display = 'flex';
+        bar.style.display = 'block';
+        bar.style.width = '70%'; // Chạy trước một đoạn
+    } else {
+        bar.style.width = '100%';
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            bar.style.display = 'none';
+            bar.style.width = '0%';
+        }, 300);
+    }
+}
 
     setInterval(refresh, 30000); 
 </script>
