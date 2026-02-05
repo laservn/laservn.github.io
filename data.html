@@ -139,6 +139,7 @@
                     <th>Hỗ trợ</th>
                     <th>Nội dung</th>
                     <th>Kỹ thuật</th>
+                    <th>Ghi chú</th> </tr>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -277,32 +278,27 @@
     }
 
 function renderData(data) {
-        // Hàm hỗ trợ cập nhật dropdown mà không làm mất vị trí đang chọn
+        // Hàm hỗ trợ cập nhật dropdown thông minh
         const updateDropdown = (id, newData, defaultText) => {
             const select = document.getElementById(id);
-            const currentValue = select.value; // Lưu lại giá trị đang chọn
-            
-            // Chuyển dữ liệu mới thành chuỗi HTML để so sánh
+            const currentValue = select.value;
             const newHtml = `<option value="">-- ${defaultText} --</option>` + 
                             newData.map(item => `<option value="${item}">${item}</option>`).join('');
             
-            // CHỈ cập nhật nếu dữ liệu mới khác dữ liệu cũ
             if (select.innerHTML !== newHtml) {
                 select.innerHTML = newHtml;
-                // Sau khi nạp mới, nếu giá trị cũ vẫn tồn tại trong danh sách mới thì chọn lại
                 if ([...select.options].some(opt => opt.value === currentValue)) {
                     select.value = currentValue;
                 }
             }
         };
 
-        // Cập nhật các dropdown thông minh hơn
         if (data.customers) updateDropdown('customer', data.customers, 'Khách hàng');
         if (data.techs) updateDropdown('techName', data.techs, 'Kỹ thuật');
         if (data.machineTypes) updateDropdown('machineType', data.machineTypes, 'Loại máy');
         if (data.supports) updateDropdown('supportType', data.supports, 'Hỗ trợ');
 
-        // Phần render bảng dữ liệu (giữ nguyên logic cũ nhưng tối ưu tốc độ)
+        // Render Table - Hiển thị thêm cột Ghi chú (row[8])
         window.currentLogs = data.logs.slice(1).reverse();
         const html = window.currentLogs.map((row, index) => `
             <tr onclick="openInfoModal(${index})">
@@ -312,6 +308,9 @@ function renderData(data) {
                 <td><small>${row[4] || ''}</small></td>
                 <td style="color:#cbd5e1">${(row[5]||"").substring(0,30)}${(row[5]||"").length>30?'...':''}</td>
                 <td><span class="badge-tech">${row[6] || ''}</span></td>
+                <td style="font-style:italic; color:var(--text-muted); font-size:12px">
+                    ${(row[8] || '').substring(0,20)}${(row[8]||'').length > 20 ? '...' : ''}
+                </td>
             </tr>
         `).join('');
         
