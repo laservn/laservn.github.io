@@ -31,7 +31,7 @@
         .login-box { width: 320px; padding: 30px; background: var(--card); border-radius: 20px; border: 1px solid var(--border); text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         
         /* Container & Header */
-        .container { max-width: 900px; margin: auto; }
+        .container { max-width: 1000px; margin: auto; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px; }
         
         /* Inputs */
@@ -53,7 +53,7 @@
             margin-top: 15px; border: 1px solid var(--border); border-radius: 12px; 
             overflow-x: auto; background: var(--card); box-shadow: 0 4px 20px rgba(0,0,0,0.3); 
         }
-        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 600px; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 850px; }
         th { 
             background: #111827; color: var(--text-muted); font-size: 11px; font-weight: 600; 
             text-transform: uppercase; letter-spacing: 0.05em; padding: 14px 12px; border-bottom: 2px solid var(--border); text-align: left;
@@ -68,72 +68,18 @@
         /* Modals */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 20px; }
         .modal-content { 
-    background: var(--card); 
-    width: 90%;            /* Chiếm 90% chiều ngang màn hình di động */
-    max-width: 600px;      /* Nhưng không quá 600px trên máy tính (cho to ra) */
-    border-radius: 20px; 
-    border: 1px solid var(--primary); 
-    padding: 25px; 
-    
-    /* Xử lý chiều cao và thanh cuộn */
-    max-height: 85vh;      /* Giới hạn chiều cao tối đa 85% chiều cao màn hình */
-    display: flex;         /* Sử dụng flex để quản lý nội dung bên trong */
-    flex-direction: column;
-}
+            background: var(--card); width: 95%; max-width: 600px; border-radius: 20px; border: 1px solid var(--primary); 
+            padding: 25px; max-height: 85vh; display: flex; flex-direction: column;
+        }
+        #modalBody { overflow-y: auto; margin-top: 15px; padding-right: 5px; }
 
-#modalBody {
-    overflow-y: auto;      /* TỰ ĐỘNG hiện thanh cuộn nếu nội dung dài hơn max-height */
-    margin-top: 15px;
-    padding-right: 5px;    /* Tránh nội dung đè lên thanh cuộn */
-}
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .detail-item { display: flex; align-items: center; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 6px 0; }
+        .detail-label { color: var(--text-muted); width: 85px; flex-shrink: 0; }
+        .detail-value { color: var(--primary); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Làm cho thanh cuộn trông chuyên nghiệp hơn (tùy chọn) */
-#modalBody::-webkit-scrollbar {
-    width: 6px;
-}
-#modalBody::-webkit-scrollbar-thumb {
-    background-color: var(--primary);
-    border-radius: 10px;
-}
-        /* Responsive cho bảng chi tiết trong Modal */
-.detail-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Mặc định 2 cột */
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.detail-item {
-    display: flex;
-    align-items: center;
-    font-size: 13px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    padding: 6px 0;
-}
-
-.detail-label {
-    color: var(--text-muted);
-    width: 80px;
-    flex-shrink: 0;
-}
-
-.detail-value {
-    color: var(--primary);
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* KHI MÀN HÌNH NHỎ (Dưới 480px - Điện thoại) */
-@media (max-width: 480px) {
-    .detail-grid {
-        grid-template-columns: 1fr; /* Chuyển về 1 cột duy nhất */
-    }
-    .detail-value {
-        white-space: normal; /* Cho phép xuống dòng nếu tên quá dài trên mobile */
-    }
-}
+        @media (max-width: 480px) { .detail-grid { grid-template-columns: 1fr; } .detail-value { white-space: normal; } }
+        
         #workDateDisplay { background: rgba(0, 210, 255, 0.1); border: 1px solid var(--primary); color: var(--primary); font-weight: bold; cursor: pointer; text-align: center; }
         .btn-toggle-form { background: rgba(0, 210, 255, 0.05); color: var(--primary); border: 1px dashed var(--primary); padding: 12px; width: 100%; border-radius: 10px; margin-bottom: 15px; cursor: pointer; font-weight: 600; }
         #searchBox { border: 1px solid var(--primary); background: rgba(0, 210, 255, 0.05); margin-top: 10px; }
@@ -164,33 +110,39 @@
 
     <div id="formContainer" style="display:none; background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
         <input type="text" id="workDateDisplay" readonly onclick="document.getElementById('dateModal').style.display='flex'">
+        
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <select id="customer"><option value="">Tải khách hàng...</option></select>
             <select id="techName"><option value="">Tải kỹ thuật...</option></select>
         </div>
-        <textarea id="content" placeholder="Mô tả công việc thực hiện..." style="height:100px"></textarea>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <select id="machineType"><option value="">-- Loại máy --</option></select>
+            <select id="supportType"><option value="">-- Hỗ trợ --</option></select>
+        </div>
+
+        <textarea id="content" placeholder="Mô tả công việc thực hiện (Bắt buộc)..." style="height:100px"></textarea>
+        <input type="text" id="note" placeholder="Ghi chú thêm (Không bắt buộc)...">
+        
         <button class="btn-save" id="btnSave" onclick="saveData()">LƯU NHẬT KÝ</button>
     </div>
 
-    <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="🔍 Tìm kiếm nhanh...">
+    <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="🔍 Tìm kiếm nhanh (Máy, khách, nội dung...)">
     
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th>Ngày</th><th>Khách</th><th>Nội dung</th><th>Tech</th><th>User</th>
+                    <th>Ngày làm</th>
+                    <th>Khách hàng</th>
+                    <th>Loại máy</th>
+                    <th>Hỗ trợ</th>
+                    <th>Nội dung</th>
+                    <th>Kỹ thuật</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
         </table>
-    </div>
-</div>
-
-<div id="dateModal" class="modal" onclick="if(event.target==this) this.style.display='none'">
-    <div class="modal-content" style="text-align:center">
-        <h4 style="margin:0 0 15px 0">CHỌN NGÀY LÀM VIỆC</h4>
-        <input type="date" id="hiddenDate" onchange="confirmDate(this.value)">
-        <button class="btn-save" onclick="document.getElementById('dateModal').style.display='none'">XÁC NHẬN</button>
     </div>
 </div>
 
@@ -202,16 +154,23 @@
     </div>
 </div>
 
+<div id="dateModal" class="modal" onclick="if(event.target==this) this.style.display='none'">
+    <div class="modal-content" style="text-align:center">
+        <h4 style="margin:0 0 15px 0">CHỌN NGÀY LÀM VIỆC</h4>
+        <input type="date" id="hiddenDate" onchange="confirmDate(this.value)">
+        <button class="btn-save" onclick="document.getElementById('dateModal').style.display='none'">XÁC NHẬN</button>
+    </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js"></script>
 <script>
-    const GOOGLE_URL = 'https://script.google.com/macros/s/AKfycbwCp7VrriqxYhbiuyJYUWfbSfGzA21lgMYnEHiZUzoJWQkDSfZIyhY2MdGoTW5ijhG5/exec'; // <-- Dán URL Web App của bạn vào đây
+    const GOOGLE_URL = 'https://script.google.com/macros/s/AKfycbzJA_0GX60mSaYUt3bGgrgO-xB4_P4qeiLjcyd--8lpUrm0KHmC07hBgC0Y6NZo5O1j/exec'; 
     let AUTH = JSON.parse(localStorage.getItem('tech_auth_v4')) || null;
     window.currentLogs = [];
 
     document.addEventListener("DOMContentLoaded", () => {
         setInitialDate();
         checkSession();
-        // Lắng nghe sự kiện Enter cho login
         document.getElementById('passInput').addEventListener("keypress", (e) => { if(e.key === "Enter") unlock(); });
     });
 
@@ -221,11 +180,9 @@
             showApp();
             refresh();
         } else {
-            // Không reload ở đây, chỉ hiện màn hình login
             localStorage.removeItem('tech_auth_v4');
             AUTH = null;
             document.getElementById('lock-screen').style.display = 'flex';
-            document.getElementById('main-content').style.display = 'none';
         }
     }
 
@@ -249,7 +206,6 @@
                 alert("❌ Sai tài khoản hoặc mật khẩu!");
                 btn.innerText = "ĐĂNG NHẬP"; btn.disabled = false;
             } else {
-                // Đăng nhập thành công, lưu phiên 24h
                 AUTH = { user: u, pass: passHash, expire: new Date().getTime() + (24 * 60 * 60 * 1000) };
                 localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
                 showApp();
@@ -277,85 +233,99 @@
         const d = document.getElementById('hiddenDate').value;
         const c = document.getElementById('customer').value;
         const t = document.getElementById('techName').value;
+        const m = document.getElementById('machineType').value;
+        const s = document.getElementById('supportType').value;
         const n = document.getElementById('content').value.trim();
+        const note = document.getElementById('note').value.trim();
         
-        if (!c || !n || !t) return alert("Vui lòng điền đủ thông tin!");
+        if (!c || !n || !t) return alert("Vui lòng điền đủ: Khách hàng, Kỹ thuật và Nội dung!");
+        
         const btn = document.getElementById('btnSave'); 
         btn.innerText = "ĐANG LƯU..."; btn.disabled = true;
 
         try {
-            await fetch(GOOGLE_URL, { 
+            const res = await fetch(GOOGLE_URL, { 
                 method: 'POST', 
-                body: JSON.stringify({ action: "SAVE_LOG", user: AUTH.user, pass: AUTH.pass, workDate: d, customer: c, tech: t, content: n }) 
+                body: JSON.stringify({ 
+                    action: "SAVE_LOG", 
+                    user: AUTH.user, 
+                    pass: AUTH.pass, 
+                    workDate: d, 
+                    customer: c, 
+                    tech: t, 
+                    machineType: m,
+                    support: s,
+                    content: n,
+                    note: note
+                }) 
             });
-            document.getElementById('content').value = ''; 
-            btn.innerText = "LƯU NHẬT KÝ"; btn.disabled = false;
-            toggleForm(); 
-            refresh(); // Tải lại bảng ngay lập tức
+            const result = await res.text();
+            if(result.includes("Thành công")) {
+                document.getElementById('content').value = ''; 
+                document.getElementById('note').value = '';
+                btn.innerText = "LƯU NHẬT KÝ"; btn.disabled = false;
+                toggleForm(); 
+                refresh();
+            } else {
+                alert("Lỗi: " + result);
+                btn.innerText = "LƯU NHẬT KÝ"; btn.disabled = false;
+            }
         } catch(e) { 
-            alert("Lỗi khi lưu!"); 
+            alert("Lỗi kết nối!"); 
             btn.innerText = "LƯU NHẬT KÝ"; btn.disabled = false; 
         }
     }
 
     function renderData(data) {
-        if (data.customers) {
-            document.getElementById('customer').innerHTML = '<option value="">-- Khách hàng --</option>' + 
-                data.customers.map(c => `<option value="${c}">${c}</option>`).join('');
-        }
-        if (data.techs) {
-            document.getElementById('techName').innerHTML = '<option value="">-- Kỹ thuật --</option>' + 
-                data.techs.map(t => `<option value="${t}">${t}</option>`).join('');
-        }
+        if (data.customers) document.getElementById('customer').innerHTML = '<option value="">-- Khách hàng --</option>' + data.customers.map(c => `<option value="${c}">${c}</option>`).join('');
+        if (data.techs) document.getElementById('techName').innerHTML = '<option value="">-- Kỹ thuật --</option>' + data.techs.map(t => `<option value="${t}">${t}</option>`).join('');
+        if (data.machineTypes) document.getElementById('machineType').innerHTML = '<option value="">-- Loại máy --</option>' + data.machineTypes.map(m => `<option value="${m}">${m}</option>`).join('');
+        if (data.supports) document.getElementById('supportType').innerHTML = '<option value="">-- Hỗ trợ --</option>' + data.supports.map(s => `<option value="${s}">${s}</option>`).join('');
 
+        // Thứ tự cột trong Sheet: [0:Hệ thống, 1:Làm, 2:Khách, 3:Máy, 4:Hỗ trợ, 5:Nội dung, 6:Kỹ thuật, 7:User, 8:Ghi chú]
         window.currentLogs = data.logs.slice(1).reverse();
         const html = window.currentLogs.map((row, index) => `
             <tr onclick="openInfoModal(${index})">
                 <td style="color:var(--text-muted)">${formatVN(row[1])}</td>
                 <td><b style="color:var(--primary)">${row[2] || ''}</b></td>
-                <td style="color:#cbd5e1">${(row[3]||"").substring(0,40)}${(row[3]||"").length>40?'...':''}</td>
-                <td><span class="badge-tech">${row[4] || ''}</span></td>
-                <td><span class="badge-user">@${row[5] || ''}</span></td>
+                <td style="font-size:11px">${row[3] || ''}</td>
+                <td><small>${row[4] || ''}</small></td>
+                <td style="color:#cbd5e1">${(row[5]||"").substring(0,30)}${(row[5]||"").length>30?'...':''}</td>
+                <td><span class="badge-tech">${row[6] || ''}</span></td>
             </tr>
         `).join('');
         document.getElementById('tableBody').innerHTML = html;
         document.getElementById('syncStatus').innerText = "Cập nhật: " + new Date().toLocaleTimeString();
     }
 
-function openInfoModal(index) {
-    const row = window.currentLogs[index];
-    if(!row) return;
+    function openInfoModal(index) {
+        const row = window.currentLogs[index];
+        if(!row) return;
 
-    document.getElementById('modalBody').innerHTML = `
-        <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border)">
-            
-            <div class="detail-grid">
-                <div class="detail-item">
-                    <span class="detail-label">🗓️ Ngày:</span>
-                    <span class="detail-value">${formatVN(row[1])}</span>
+        document.getElementById('modalBody').innerHTML = `
+            <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border)">
+                <div class="detail-grid">
+                    <div class="detail-item"><span class="detail-label">🗓️ Ngày làm:</span><span class="detail-value">${formatVN(row[1])}</span></div>
+                    <div class="detail-item"><span class="detail-label">🏢 Khách:</span><span class="detail-value">${row[2]}</span></div>
+                    <div class="detail-item"><span class="detail-label">📠 Loại máy:</span><span class="detail-value">${row[3] || '---'}</span></div>
+                    <div class="detail-item"><span class="detail-label">🤝 Hỗ trợ:</span><span class="detail-value">${row[4] || '---'}</span></div>
+                    <div class="detail-item"><span class="detail-label">🛠️ Kỹ thuật:</span><span class="detail-value" style="color:#fff">${row[6]}</span></div>
+                    <div class="detail-item"><span class="detail-label">👤 User:</span><span class="detail-value" style="color:#fff">@${row[7] || '---'}</span></div>
                 </div>
-                <div class="detail-item">
-                    <span class="detail-label">🏢 Khách:</span>
-                    <span class="detail-value">${row[2]}</span>
+                <div style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px">
+                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">📝 NỘI DUNG CÔNG VIỆC:</p>
+                    <div style="white-space:pre-wrap; color:#fff; background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; font-size:14px; line-height:1.6">${row[5]}</div>
                 </div>
-                <div class="detail-item">
-                    <span class="detail-label">🛠️ Tech:</span>
-                    <span class="detail-value" style="color:#fff">${row[4]}</span>
+                <div style="margin-top:10px">
+                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">🗒️ GHI CHÚ:</p>
+                    <div style="color:var(--primary); font-style:italic; font-size:13px">${row[8] || 'Không có ghi chú.'}</div>
                 </div>
-                <div class="detail-item">
-                    <span class="detail-label">👤 User:</span>
-                    <span class="detail-value" style="color:#fff">${row[5] || '---'}</span>
-                </div>
+                <div style="margin-top:10px; font-size:10px; color:rgba(255,255,255,0.1); text-align:right">Log ID: ${formatVN(row[0])}</div>
             </div>
+        `;
+        document.getElementById('infoModal').style.display = 'flex';
+    }
 
-            <div style="margin-top: 5px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
-                <p style="margin: 0 0 8px 0; color: var(--text-muted); font-size: 12px; font-weight:600">📝 NỘI DUNG CHI TIẾT:</p>
-                <div style="white-space: pre-wrap; color: #fff; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 10px; line-height: 1.6; border: 1px solid rgba(255,255,255,0.05); font-size: 14px; text-indent: 0;">${row[3]}</div>
-            </div>
-        </div>
-    `;
-    document.getElementById('infoModal').style.display = 'flex';
-}
     function showApp() {
         document.getElementById('lock-screen').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
@@ -365,16 +335,11 @@ function openInfoModal(index) {
     function logout() {
         if (!confirm("Bạn muốn đăng xuất?")) return;
         localStorage.removeItem('tech_auth_v4');
-        AUTH = null;
-        document.getElementById('lock-screen').style.display = 'flex';
-        document.getElementById('main-content').style.display = 'none';
-        document.getElementById('userInput').value = '';
-        document.getElementById('passInput').value = '';
+        location.reload();
     }
 
     function setInitialDate() {
-        const now = new Date();
-        const iso = now.toISOString().split('T')[0];
+        const iso = new Date().toISOString().split('T')[0];
         document.getElementById('hiddenDate').value = iso;
         document.getElementById('workDateDisplay').value = formatVN(iso);
     }
@@ -403,7 +368,7 @@ function openInfoModal(index) {
         for (let r of rows) { r.style.display = r.innerText.toUpperCase().includes(v) ? "" : "none"; }
     }
 
-    setInterval(refresh, 30000); // 30s cập nhật ngầm
+    setInterval(refresh, 30000); 
 </script>
 </body>
 </html>
