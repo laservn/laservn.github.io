@@ -330,8 +330,8 @@ async function saveData() {
     const note = document.getElementById('note').value.trim();
     
     // 2. Kiểm tra dữ liệu bắt buộc
-    if (!c || !n || !t) {
-        return showToast("Vui lòng điền đủ: Khách hàng, Kỹ thuật và Nội dung!", "error");
+    if (!c || !n || !t || !m || !s) {
+        return showToast("Vui lòng điền đủ: Khách hàng, Loại máy, Hỗ trợ, Kỹ thuật và Nội dung!", "error");
     }
     
     const btn = document.getElementById('btnSave'); 
