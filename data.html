@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BÁO CÁO KỸ THUẬT</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
     <style>
         :root { 
             --primary: #00d2ff; 
@@ -65,8 +65,6 @@
 
         .badge-tech { background: rgba(58, 123, 213, 0.2); color: #93c5fd; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
         .badge-mec { background: rgba(58, 123, 213, 0.2); color: #93c5ff; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-        .badge-sup { background: rgba(58, 123, 213, 0.2); color: #93c5dd; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-        .badge-user { color: var(--text-muted); font-size: 11px; font-family: monospace; }
 
         /* Modals */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 20px; }
@@ -81,132 +79,40 @@
         .detail-label { color: var(--text-muted); width: 85px; flex-shrink: 0; }
         .detail-value { color: var(--primary); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        @media (max-width: 480px) { .detail-grid { grid-template-columns: 1fr; } .detail-value { white-space: normal; } }
-        
         #workDateDisplay { background: rgba(0, 210, 255, 0.1); border: 1px solid var(--primary); color: var(--primary); font-weight: bold; cursor: pointer; text-align: center; }
         .btn-toggle-form { background: rgba(0, 210, 255, 0.05); color: var(--primary); border: 1px dashed var(--primary); padding: 12px; width: 100%; border-radius: 10px; margin-bottom: 15px; cursor: pointer; font-weight: 600; }
         #searchBox { border: 1px solid var(--primary); background: rgba(0, 210, 255, 0.05); margin-top: 10px; }
-        /* Thanh tiến trình chạy ở đỉnh đầu */
-#top-progress {
-    position: fixed;
-    top: 0; left: 0;
-    height: 3px;
-    background: linear-gradient(to right, var(--primary), #fff);
-    z-index: 9999;
-    transition: width 0.3s;
-    width: 0%;
-    display: none;
-    box-shadow: 0 0 10px var(--primary);
-}
+        
+        /* Loading & Toasts */
+        #top-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(to right, var(--primary), #fff); z-index: 9999; transition: width 0.3s; width: 0%; display: none; box-shadow: 0 0 10px var(--primary); }
+        #loading-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px); z-index: 4000; display: none; flex-direction: column; justify-content: center; align-items: center; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #toast-container { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+        .toast { background: rgba(30, 41, 59, 0.95); color: white; padding: 16px 28px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); animation: toastPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; min-width: 200px; text-align: center; }
+        .toast.error { border-bottom: 3px solid #ef4444; }
+        .toast.success { border-bottom: 3px solid #10b981; }
+        @keyframes toastPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes toastFadeOut { to { transform: scale(0.8); opacity: 0; } }
 
-/* Lớp phủ mờ giữa màn hình khi đang lưu */
-#loading-overlay {
-    position: fixed; inset: 0;
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(5px);
-    z-index: 4000;
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.spinner {
-    width: 40px; height: 40px;
-    border: 4px solid rgba(255,255,255,0.1);
-    border-top: 4px solid var(--primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 10px;
-}
-
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Container chứa các thông báo ở giữa màn hình */
-#toast-container {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* Căn giữa tuyệt đối */
-    z-index: 10000; /* Nằm trên cả loading overlay */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    pointer-events: none; /* Không chặn click vào bên dưới nếu không cần */
-}
-
-.toast {
-    background: rgba(30, 41, 59, 0.95); /* Màu card tối sang trọng */
-    color: white;
-    padding: 16px 28px;
-    border-radius: 12px;
-    margin-bottom: 10px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-    display: flex;
-    flex-direction: column; /* Icon ở trên, chữ ở dưới cho trang trọng */
-    align-items: center;
-    gap: 8px;
-    border: 1px solid rgba(255,255,255,0.1);
-    backdrop-filter: blur(10px);
-    animation: toastPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    min-width: 200px;
-    text-align: center;
-}
-
-.toast.error { border-bottom: 3px solid #ef4444; }
-.toast.success { border-bottom: 3px solid #10b981; }
-.toast.info { border-bottom: 3px solid var(--primary); }
-
-@keyframes toastPop {
-    from { transform: scale(0.5); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-}
-
-@keyframes toastFadeOut {
-    to { transform: scale(0.8); opacity: 0; }
-}
-/* Logo tại màn hình đăng nhập - Hiệu ứng tỏa sáng mạnh */
-.login-box img {
-    filter: drop-shadow(0 0 15px var(--primary)) brightness(1.2); /* Làm sáng logo và tạo bóng neon */
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    display: block;
-    margin: 0 auto 25px auto;
-    max-width: 250px; /* Chỉnh kích thước logo login tại đây */
-}
-
-.login-box img:hover {
-    transform: scale(1.1) rotate(2deg);
-    filter: drop-shadow(0 0 25px var(--primary)) brightness(1.2); /* Sáng rực lên khi di chuột */
-}
-
-/* Logo tại Header - Nhỏ gọn và tinh tế hơn */
-.header-logo {
-    height: 40px; /* Chỉnh độ cao logo trên trang chính */
-    filter: drop-shadow(0 0 15px var(--primary)) brightness(1.2); /* Làm sáng logo và tạo bóng neon */
-    transition: 0.3s;
-    vertical-align: middle;
-}
-
-.header-logo:hover {
-    filter: drop-shadow(0 0 10px var(--primary));
-     filter: drop-shadow(0 0 25px var(--primary)) brightness(1.2); /* Sáng rực lên khi di chuột */
-}
+        /* Logos */
+        .login-box img { filter: drop-shadow(0 0 15px var(--primary)) brightness(1.2); transition: all 0.4s; display: block; margin: 0 auto 25px auto; max-width: 220px; }
+        .header-logo { height: 40px; filter: drop-shadow(0 0 10px var(--primary)) brightness(1.2); vertical-align: middle; }
     </style>
 </head>
 <body>
-    
+
 <div id="toast-container"></div>
-    
 <div id="top-progress"></div>
 <div id="loading-overlay">
     <div class="spinner"></div>
     <div id="loading-text" style="color:var(--primary); font-weight:600; font-size:14px;">ĐANG XỬ LÝ...</div>
 </div>
-    
+
 <div id="lock-screen">
     <div class="login-box">
-        <img src="https://lh3.googleusercontent.com/pw/AP1GczNyKJCNBen1I6WeBIOFBHnduEAc-raKjpQsiE-xMOPlkgBLUxSUPtPfnGUO-h_gVE4xbhoZyycDSfpCjJD_uk7EkCLQJEXeuBytxHxBTDS0NEIMKC7RqBA-GIxKhZed7ddwzYsTmKsh5fKxggPZvFM=w483-h154" alt="Logo" style="width: 250px; margin-bottom: 20px;">
-        <h2 style="color:var(--primary); margin:0 0 20px 0;">BÁO CÁO KỸ THUẬT</h2>
+        <img src="https://lh3.googleusercontent.com/pw/AP1GczNyKJCNBen1I6WeBIOFBHnduEAc-raKjpQsiE-xMOPlkgBLUxSUPtPfnGUO-h_gVE4xbhoZyycDSfpCjJD_uk7EkCLQJEXeuBytxHxBTDS0NEIMKC7RqBA-GIxKhZed7ddwzYsTmKsh5fKxggPZvFM=w483-h154" alt="Logo">
+        <h2 style="color:var(--primary); margin:0 0 20px 0;">NHẬT KÝ KỸ THUẬT</h2>
         <input type="text" id="userInput" placeholder="Tên đăng nhập">
         <input type="password" id="passInput" placeholder="Mật khẩu">
         <button class="btn-save" id="btnLogin" onclick="unlock()">ĐĂNG NHẬP</button>
@@ -217,7 +123,7 @@
     <div class="header">
         <div style="display: flex; align-items: center; gap: 12px;">
             <img src="https://lh3.googleusercontent.com/pw/AP1GczNyKJCNBen1I6WeBIOFBHnduEAc-raKjpQsiE-xMOPlkgBLUxSUPtPfnGUO-h_gVE4xbhoZyycDSfpCjJD_uk7EkCLQJEXeuBytxHxBTDS0NEIMKC7RqBA-GIxKhZed7ddwzYsTmKsh5fKxggPZvFM=w483-h154" class="header-logo" alt="Logo">
-            <h2 style="margin:0; display:none; font-size:1.2rem; color:var(--primary);">BÁO CÁO<span style="color:white"> KỸ THUẬT</span></h2>
+            <h2 style="margin:0; font-size:1.1rem; color:var(--primary);">TECH <span style="color:white">LOGS</span></h2>
         </div>
         <div style="text-align: right">
             <span id="helloUser" style="color:var(--primary); font-size:13px; font-weight:600">---</span>
@@ -230,20 +136,16 @@
 
     <div id="formContainer" style="display:none; background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
         <input type="text" id="workDateDisplay" readonly onclick="document.getElementById('dateModal').style.display='flex'">
-        
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <select id="customer"><option value="">Tải khách hàng...</option></select>
             <select id="techName"><option value="">Tải kỹ thuật...</option></select>
         </div>
-
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <select id="machineType"><option value="">-- Loại máy --</option></select>
             <select id="supportType"><option value="">-- Hỗ trợ --</option></select>
         </div>
-
         <textarea id="content" placeholder="Mô tả công việc thực hiện (Bắt buộc)..." style="height:100px"></textarea>
         <input type="text" id="note" placeholder="Ghi chú thêm (Không bắt buộc)...">
-        
         <button class="btn-save" id="btnSave" onclick="saveData()">LƯU BÁO CÁO</button>
     </div>
 
@@ -285,8 +187,8 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js"></script>
 <script>
-    const GOOGLE_URL = 'https://script.google.com/macros/s/AKfycbzJA_0GX60mSaYUt3bGgrgO-xB4_P4qeiLjcyd--8lpUrm0KHmC07hBgC0Y6NZo5O1j/exec'; 
-    let AUTH = JSON.parse(localStorage.getItem('tech_auth_v4')) || null;
+    const GOOGLE_URL = 'https://script.google.com/macros/s/AKfycbynKdylaJX6JCuPJ_4roEAppNco5cHcFBtTj1AlXwxOp1AL3-3wyYSOqIu-nPrqbLJz/exec'; 
+    let AUTH = JSON.parse(localStorage.getItem('tech_auth_v5')) || null;
     window.currentLogs = [];
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -301,41 +203,59 @@
             showApp();
             refresh();
         } else {
-            localStorage.removeItem('tech_auth_v4');
-            AUTH = null;
-            document.getElementById('lock-screen').style.display = 'flex';
+            logout(true);
         }
     }
 
-async function unlock() {
-    const u = document.getElementById('userInput').value.trim();
-    const p = document.getElementById('passInput').value.trim();
-    if(!u || !p) return showToast("Nhập đủ tài khoản/mật khẩu!", "error");
-    
-    showLoading(true, "ĐANG XÁC THỰC..."); // Bật hiệu ứng
-
-    try {
-        const res = await fetch(GOOGLE_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: "FETCH_DATA", user: u, pass: md5(p) })
-        });
-        const text = await res.text();
+    async function unlock() {
+        const u = document.getElementById('userInput').value.trim();
+        const p = document.getElementById('passInput').value.trim();
+        if(!u || !p) return showToast("Nhập đủ tài khoản/mật khẩu!", "error");
         
-        showLoading(false); // Tắt hiệu ứng
+        showLoading(true, "ĐANG XÁC THỰC...");
 
-        if (text === "AUTH_FAILED") {
-            showToast("Sai tài khoản hoặc mật khẩu!", "error");
-        } else {
-            AUTH = { user: u, pass: md5(p), expire: new Date().getTime() + (24 * 60 * 60 * 1000) };
-            localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
-            showApp();
-            renderData(JSON.parse(text));
+        try {
+            const res = await fetch(GOOGLE_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "FETCH_DATA", user: u, pass: md5(p) })
+            });
+            const text = await res.text();
+            showLoading(false);
+
+            if (text === "AUTH_FAILED") {
+                showToast("Sai tài khoản hoặc mật khẩu!", "error");
+            } else {
+                const data = JSON.parse(text);
+                // LƯU QUYỀN VÀO AUTH
+                AUTH = { 
+                    user: u, 
+                    pass: md5(p), 
+                    role: data.role || "VIEWER", 
+                    expire: new Date().getTime() + (24 * 60 * 60 * 1000) 
+                };
+                localStorage.setItem('tech_auth_v5', JSON.stringify(AUTH));
+                showApp();
+                renderData(data);
+            }
+        } catch (e) {
+            showLoading(false);
+            showToast("Lỗi kết nối máy chủ!", "error");
         }
-    } catch (e) {
-        showLoading(false);
-        showToast("Lỗi kết nối máy chủ!", "error");
     }
-}
+
+    function showApp() {
+        document.getElementById('lock-screen').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+        document.getElementById('helloUser').innerText = "Chào, " + AUTH.user;
+
+        // PHÂN QUYỀN GIAO DIỆN
+        const toggleBtn = document.getElementById('toggleBtn');
+        if (AUTH.role === "VIEWER") {
+            toggleBtn.style.display = 'none'; // Ẩn nút "Nhập báo cáo" nếu là Viewer
+        } else {
+            toggleBtn.style.display = 'block';
+        }
+    }
 
     async function refresh() {
         if (!AUTH || document.hidden) return;
@@ -349,85 +269,64 @@ async function unlock() {
         } catch (e) { console.warn("Sync failed"); }
     }
 
-async function saveData() {
-    // 1. Lấy dữ liệu từ form
-    const d = document.getElementById('hiddenDate').value;
-    const c = document.getElementById('customer').value;
-    const t = document.getElementById('techName').value;
-    const m = document.getElementById('machineType').value;
-    const s = document.getElementById('supportType').value;
-    const n = document.getElementById('content').value.trim();
-    const note = document.getElementById('note').value.trim();
-    
-    // 2. Kiểm tra dữ liệu bắt buộc
-    if (!c || !n || !t || !m || !s) {
-        return showToast("Vui lòng điền đủ: Khách hàng, Loại máy, Hỗ trợ, Kỹ thuật và Nội dung!", "error");
-    }
-    
-    const btn = document.getElementById('btnSave'); 
+    async function saveData() {
+        if (AUTH.role === "VIEWER") {
+            return showToast("Bạn không có quyền thêm dữ liệu!", "error");
+        }
 
-    // 3. Kích hoạt trạng thái ĐANG XỬ LÝ
-    showLoading(true, "ĐANG LƯU NHẬT KÝ..."); 
-    btn.disabled = true; // Chặn bấm liên tiếp
+        const d = document.getElementById('hiddenDate').value;
+        const c = document.getElementById('customer').value;
+        const t = document.getElementById('techName').value;
+        const m = document.getElementById('machineType').value;
+        const s = document.getElementById('supportType').value;
+        const n = document.getElementById('content').value.trim();
+        const note = document.getElementById('note').value.trim();
+        
+        if (!c || !n || !t || !m || !s) {
+            return showToast("Vui lòng điền đủ các trường bắt buộc!", "error");
+        }
+        
+        const btn = document.getElementById('btnSave'); 
+        showLoading(true, "ĐANG LƯU NHẬT KÝ..."); 
+        btn.disabled = true;
 
-    try {
-        const res = await fetch(GOOGLE_URL, { 
-            method: 'POST', 
-            body: JSON.stringify({ 
-                action: "SAVE_LOG", 
-                user: AUTH.user, 
-                pass: AUTH.pass, 
-                workDate: d, 
-                customer: c, 
-                tech: t, 
-                machineType: m,
-                support: s,
-                content: n,
-                note: note
-            }) 
-        });
+        try {
+            const res = await fetch(GOOGLE_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ 
+                    action: "SAVE_LOG", user: AUTH.user, pass: AUTH.pass, 
+                    workDate: d, customer: c, tech: t, machineType: m, 
+                    support: s, content: n, note: note
+                }) 
+            });
+            const result = await res.text();
+            showLoading(false);
 
-        const result = await res.text();
-
-        // 4. Kết thúc xử lý (tắt loading)
-        showLoading(false);
-
-        if (result.includes("Thành công")) {
-            showToast("Đã lưu nhật ký thành công!", "success");
-            // Xóa nội dung sau khi lưu
-            document.getElementById('content').value = ''; 
-            document.getElementById('note').value = '';
-            
-            // Thông báo nhỏ hoặc cập nhật giao diện
-            btn.disabled = false;
-            toggleForm(); // Đóng form nhập
-            refresh();    // Tải lại bảng ngay lập tức
-        } else {
-            showToast("Lỗi từ máy chủ: " + result, "error");
+            if (result.includes("Thành công")) {
+                showToast("Lưu thành công!", "success");
+                document.getElementById('content').value = ''; 
+                document.getElementById('note').value = '';
+                toggleForm();
+                refresh();
+            } else {
+                showToast(result, "error");
+            }
+        } catch (e) { 
+            showLoading(false);
+            showToast("Lỗi mạng!", "error");
+        } finally {
             btn.disabled = false;
         }
-    } catch (e) { 
-        // 5. Xử lý khi có lỗi kết nối
-        showLoading(false);
-        showToast("Lỗi kết nối! Vui lòng kiểm tra mạng.", "error");
-        btn.disabled = false; 
     }
-}
 
-function renderData(data) {
-        // Hàm hỗ trợ cập nhật dropdown thông minh
+    function renderData(data) {
         const updateDropdown = (id, newData, defaultText) => {
             const select = document.getElementById(id);
+            if(!select) return;
             const currentValue = select.value;
-            const newHtml = `<option value="">-- ${defaultText} --</option>` + 
-                            newData.map(item => `<option value="${item}">${item}</option>`).join('');
-            
-            if (select.innerHTML !== newHtml) {
-                select.innerHTML = newHtml;
-                if ([...select.options].some(opt => opt.value === currentValue)) {
-                    select.value = currentValue;
-                }
-            }
+            select.innerHTML = `<option value="">-- ${defaultText} --</option>` + 
+                               newData.map(item => `<option value="${item}">${item}</option>`).join('');
+            if ([...select.options].some(opt => opt.value === currentValue)) select.value = currentValue;
         };
 
         if (data.customers) updateDropdown('customer', data.customers, 'Khách hàng');
@@ -435,71 +334,51 @@ function renderData(data) {
         if (data.machineTypes) updateDropdown('machineType', data.machineTypes, 'Loại máy');
         if (data.supports) updateDropdown('supportType', data.supports, 'Hỗ trợ');
 
-        // Render Table - Hiển thị thêm cột Ghi chú (row[8])
         window.currentLogs = data.logs.slice(1).reverse();
         const html = window.currentLogs.map((row, index) => `
             <tr onclick="openInfoModal(${index})">
                 <td style="color:var(--text-muted)">${formatVN(row[1])}</td>
                 <td><b style="color:var(--primary)">${row[2] || ''}</b></td>
-                <td style="font-size:11px"><span class="badge-mec">${row[3] || ''}</span></td>
+                <td><span class="badge-mec">${row[3] || ''}</span></td>
                 <td><small>${row[4] || ''}</small></td>
-                <td style="color:#cbd5e1">${(row[5]||"").substring(0,30)}${(row[5]||"").length>30?'...':''}</td>
+                <td style="color:#cbd5e1">${(row[5]||"").substring(0,30)}...</td>
                 <td><span class="badge-tech">${row[6] || ''}</span></td>
-                <td style="font-style:italic; color:var(--text-muted); font-size:12px">
-                    ${(row[8] || '').substring(0,15)}${(row[8]||'').length > 15 ? '...' : ''}
-                </td>
+                <td style="font-style:italic; color:var(--text-muted); font-size:12px">${(row[8]||'').substring(0,15)}</td>
             </tr>
         `).join('');
-        
-        const tableBody = document.getElementById('tableBody');
-        if (tableBody.innerHTML !== html) {
-            tableBody.innerHTML = html;
-        }
-        
+        document.getElementById('tableBody').innerHTML = html;
         document.getElementById('syncStatus').innerText = "Cập nhật: " + new Date().toLocaleTimeString();
     }
 
     function openInfoModal(index) {
         const row = window.currentLogs[index];
         if(!row) return;
-
         document.getElementById('modalBody').innerHTML = `
             <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border)">
                 <div class="detail-grid">
-                    <div class="detail-item"><span class="detail-label">🗓️ Ngày làm:</span><span class="detail-value">${formatVN(row[1])}</span></div>
+                    <div class="detail-item"><span class="detail-label">🗓️ Ngày:</span><span class="detail-value">${formatVN(row[1])}</span></div>
                     <div class="detail-item"><span class="detail-label">🕵️‍♂️ Khách:</span><span class="detail-value">${row[2]}</span></div>
-                    <div class="detail-item"><span class="detail-label">⚙️ Loại máy:</span><span class="detail-value">${row[3] || '---'}</span></div>
-                    <div class="detail-item"><span class="detail-label">📌 Hỗ trợ:</span><span class="detail-value">${row[4] || '---'}</span></div>
-                    <div class="detail-item"><span class="detail-label">👷‍♂️ Kỹ thuật:</span><span class="detail-value">${row[6]}</span></div>
-                    <div class="detail-item"><span class="detail-label">🪪 User:</span><span class="detail-value">${row[7] || '---'}</span></div>
+                    <div class="detail-item"><span class="detail-label">⚙️ Máy:</span><span class="detail-value">${row[3]}</span></div>
+                    <div class="detail-item"><span class="detail-label">👷‍♂️ Tech:</span><span class="detail-value">${row[6]}</span></div>
                 </div>
                 <div style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px">
-                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">📝 NỘI DUNG CÔNG VIỆC:</p>
-                    <div style="white-space:pre-wrap; color:#fff; background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; font-size:14px; line-height:1.6">${row[5]}</div>
+                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px">📝 NỘI DUNG:</p>
+                    <div style="white-space:pre-wrap; color:#fff; font-size:14px;">${row[5]}</div>
                 </div>
-                <div style="margin-top:10px">
-                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">🗒️ GHI CHÚ:</p>
-                    <div style="color:var(--primary); font-style:italic; font-size:13px">${row[8] || 'Không có ghi chú.'}</div>
-                </div>
-                <div style="margin-top:10px; font-size:10px; color:rgba(255,255,255,0.1); text-align:right">Log ID: ${formatVN(row[0])}</div>
+                ${row[8] ? `<div style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px">
+                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px">🗒️ GHI CHÚ:</p>
+                    <div style="color:var(--primary); font-style:italic; font-size:13px">${row[8]}</div>
+                </div>` : ''}
             </div>
         `;
         document.getElementById('infoModal').style.display = 'flex';
     }
 
-    function showApp() {
-        document.getElementById('lock-screen').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
-        document.getElementById('helloUser').innerText = "Chào, " + AUTH.user;
+    function logout(quiet = false) {
+        if(!quiet) showToast("Đã đăng xuất", "info");
+        localStorage.removeItem('tech_auth_v5');
+        setTimeout(() => location.reload(), quiet ? 0 : 800);
     }
-
-function logout() {
-    showToast("Đã đăng xuất hệ thống", "info");
-    setTimeout(() => {
-        localStorage.removeItem('tech_auth_v4');
-        location.reload();
-    }, 1000);
-}
 
     function setInitialDate() {
         const iso = new Date().toISOString().split('T')[0];
@@ -532,46 +411,22 @@ function logout() {
     }
 
     function showLoading(status, text = "ĐANG XỬ LÝ...") {
-    const overlay = document.getElementById('loading-overlay');
-    const bar = document.getElementById('top-progress');
-    document.getElementById('loading-text').innerText = text;
-    
-    if(status) {
-        overlay.style.display = 'flex';
-        bar.style.display = 'block';
-        bar.style.width = '70%'; // Chạy trước một đoạn
-    } else {
-        bar.style.width = '100%';
-        setTimeout(() => {
-            overlay.style.display = 'none';
-            bar.style.display = 'none';
-            bar.style.width = '0%';
-        }, 300);
+        const overlay = document.getElementById('loading-overlay');
+        const bar = document.getElementById('top-progress');
+        document.getElementById('loading-text').innerText = text;
+        if(status) { overlay.style.display = 'flex'; bar.style.display = 'block'; bar.style.width = '70%'; }
+        else { bar.style.width = '100%'; setTimeout(() => { overlay.style.display = 'none'; bar.style.display = 'none'; bar.style.width = '0%'; }, 300); }
     }
-}
-    function showToast(message, type = 'info') {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    
-    let icon = 'ℹ️';
-    let iconColor = 'var(--primary)';
-    if(type === 'error') { icon = '⚠️'; iconColor = '#ef4444'; }
-    if(type === 'success') { icon = '✅'; iconColor = '#10b981'; }
-    
-    toast.innerHTML = `
-        <div style="font-size: 30px; margin-bottom: 5px;">${icon}</div>
-        <div style="font-size: 14px; font-weight: 600; letter-spacing: 0.5px;">${message.toUpperCase()}</div>
-    `;
-    
-    container.appendChild(toast);
 
-    // Tự động biến mất sau 2.5 giây
-    setTimeout(() => {
-        toast.style.animation = 'toastFadeOut 0.2s ease-in forwards';
-        setTimeout(() => toast.remove(), 200);
-    }, 2500);
-}
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        let icon = type === 'error' ? '⚠️' : (type === 'success' ? '✅' : 'ℹ️');
+        toast.innerHTML = `<div style="font-size:30px">${icon}</div><div style="font-size:14px; font-weight:600">${message.toUpperCase()}</div>`;
+        container.appendChild(toast);
+        setTimeout(() => { toast.style.animation = 'toastFadeOut 0.2s forwards'; setTimeout(() => toast.remove(), 200); }, 2500);
+    }
 
     setInterval(refresh, 30000); 
 </script>
