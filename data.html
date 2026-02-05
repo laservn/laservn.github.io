@@ -301,6 +301,8 @@
         if (AUTH && AUTH.expire && now < AUTH.expire) {
             showApp();
             refresh();
+            // Chào mừng nhẹ nhàng khi vào lại app
+            showToast(`Hệ thống đã sẵn sàng, ${AUTH.user}!`, "info");
         } else {
             localStorage.removeItem('tech_auth_v4');
             AUTH = null;
@@ -333,7 +335,10 @@ async function unlock() {
             localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
             showApp();
             renderData(data); // Đưa dữ liệu vào bảng
-            applyPermissions(); // Gọi hàm kiểm tra quyền ẩn/hiện nú
+            applyPermissions(); // Gọi hàm kiểm tra quyền ẩn/hiện nút
+            // --- THÊM DÒNG NÀY ĐỂ CHÀO MỪNG ---
+            showToast(`Chào mừng ${u} trở lại!`, "success");
+            // ---------------------------------
         }
     } catch (e) {
         showLoading(false);
