@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tech Logs Pro - Enterprise</title>
+    <title>BÁO CÁO KỸ THUẬT</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
     <style>
         :root { 
             --primary: #00d2ff; 
@@ -205,7 +206,7 @@
 <div id="lock-screen">
     <div class="login-box">
         <img src="https://lh3.googleusercontent.com/pw/AP1GczNyKJCNBen1I6WeBIOFBHnduEAc-raKjpQsiE-xMOPlkgBLUxSUPtPfnGUO-h_gVE4xbhoZyycDSfpCjJD_uk7EkCLQJEXeuBytxHxBTDS0NEIMKC7RqBA-GIxKhZed7ddwzYsTmKsh5fKxggPZvFM=w483-h154" alt="Logo" style="width: 250px; margin-bottom: 20px;">
-        <h2 style="color:var(--primary); margin:0 0 20px 0;">TECH LOGS PRO</h2>
+        <h2 style="color:var(--primary); margin:0 0 20px 0;">BÁO CÁO KỸ THUẬT</h2>
         <input type="text" id="userInput" placeholder="Tên đăng nhập">
         <input type="password" id="passInput" placeholder="Mật khẩu">
         <button class="btn-save" id="btnLogin" onclick="unlock()">ĐĂNG NHẬP</button>
@@ -216,7 +217,7 @@
     <div class="header">
         <div style="display: flex; align-items: center; gap: 12px;">
             <img src="https://lh3.googleusercontent.com/pw/AP1GczNyKJCNBen1I6WeBIOFBHnduEAc-raKjpQsiE-xMOPlkgBLUxSUPtPfnGUO-h_gVE4xbhoZyycDSfpCjJD_uk7EkCLQJEXeuBytxHxBTDS0NEIMKC7RqBA-GIxKhZed7ddwzYsTmKsh5fKxggPZvFM=w483-h154" class="header-logo" alt="Logo">
-            <h2 style="margin:0; font-size:1.3rem; color:var(--primary);">TECH LOGS <span style="color:white">PRO</span></h2>
+            <h2 style="margin:0; font-size:1.2rem; color:var(--primary);">BÁO CÁO<span style="color:white">KỸ THUẬT</span></h2>
         </div>
         <div style="text-align: right">
             <span id="helloUser" style="color:var(--primary); font-size:13px; font-weight:600">---</span>
@@ -225,7 +226,7 @@
         </div>
     </div>
 
-    <button class="btn-toggle-form" id="toggleBtn" onclick="toggleForm()">➕ NHẬP NHẬT KÝ MỚI</button>
+    <button class="btn-toggle-form" id="toggleBtn" onclick="toggleForm()">📑 BÁO CÁO MỚI</button>
 
     <div id="formContainer" style="display:none; background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
         <input type="text" id="workDateDisplay" readonly onclick="document.getElementById('dateModal').style.display='flex'">
@@ -243,7 +244,7 @@
         <textarea id="content" placeholder="Mô tả công việc thực hiện (Bắt buộc)..." style="height:100px"></textarea>
         <input type="text" id="note" placeholder="Ghi chú thêm (Không bắt buộc)...">
         
-        <button class="btn-save" id="btnSave" onclick="saveData()">LƯU NHẬT KÝ</button>
+        <button class="btn-save" id="btnSave" onclick="saveData()">LƯU BÁO CÁO</button>
     </div>
 
     <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="🔍 Tìm kiếm nhanh (Máy, khách, nội dung...)">
@@ -521,7 +522,7 @@ function logout() {
         const f = document.getElementById('formContainer');
         const isHidden = f.style.display === "none";
         f.style.display = isHidden ? "block" : "none";
-        document.getElementById('toggleBtn').innerHTML = isHidden ? "➖ THU GỌN FORM" : "➕ NHẬP NHẬT KÝ MỚI";
+        document.getElementById('toggleBtn').innerHTML = isHidden ? "📒 THU GỌN" : "📑 BÁO CÁO MỚI";
     }
 
     function filterTable() {
