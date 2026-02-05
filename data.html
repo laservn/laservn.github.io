@@ -63,6 +63,8 @@
         tbody tr:hover td { background: rgba(0, 210, 255, 0.08); }
 
         .badge-tech { background: rgba(58, 123, 213, 0.2); color: #93c5fd; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+        .badge-mec { background: rgba(58, 123, 213, 0.2); color: #93c5ff; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+        .badge-sup { background: rgba(58, 123, 213, 0.2); color: #93c5đ; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
         .badge-user { color: var(--text-muted); font-size: 11px; font-family: monospace; }
 
         /* Modals */
@@ -304,12 +306,12 @@ function renderData(data) {
             <tr onclick="openInfoModal(${index})">
                 <td style="color:var(--text-muted)">${formatVN(row[1])}</td>
                 <td><b style="color:var(--primary)">${row[2] || ''}</b></td>
-                <td style="font-size:11px">${row[3] || ''}</td>
-                <td><small>${row[4] || ''}</small></td>
+                <td style="font-size:11px"><span class="badge-mec">${row[3] || ''}</span></td>
+                <td><small><span class="badge-sup">${row[4] || ''}</span></small></td>
                 <td style="color:#cbd5e1">${(row[5]||"").substring(0,30)}${(row[5]||"").length>30?'...':''}</td>
                 <td><span class="badge-tech">${row[6] || ''}</span></td>
                 <td style="font-style:italic; color:var(--text-muted); font-size:12px">
-                    ${(row[8] || '').substring(0,20)}${(row[8]||'').length > 20 ? '...' : ''}
+                    ${(row[8] || '').substring(0,15)}${(row[8]||'').length > 15 ? '...' : ''}
                 </td>
             </tr>
         `).join('');
