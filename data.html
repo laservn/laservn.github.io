@@ -447,9 +447,12 @@ async function saveData() {
 }
 
 function renderData(data) {
-        // Hàm hỗ trợ cập nhật dropdown thông minh
+    // 1. Chỉ cập nhật Dropdown nếu KHÔNG PHẢI là VIEWER
+    if (USER_ROLE !== "VIEWER") {
         const updateDropdown = (id, newData, defaultText) => {
             const select = document.getElementById(id);
+            if (!select) return; // Phòng trường hợp element bị remove
+            
             const currentValue = select.value;
             const newHtml = `<option value="">-- ${defaultText} --</option>` + 
                             newData.map(item => `<option value="${item}">${item}</option>`).join('');
@@ -466,30 +469,37 @@ function renderData(data) {
         if (data.techs) updateDropdown('techName', data.techs, 'Kỹ thuật');
         if (data.machineTypes) updateDropdown('machineType', data.machineTypes, 'Loại máy');
         if (data.supports) updateDropdown('supportType', data.supports, 'Hỗ trợ');
-
-        // Render Table - Hiển thị thêm cột Ghi chú (row[8])
-        window.currentLogs = data.logs.slice(1).reverse();
-        const html = window.currentLogs.map((row, index) => `
-            <tr onclick="openInfoModal(${index})">
-                <td style="color:var(--text-muted)">${formatVN(row[1])}</td>
-                <td><b style="color:var(--primary)">${row[2] || ''}</b></td>
-                <td style="font-size:11px"><span class="badge-mec">${row[3] || ''}</span></td>
-                <td><small>${row[4] || ''}</small></td>
-                <td style="color:#cbd5e1">${(row[5]||"").substring(0,30)}${(row[5]||"").length>30?'...':''}</td>
-                <td><span class="badge-tech">${row[6] || ''}</span></td>
-                <td style="font-style:italic; color:var(--text-muted); font-size:12px">
-                    ${(row[8] || '').substring(0,15)}${(row[8]||'').length > 15 ? '...' : ''}
-                </td>
-            </tr>
-        `).join('');
-        
-        const tableBody = document.getElementById('tableBody');
-        if (tableBody.innerHTML !== html) {
-            tableBody.innerHTML = html;
-        }
-        
-        document.getElementById('syncStatus').innerText = "Cập nhật: " + new Date().toLocaleTimeString();
+    } else {
+        // Nếu là VIEWER, làm trống nội dung các dropdown để bảo mật thông tin
+        ['customer', 'techName', 'machineType', 'supportType'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = '<option value="">Không có quyền truy cập</option>';
+        });
     }
+
+    // 2. Render bảng dữ liệu (VIEWER vẫn được xem Logs)
+    window.currentLogs = data.logs.slice(1).reverse();
+    const html = window.currentLogs.map((row, index) => `
+        <tr onclick="openInfoModal(${index})">
+            <td style="color:var(--text-muted)">${formatVN(row[1])}</td>
+            <td><b style="color:var(--primary)">${row[2] || ''}</b></td>
+            <td style="font-size:11px"><span class="badge-mec">${row[3] || ''}</span></td>
+            <td><small>${row[4] || ''}</small></td>
+            <td style="color:#cbd5e1">${(row[5]||"").substring(0,30)}${(row[5]||"").length>30?'...':''}</td>
+            <td><span class="badge-tech">${row[6] || ''}</span></td>
+            <td style="font-style:italic; color:var(--text-muted); font-size:12px">
+                ${(row[8] || '').substring(0,15)}${(row[8]||'').length > 15 ? '...' : ''}
+            </td>
+        </tr>
+    `).join('');
+    
+    const tableBody = document.getElementById('tableBody');
+    if (tableBody && tableBody.innerHTML !== html) {
+        tableBody.innerHTML = html;
+    }
+    
+    document.getElementById('syncStatus').innerText = "Cập nhật: " + new Date().toLocaleTimeString();
+}
 
     function openInfoModal(index) {
         const row = window.currentLogs[index];
