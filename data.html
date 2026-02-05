@@ -346,8 +346,10 @@ async function unlock() {
     const formContainer = document.getElementById('formContainer');
 
     if (USER_ROLE === "VIEWER") {
-        toggleBtn.style.display = "none"; // Ẩn nút "Báo cáo mới"
-        formContainer.style.display = "none"; // Chắc chắn form luôn đóng
+        const btn = document.getElementById('toggleBtn');
+        const form = document.getElementById('formContainer');
+        if (btn) btn.remove();  // Xóa sổ hoàn toàn khỏi màn hình
+        if (form) form.remove(); // Xóa luôn cả Form nhập
     } else {
         toggleBtn.style.display = "block"; // Admin thì hiện ra
     }
