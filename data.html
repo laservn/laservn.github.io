@@ -226,7 +226,7 @@
         </div>
     </div>
 
-    <button class="btn-toggle-form" id="toggleBtn" onclick="toggleForm()" style="display:none;">📑 BÁO CÁO MỚI</button>
+    <button class="btn-toggle-form" id="toggleBtn" onclick="toggleForm()">📑 BÁO CÁO MỚI</button>
 
     <div id="formContainer" style="display:none; background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
         <input type="text" id="workDateDisplay" readonly onclick="document.getElementById('dateModal').style.display='flex'">
@@ -357,12 +357,6 @@ function applyPermissions() {
     } else {
         // Nếu là ADMIN, đảm bảo nút bấm hiện ra
         if (btn) btn.style.display = "block";
-        // Trả lại hàm gốc nếu trước đó bị ghi đè
-        window.toggleForm = function() {
-            const f = document.getElementById('formContainer');
-            const isHidden = f.style.display === "none";
-            f.style.display = isHidden ? "block" : "none";
-            document.getElementById('toggleBtn').innerHTML = isHidden ? "📒 THU GỌN" : "📑 BÁO CÁO MỚI";
     }
 }
     
@@ -539,8 +533,6 @@ function renderData(data) {
         document.getElementById('lock-screen').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
         document.getElementById('helloUser').innerText = "Chào, " + AUTH.user;
-        // Gọi applyPermissions ngay khi hiện App để kiểm soát giao diện theo Role
-        applyPermissions();
     }
 
 function logout() {
