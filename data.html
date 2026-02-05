@@ -429,29 +429,53 @@ function renderData(data) {
         document.getElementById('syncStatus').innerText = "Cập nhật: " + new Date().toLocaleTimeString();
     }
 
-    function openInfoModal(index) {
+function openInfoModal(index) {
         const row = window.currentLogs[index];
         if(!row) return;
 
         document.getElementById('modalBody').innerHTML = `
-            <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border)">
-                <div class="detail-grid">
-                    <div class="detail-item"><span class="detail-label">🗓️ Ngày làm:</span><span class="detail-value">${formatVN(row[1])}</span></div>
-                    <div class="detail-item"><span class="detail-label">🏢 Khách:</span><span class="detail-value">${row[2]}</span></div>
-                    <div class="detail-item"><span class="detail-label">📠 Loại máy:</span><span class="detail-value">${row[3] || '---'}</span></div>
-                    <div class="detail-item"><span class="detail-label">🤝 Hỗ trợ:</span><span class="detail-value">${row[4] || '---'}</span></div>
-                    <div class="detail-item"><span class="detail-label">🛠️ Kỹ thuật:</span><span class="detail-value">${row[6]}</span></div>
-                    <div class="detail-item"><span class="detail-label">👤 User:</span><span class="detail-value">${row[7] || '---'}</span></div>
+            <div style="background:rgba(255,255,255,0.02); padding:15px; border-radius:15px; border:1px solid var(--border)">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div>
+                        <small style="color:var(--text-muted); display:block; margin-bottom:4px">🏢 KHÁCH HÀNG</small>
+                        <b style="color:var(--primary); font-size:15px">${row[2]}</b>
+                    </div>
+                    <div>
+                        <small style="color:var(--text-muted); display:block; margin-bottom:4px">🗓️ NGÀY LÀM</small>
+                        <b style="color:white; font-size:15px">${formatVN(row[1])}</b>
+                    </div>
                 </div>
-                <div style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px">
-                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">📝 NỘI DUNG CÔNG VIỆC:</p>
-                    <div style="white-space:pre-wrap; color:#fff; background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; font-size:14px; line-height:1.6">${row[5]}</div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; border-top: 1px solid var(--border); padding-top: 15px;">
+                    <div>
+                        <small style="color:var(--text-muted); display:block; margin-bottom:4px">📠 LOẠI MÁY</small>
+                        <span class="badge-mec" style="display:inline-block">${row[3] || '---'}</span>
+                    </div>
+                    <div>
+                        <small style="color:var(--text-muted); display:block; margin-bottom:4px">🤝 HỖ TRỢ</small>
+                        <span style="color:white; font-weight:500">${row[4] || '---'}</span>
+                    </div>
                 </div>
-                <div style="margin-top:10px">
-                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">🗒️ GHI CHÚ:</p>
-                    <div style="color:var(--primary); font-style:italic; font-size:13px">${row[8] || 'Không có ghi chú.'}</div>
+
+                <div style="margin-bottom: 20px; border-top: 1px solid var(--border); padding-top: 15px;">
+                    <small style="color:var(--text-muted); display:block; margin-bottom:4px">🛠️ KỸ THUẬT THỰC HIỆN</small>
+                    <span class="badge-tech" style="font-size:13px; padding:6px 12px">${row[6]}</span>
+                    <span style="color:var(--text-muted); font-size:11px; margin-left:10px">(User: ${row[7] || 'n/a'})</span>
                 </div>
-                <div style="margin-top:10px; font-size:10px; color:rgba(255,255,255,0.1); text-align:right">Log ID: ${formatVN(row[0])}</div>
+
+                <div style="background:rgba(0,0,0,0.4); padding:15px; border-radius:12px; border:1px solid rgba(0,210,255,0.2); margin-bottom:15px">
+                    <small style="color:var(--primary); font-weight:bold; display:block; margin-bottom:8px">📝 NỘI DUNG CHI TIẾT:</small>
+                    <div style="color:#f1f5f9; line-height:1.6; white-space:pre-wrap; font-size:14px">${row[5]}</div>
+                </div>
+
+                ${row[8] ? `
+                <div style="border-left: 3px solid var(--secondary); padding-left: 12px; margin-top: 10px;">
+                    <small style="color:var(--text-muted); display:block">🗒️ GHI CHÚ THÊM:</small>
+                    <i style="color:#cbd5e1; font-size:13px">${row[8]}</i>
+                </div>
+                ` : ''}
+
+                <div style="text-align:right; margin-top:20px; font-size:9px; color:rgba(255,255,255,0.1)">LOG_ID: ${row[0]}</div>
             </div>
         `;
         document.getElementById('infoModal').style.display = 'flex';
