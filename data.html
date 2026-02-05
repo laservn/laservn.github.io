@@ -170,25 +170,25 @@
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: block;
     margin: 0 auto 25px auto;
-    max-width: 120px; /* Chỉnh kích thước logo login tại đây */
+    max-width: 250px; /* Chỉnh kích thước logo login tại đây */
 }
 
 .login-box img:hover {
     transform: scale(1.1) rotate(2deg);
-    filter: drop-shadow(0 0 25px var(--primary)) brightness(1.4); /* Sáng rực lên khi di chuột */
+    filter: drop-shadow(0 0 25px var(--primary)) brightness(1.2); /* Sáng rực lên khi di chuột */
 }
 
 /* Logo tại Header - Nhỏ gọn và tinh tế hơn */
 .header-logo {
     height: 40px; /* Chỉnh độ cao logo trên trang chính */
-    filter: drop-shadow(0 0 5px var(--primary)); /* Đổ bóng nhẹ */
+    filter: drop-shadow(0 0 15px var(--primary)) brightness(1.2); /* Làm sáng logo và tạo bóng neon */
     transition: 0.3s;
     vertical-align: middle;
 }
 
 .header-logo:hover {
     filter: drop-shadow(0 0 10px var(--primary));
-    transform: translateY(-2px); /* Nhích nhẹ lên trên khi hover */
+     filter: drop-shadow(0 0 25px var(--primary)) brightness(1.2); /* Sáng rực lên khi di chuột */
 }
     </style>
 </head>
@@ -204,7 +204,7 @@
     
 <div id="lock-screen">
     <div class="login-box">
-        <img src="https://lh3.googleusercontent.com/pw/AP1GczNyKJCNBen1I6WeBIOFBHnduEAc-raKjpQsiE-xMOPlkgBLUxSUPtPfnGUO-h_gVE4xbhoZyycDSfpCjJD_uk7EkCLQJEXeuBytxHxBTDS0NEIMKC7RqBA-GIxKhZed7ddwzYsTmKsh5fKxggPZvFM=w483-h154" alt="Logo" style="width: 200px; margin-bottom: 20px;">
+        <img src="https://lh3.googleusercontent.com/pw/AP1GczNyKJCNBen1I6WeBIOFBHnduEAc-raKjpQsiE-xMOPlkgBLUxSUPtPfnGUO-h_gVE4xbhoZyycDSfpCjJD_uk7EkCLQJEXeuBytxHxBTDS0NEIMKC7RqBA-GIxKhZed7ddwzYsTmKsh5fKxggPZvFM=w483-h154" alt="Logo" style="width: 250px; margin-bottom: 20px;">
         <h2 style="color:var(--primary); margin:0 0 20px 0;">TECH LOGS PRO</h2>
         <input type="text" id="userInput" placeholder="Tên đăng nhập">
         <input type="password" id="passInput" placeholder="Mật khẩu">
@@ -214,8 +214,8 @@
 
 <div class="container" id="main-content" style="display:none;">
     <div class="header">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="https://lh3.googleusercontent.com/pw/AP1GczNyKJCNBen1I6WeBIOFBHnduEAc-raKjpQsiE-xMOPlkgBLUxSUPtPfnGUO-h_gVE4xbhoZyycDSfpCjJD_uk7EkCLQJEXeuBytxHxBTDS0NEIMKC7RqBA-GIxKhZed7ddwzYsTmKsh5fKxggPZvFM=w483-h154" alt="Logo" style="height: 35px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <img src="https://lh3.googleusercontent.com/pw/AP1GczNyKJCNBen1I6WeBIOFBHnduEAc-raKjpQsiE-xMOPlkgBLUxSUPtPfnGUO-h_gVE4xbhoZyycDSfpCjJD_uk7EkCLQJEXeuBytxHxBTDS0NEIMKC7RqBA-GIxKhZed7ddwzYsTmKsh5fKxggPZvFM=w483-h154" class="header-logo" alt="Logo">
             <h2 style="margin:0; font-size:1.3rem; color:var(--primary);">TECH LOGS <span style="color:white">PRO</span></h2>
         </div>
         <div style="text-align: right">
