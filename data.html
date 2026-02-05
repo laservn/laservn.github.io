@@ -164,12 +164,31 @@
 @keyframes toastFadeOut {
     to { transform: scale(0.8); opacity: 0; }
 }
-        .login-box img {
-    filter: drop-shadow(0 0 8px var(--primary));
-    transition: transform 0.3s ease;
+/* Logo tại màn hình đăng nhập - Hiệu ứng tỏa sáng mạnh */
+.login-box img {
+    filter: drop-shadow(0 0 15px var(--primary)) brightness(1.2); /* Làm sáng logo và tạo bóng neon */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: block;
+    margin: 0 auto 25px auto;
+    max-width: 120px; /* Chỉnh kích thước logo login tại đây */
 }
+
 .login-box img:hover {
-    transform: scale(1.1);
+    transform: scale(1.1) rotate(2deg);
+    filter: drop-shadow(0 0 25px var(--primary)) brightness(1.4); /* Sáng rực lên khi di chuột */
+}
+
+/* Logo tại Header - Nhỏ gọn và tinh tế hơn */
+.header-logo {
+    height: 40px; /* Chỉnh độ cao logo trên trang chính */
+    filter: drop-shadow(0 0 5px var(--primary)); /* Đổ bóng nhẹ */
+    transition: 0.3s;
+    vertical-align: middle;
+}
+
+.header-logo:hover {
+    filter: drop-shadow(0 0 10px var(--primary));
+    transform: translateY(-2px); /* Nhích nhẹ lên trên khi hover */
 }
     </style>
 </head>
