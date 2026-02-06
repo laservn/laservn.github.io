@@ -29,7 +29,7 @@
         
         /* Tab Navigation */
         .tab-navigation { display: flex; gap: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 12px; border: 1px solid var(--border); }
-        .tab-btn { flex: 1; padding: 12px; border: none; background: none; color: var(--text-muted); font-weight: 600; cursor: pointer; border-radius: 8px; transition: 0.3s; font-size: 12px; text-transform: uppercase; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: none; color: var(--text-muted); font-weight: 600; cursor: pointer; border-radius: 8px; transition: 0.3s; font-size: 13px; text-transform: uppercase; }
         .tab-btn.active { background: var(--primary); color: var(--dark); box-shadow: 0 0 15px rgba(0, 210, 255, 0.4); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -56,40 +56,65 @@
         .btn-save:active { transform: scale(0.98); }
         .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
         
-        /* Professional Table */
-        .table-container { margin-top: 15px; border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; background: var(--card); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        /* Professional Table (GIỮ NGUYÊN GỐC) */
+        .table-container { 
+            margin-top: 15px; border: 1px solid var(--border); border-radius: 12px; 
+            overflow-x: auto; background: var(--card); box-shadow: 0 4px 20px rgba(0,0,0,0.3); 
+        }
         table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 850px; }
-        th { background: #111827; color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase; padding: 14px 12px; border-bottom: 2px solid var(--border); text-align: left; }
+        th { 
+            background: #111827; color: var(--text-muted); font-size: 11px; font-weight: 600; 
+            text-transform: uppercase; letter-spacing: 0.05em; padding: 14px 12px; border-bottom: 2px solid var(--border); text-align: left;
+        }
         td { padding: 14px 12px; border-bottom: 1px solid var(--border); font-size: 13px; cursor: pointer; transition: 0.2s; }
+        tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
         tbody tr:hover td { background: rgba(0, 210, 255, 0.08); }
 
-        .badge-tech, .badge-mec { background: rgba(58, 123, 213, 0.2); color: #93c5fd; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+        .badge-tech { background: rgba(58, 123, 213, 0.2); color: #93c5fd; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+        .badge-mec { background: rgba(58, 123, 213, 0.2); color: #93c5ff; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+        .badge-sup { background: rgba(58, 123, 213, 0.2); color: #93c5dd; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
 
-        /* Metadata Block Tab Style */
+        /* Popup Modals (GIỮ NGUYÊN GỐC) */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 20px; }
+        .modal-content { 
+            background: var(--card); width: 95%; max-width: 600px; border-radius: 20px; border: 1px solid var(--primary); 
+            padding: 25px; max-height: 85vh; display: flex; flex-direction: column;
+        }
+        #modalBody { overflow-y: auto; margin-top: 15px; padding-right: 5px; }
+
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .detail-item { display: flex; align-items: center; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 6px 0; }
+        .detail-label { color: var(--text-muted); width: 85px; flex-shrink: 0; }
+        .detail-value { color: var(--primary); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Metadata Block Style (Tab 3) */
         .meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
         .meta-col { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; }
-        .meta-col h4 { margin: 0 0 15px 0; color: var(--primary); font-size: 13px; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .meta-list { flex-grow: 1; min-height: 200px; max-height: 400px; overflow-y: auto; }
-        .meta-item { background: rgba(0,0,0,0.2); margin-bottom: 5px; padding: 8px; border-radius: 6px; display: flex; gap: 5px; align-items: center; border: 1px solid transparent; }
-        .meta-item input { margin-bottom: 0; padding: 6px; font-size: 12px; background: transparent; border: none; }
+        .meta-col h4 { margin: 0 0 12px 0; color: var(--primary); font-size: 12px; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        .meta-list { flex-grow: 1; min-height: 250px; max-height: 400px; overflow-y: auto; }
+        .meta-item { background: rgba(0,0,0,0.2); margin-bottom: 4px; border-radius: 6px; border: 1px solid transparent; }
+        .meta-item input { margin-bottom: 0; padding: 8px; font-size: 12px; background: transparent; border: none; color: #fff; }
         .meta-item.editing { background: #0f172a; border-color: var(--primary); }
-        .meta-item.editing input { background: #1e293b; border: 1px solid #334155; }
-        .meta-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 15px; }
-        .btn-meta { padding: 8px; border-radius: 6px; border: none; font-size: 11px; font-weight: 600; cursor: pointer; }
+        .meta-item.editing input { background: #1e293b; }
+        .meta-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 12px; }
+        .btn-meta { padding: 8px; border-radius: 6px; border: none; font-size: 11px; font-weight: 600; cursor: pointer; text-transform: uppercase; }
         .btn-edit-mode { background: rgba(0, 210, 255, 0.1); color: var(--primary); border: 1px solid var(--primary); }
         .btn-save-mode { background: var(--primary); color: var(--dark); }
 
-        @media (max-width: 768px) { .meta-grid { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 480px) { .meta-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 480px) { .meta-grid { grid-template-columns: 1fr; } .detail-grid { grid-template-columns: 1fr; } }
+        
+        #workDateDisplay { background: rgba(0, 210, 255, 0.1); border: 1px solid var(--primary); color: var(--primary); font-weight: bold; cursor: pointer; text-align: center; }
+        #searchBox { border: 1px solid var(--primary); background: rgba(0, 210, 255, 0.05); margin-top: 10px; }
 
-        /* Modals & Loading */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 20px; }
-        .modal-content { background: var(--card); width: 95%; max-width: 600px; border-radius: 20px; border: 1px solid var(--primary); padding: 25px; }
-        #loading-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); z-index: 4000; display: none; flex-direction: column; justify-content: center; align-items: center; }
+        /* Progress & Loading */
+        #top-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(to right, var(--primary), #fff); z-index: 9999; transition: width 0.3s; width: 0%; display: none; }
+        #loading-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px); z-index: 4000; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #toast-container { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; pointer-events: none; }
-        .toast { background: rgba(30, 41, 59, 0.95); color: white; padding: 16px 28px; border-radius: 12px; margin-bottom: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.1); animation: toastPop 0.3s forwards; }
+
+        /* Toasts */
+        #toast-container { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+        .toast { background: rgba(30, 41, 59, 0.95); color: white; padding: 16px 28px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); text-align: center; border: 1px solid rgba(255,255,255,0.1); animation: toastPop 0.3s forwards; }
         @keyframes toastPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .header-logo { height: 55px; filter: drop-shadow(0 0 15px var(--primary)) brightness(1.2); }
     </style>
@@ -97,7 +122,8 @@
 <body>
     
 <div id="toast-container"></div>
-<div id="loading-overlay"><div class="spinner"></div><div id="loading-text" style="color:var(--primary); margin-top:10px;">ĐANG XỬ LÝ...</div></div>
+<div id="top-progress"></div>
+<div id="loading-overlay"><div class="spinner"></div><div id="loading-text" style="color:var(--primary); font-weight:600; margin-top:10px;">ĐANG XỬ LÝ...</div></div>
     
 <div id="lock-screen">
     <div class="login-box">
@@ -120,23 +146,25 @@
     </div>
 
     <div class="tab-navigation" id="tabBar" style="display:none;">
-        <button class="tab-btn active" onclick="switchTab('data-tab', this)">📊 Dữ liệu</button>
-        <button class="tab-btn" onclick="switchTab('form-tab', this)">📑 Báo cáo mới</button>
-        <button class="tab-btn" id="btnTabMeta" onclick="switchTab('meta-tab', this)">🧱 Thông tin khối</button>
+        <button class="tab-btn active" onclick="switchTab('data-tab', this)">📊 Bảng Dữ Liệu</button>
+        <button class="tab-btn" onclick="switchTab('form-tab', this)">📑 Báo Cáo Mới</button>
+        <button class="tab-btn" id="btnTabMeta" onclick="switchTab('meta-tab', this)">🧱 Thông Tin Khối</button>
     </div>
 
     <div id="data-tab" class="tab-content active">
-        <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="🔍 Tìm kiếm nhanh...">
+        <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="🔍 Tìm kiếm nhanh (Máy, khách, nội dung...)">
         <div class="table-container">
             <table>
-                <thead><tr><th>Ngày làm</th><th>Khách hàng</th><th>Loại máy</th><th>Hỗ trợ</th><th>Nội dung</th><th>Kỹ thuật</th><th>Ghi chú</th></tr></thead>
+                <thead>
+                    <tr><th>Ngày làm</th><th>Khách hàng</th><th>Loại máy</th><th>Hỗ trợ</th><th>Nội dung</th><th>Kỹ thuật</th><th>Ghi chú</th></tr>
+                </thead>
                 <tbody id="tableBody"></tbody>
             </table>
         </div>
     </div>
 
     <div id="form-tab" class="tab-content">
-        <div id="formContainer" style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary);">
+        <div id="formContainer" style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
             <input type="text" id="workDateDisplay" readonly onclick="document.getElementById('dateModal').style.display='flex'">
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                 <select id="customer"><option value="">Tải khách hàng...</option></select>
@@ -147,7 +175,7 @@
                 <select id="supportType"><option value="">-- Hỗ trợ --</option></select>
             </div>
             <textarea id="content" placeholder="Mô tả công việc thực hiện (Bắt buộc)..." style="height:100px"></textarea>
-            <input type="text" id="note" placeholder="Ghi chú thêm...">
+            <input type="text" id="note" placeholder="Ghi chú thêm (Không bắt buộc)...">
             <button class="btn-save" id="btnSave" onclick="saveData()">LƯU BÁO CÁO</button>
         </div>
     </div>
@@ -187,17 +215,30 @@
                 </div>
             </div>
         </div>
-        <p style="font-size: 11px; color: var(--text-muted); margin-top: 15px; text-align: center;">* Để xóa: Xóa trắng nội dung ô đó rồi nhấn Lưu. Để thêm: Nhấn Sửa rồi điền vào các ô trống cuối danh sách.</p>
     </div>
 </div>
 
-<div id="infoModal" class="modal" onclick="if(event.target==this) this.style.display='none'"><div class="modal-content"><h3 style="color:var(--primary); text-align:center;">CHI TIẾT 🔎</h3><div id="modalBody"></div><button class="btn-save" style="margin-top:20px" onclick="document.getElementById('infoModal').style.display='none'">ĐÓNG</button></div></div>
-<div id="dateModal" class="modal" onclick="if(event.target==this) this.style.display='none'"><div class="modal-content" style="text-align:center"><h4>CHỌN NGÀY LÀM VIỆC</h4><input type="date" id="hiddenDate" onchange="confirmDate(this.value)"><button class="btn-save" onclick="document.getElementById('dateModal').style.display='none'">XÁC NHẬN</button></div></div>
+<div id="infoModal" class="modal" onclick="if(event.target==this) this.style.display='none'">
+    <div class="modal-content">
+        <h3 style="color:var(--primary); text-align:center; margin:0 0 20px 0">CHI TIẾT 🔎</h3>
+        <div id="modalBody"></div>
+        <button class="btn-save" style="margin-top:25px" onclick="document.getElementById('infoModal').style.display='none'">ĐÓNG</button>
+    </div>
+</div>
+
+<div id="dateModal" class="modal" onclick="if(event.target==this) this.style.display='none'">
+    <div class="modal-content" style="text-align:center">
+        <h4 style="margin:0 0 15px 0">CHỌN NGÀY LÀM VIỆC</h4>
+        <input type="date" id="hiddenDate" onchange="confirmDate(this.value)">
+        <button class="btn-save" onclick="document.getElementById('dateModal').style.display='none'">XÁC NHẬN</button>
+    </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
 <script>
+    // --- FIREBASE CONFIG (ORIGINAL) ---
     const firebaseConfig = {
         apiKey: "AIzaSyC-WW6N3ZzmZ8gk_XypHWa3oW6VJMMGloM",
         authDomain: "data-260206.firebaseapp.com",
@@ -210,13 +251,15 @@
     const db = firebase.firestore();
 
     let AUTH = JSON.parse(localStorage.getItem('tech_auth_v4')) || null;
-    let RAW_METADATA = {}; // Lưu trữ dữ liệu gốc từ Firestore
+    let USER_ROLE = "VIEWER"; 
+    window.currentLogs = [];
 
     function switchTab(tabId, btn) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
         btn.classList.add('active');
+        if (tabId === 'data-tab') resetSaveButton();
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -225,9 +268,12 @@
     });
 
     function checkSession() {
-        if (AUTH && AUTH.expire && new Date().getTime() < AUTH.expire) {
+        const now = new Date().getTime();
+        if (AUTH && AUTH.expire && now < AUTH.expire) {
+            USER_ROLE = AUTH.role;
             showApp(); fetchData();
         } else {
+            localStorage.removeItem('tech_auth_v4');
             document.getElementById('lock-screen').style.display = 'flex';
         }
     }
@@ -235,133 +281,210 @@
     async function unlock() {
         const u = document.getElementById('userInput').value.trim();
         const p = document.getElementById('passInput').value.trim();
-        showLoading(true, "XÁC THỰC...");
+        showLoading(true, "ĐANG XÁC THỰC...");
         try {
-            const doc = await db.collection("users").doc(u).get();
-            if (doc.exists && doc.data().pass === p) {
-                AUTH = { user: u, role: doc.data().role, expire: new Date().getTime() + (24*60*60*1000) };
+            const userDoc = await db.collection("users").doc(u).get();
+            if (userDoc.exists && userDoc.data().pass === p) {
+                USER_ROLE = userDoc.data().role;
+                AUTH = { user: u, role: USER_ROLE, expire: new Date().getTime() + (24*60*60*1000) };
                 localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
                 showApp(); fetchData();
-            } else { showToast("Sai tài khoản!", "error"); }
-        } catch (e) { showToast("Lỗi kết nối!", "error"); }
+            } else { showToast("Sai tài khoản hoặc mật khẩu!", "error"); }
+        } catch (e) { showToast("Lỗi kết nối Firestore!", "error"); }
         showLoading(false);
     }
 
     function fetchData() {
-        // Lấy Logs Real-time
-        db.collection("logs").orderBy("createdAt", "desc").limit(100).onSnapshot(snap => {
-            const logs = snap.docs.map(d => [d.id, d.data().workDate, d.data().customer, d.data().machineType, d.data().support, d.data().content, d.data().tech, d.data().createdBy, d.data().note]);
-            renderTable(logs);
+        if (!AUTH) return;
+        // Logs Table
+        db.collection("logs").orderBy("createdAt", "desc").limit(500).onSnapshot((snapshot) => {
+            const logs = snapshot.docs.map(doc => {
+                const d = doc.data();
+                return [doc.id, d.workDate, d.customer, d.machineType, d.support, d.content, d.tech, d.createdBy || "", d.note || ""];
+            });
+            renderData({ logs: [["Header"], ...logs], role: AUTH.role });
+            applyPermissions();
         });
 
-        // Lấy Metadata (Dropdowns)
-        db.collection("metadata").doc("dropdowns").onSnapshot(doc => {
+        // Dropdowns & Meta Block
+        db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
             if (doc.exists) {
-                RAW_METADATA = doc.data();
-                updateDropdowns(RAW_METADATA);
-                renderMetaBlock(RAW_METADATA);
+                const d = doc.data();
+                updateDropdowns(d);
+                renderMetaBlock(d);
             }
         });
-        applyPermissions();
     }
 
-    function renderTable(logs) {
-        window.currentLogs = logs;
-        document.getElementById('tableBody').innerHTML = logs.map((row, i) => `
-            <tr onclick="openInfoModal(${i})">
-                <td>${formatVN(row[1])}</td>
-                <td><b>${row[2]}</b></td>
-                <td><span class="badge-mec">${row[3]}</span></td>
-                <td><small>${row[4]}</small></td>
-                <td>${row[5].substring(0,25)}...</td>
-                <td><span class="badge-tech">${row[6]}</span></td>
-                <td><small>${row[8] || ''}</small></td>
+    // --- UI RENDER (KHÔI PHỤC CẤU TRÚC GỐC CỦA BẠN) ---
+    function renderData(data) {
+        window.currentLogs = data.logs.slice(1);
+        const html = window.currentLogs.map((row, index) => `
+            <tr onclick="openInfoModal(${index})">
+                <td style="color:var(--text-muted)">${formatVN(row[1])}</td>
+                <td><b style="color:var(--primary)">${row[2] || ''}</b></td>
+                <td style="font-size:11px"><span class="badge-mec">${row[3] || ''}</span></td>
+                <td><small>${row[4] || ''}</small></td>
+                <td style="color:#cbd5e1">${(row[5]||"").substring(0,30)}${(row[5]||"").length>30?'...':''}</td>
+                <td><span class="badge-tech">${row[6] || ''}</span></td>
+                <td style="font-style:italic; color:var(--text-muted); font-size:12px">
+                    ${(row[8] || '').substring(0,15)}${(row[8]||'').length > 15 ? '...' : ''}
+                </td>
             </tr>
         `).join('');
-        document.getElementById('syncStatus').innerText = "Cập nhật: " + new Date().toLocaleTimeString();
+        document.getElementById('tableBody').innerHTML = html;
+        document.getElementById('syncStatus').innerText = "Đồng bộ: " + new Date().toLocaleTimeString();
     }
 
     function updateDropdowns(d) {
-        const setMap = (id, list, txt) => {
-            const el = document.getElementById(id);
-            el.innerHTML = `<option value="">-- ${txt} --</option>` + list.map(v => `<option value="${v}">${v}</option>`).join('');
+        const update = (id, list, txt) => {
+            const select = document.getElementById(id);
+            const val = select.value;
+            select.innerHTML = `<option value="">-- ${txt} --</option>` + list.map(i => `<option value="${i}">${i}</option>`).join('');
+            select.value = val;
         };
-        setMap('customer', d.customers, 'Khách hàng');
-        setMap('techName', d.techs, 'Kỹ thuật');
-        setMap('machineType', d.machineTypes, 'Loại máy');
-        setMap('supportType', d.supports, 'Hỗ trợ');
+        if(d.customers) update('customer', d.customers, 'Khách hàng');
+        if(d.techs) update('techName', d.techs, 'Kỹ thuật');
+        if(d.machineTypes) update('machineType', d.machineTypes, 'Loại máy');
+        if(d.supports) update('supportType', d.supports, 'Hỗ trợ');
     }
 
-    // --- TAB 3 LOGIC ---
+    // --- POPUP CHI TIẾT (KHÔI PHỤC CẤU TRÚC GỐC CỦA BẠN) ---
+    function openInfoModal(index) {
+        const row = window.currentLogs[index];
+        const isAdmin = (AUTH && AUTH.role === "ADMIN");
+        let modalHtml = `
+            <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border)">
+                <div class="detail-grid">
+                    <div class="detail-item"><span class="detail-label">🗓️ Ngày làm:</span><span class="detail-value">${formatVN(row[1])}</span></div>
+                    <div class="detail-item"><span class="detail-label">🕵️‍♂️ Khách:</span><span class="detail-value">${row[2]}</span></div>
+                    <div class="detail-item"><span class="detail-label">⚙️ Loại máy:</span><span class="detail-value">${row[3] || '---'}</span></div>
+                    <div class="detail-item"><span class="detail-label">📌 Hỗ trợ:</span><span class="detail-value">${row[4] || '---'}</span></div>
+                    <div class="detail-item"><span class="detail-label">👷‍♂️ Kỹ thuật:</span><span class="detail-value">${row[6]}</span></div>
+                    <div class="detail-item"><span class="detail-label">🪪 User:</span><span class="detail-value">${row[7] || '---'}</span></div>
+                </div>
+                <div style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px">
+                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">📝 NỘI DUNG:</p>
+                    <div style="white-space:pre-wrap; color:#fff; background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; font-size:14px;">${row[5]}</div>
+                </div>
+                <div style="margin-top:10px">
+                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">🗒️ GHI CHÚ:</p>
+                    <div style="color:var(--primary); font-style:italic; font-size:13px">${row[8] || 'Không có ghi chú.'}</div>
+                </div>
+            </div>
+        `;
+        if (isAdmin) {
+            modalHtml += `<div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px">
+                <button onclick="deleteLog('${row[0]}')" style="background:#450a0a; color:#f87171; border:1px solid #7f1d1d; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold">🗑️ XÓA</button>
+                <button onclick="editLog(${index})" style="background:#1e1b4b; color:#818cf8; border:1px solid #312e81; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold">✏️ SỬA</button>
+            </div>`;
+        }
+        document.getElementById('modalBody').innerHTML = modalHtml;
+        document.getElementById('infoModal').style.display = 'flex';
+    }
+
+    // --- TAB 3 LOGIC (THEO YÊU CẦU MỚI) ---
     function renderMetaBlock(data) {
         const renderCol = (id, list) => {
             const container = document.getElementById('list-' + id);
-            // Thêm 3 ô trống ở cuối để người dùng thêm mới dễ dàng
-            const fullList = [...list, "", "", ""]; 
-            container.innerHTML = fullList.map(v => `
-                <div class="meta-item">
-                    <input type="text" value="${v}" readonly>
-                </div>
-            `).join('');
+            const fullList = [...(list || []), "", "", ""]; // Thêm dòng trống để nhập mới
+            container.innerHTML = fullList.map(v => `<div class="meta-item"><input type="text" value="${v}" readonly></div>`).join('');
         };
-        renderCol('customers', data.customers || []);
-        renderCol('machineTypes', data.machineTypes || []);
-        renderCol('techs', data.techs || []);
-        renderCol('supports', data.supports || []);
+        renderCol('customers', data.customers);
+        renderCol('machineTypes', data.machineTypes);
+        renderCol('techs', data.techs);
+        renderCol('supports', data.supports);
     }
 
     function enableMetaEdit(id) {
-        const items = document.querySelectorAll(`#list-${id} .meta-item`);
-        items.forEach(item => {
+        document.querySelectorAll(`#list-${id} .meta-item`).forEach(item => {
             item.classList.add('editing');
             item.querySelector('input').readOnly = false;
         });
-        showToast("Đã mở chế độ sửa cột " + id, "info");
+        showToast("Đã mở chế độ sửa", "info");
     }
 
     async function saveMetaData(id) {
         const inputs = document.querySelectorAll(`#list-${id} input`);
-        // Lọc lấy giá trị không rỗng và không trùng
         const newList = [...new Set(Array.from(inputs).map(i => i.value.trim()).filter(v => v !== ""))];
-        
         showLoading(true, "ĐANG CẬP NHẬT...");
         try {
-            const updateObj = {};
-            updateObj[id] = newList;
-            await db.collection("metadata").doc("dropdowns").update(updateObj);
-            showToast("Đã cập nhật Firestore!", "success");
+            await db.collection("metadata").doc("dropdowns").update({ [id]: newList });
+            showToast("Cập nhật thành công!", "success");
+        } catch (e) { showToast("Lỗi khi lưu dữ liệu!", "error"); }
+        showLoading(false);
+    }
+
+    // --- OTHER LOGIC (GIỮ NGUYÊN GỐC) ---
+    async function saveData() {
+        const d = document.getElementById('hiddenDate').value;
+        const c = document.getElementById('customer').value;
+        const n = document.getElementById('content').value.trim();
+        if(!c || !n) return showToast("Vui lòng điền đủ thông tin!", "error");
+        showLoading(true, "ĐANG LƯU...");
+        try {
+            await db.collection("logs").add({
+                workDate: d, customer: c, tech: document.getElementById('techName').value,
+                machineType: document.getElementById('machineType').value,
+                support: document.getElementById('supportType').value,
+                content: n, note: document.getElementById('note').value.trim(),
+                createdBy: AUTH.user, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            showToast("Đã lưu báo cáo!", "success");
+            resetSaveButton(); switchTab('data-tab', document.querySelector('.tab-btn'));
         } catch (e) { showToast("Lỗi khi lưu!", "error"); }
         showLoading(false);
     }
 
-    // --- UTILS ---
-    async function saveData() {
-        const payload = {
-            workDate: document.getElementById('hiddenDate').value,
-            customer: document.getElementById('customer').value,
-            tech: document.getElementById('techName').value,
-            machineType: document.getElementById('machineType').value,
-            support: document.getElementById('supportType').value,
-            content: document.getElementById('content').value.trim(),
-            note: document.getElementById('note').value.trim(),
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            createdBy: AUTH.user
-        };
-        if(!payload.customer || !payload.content) return showToast("Thiếu thông tin!", "error");
+    async function deleteLog(id) {
+        if(!confirm("Xóa báo cáo này?")) return;
         showLoading(true);
-        await db.collection("logs").add(payload);
+        await db.collection("logs").doc(id).delete();
+        document.getElementById('infoModal').style.display = 'none';
         showLoading(false);
-        showToast("Đã lưu!", "success");
+    }
+
+    function editLog(index) {
+        const row = window.currentLogs[index];
+        document.getElementById('infoModal').style.display = 'none';
+        switchTab('form-tab', document.querySelectorAll('.tab-btn')[1]);
+        document.getElementById('hiddenDate').value = row[1];
+        document.getElementById('workDateDisplay').value = formatVN(row[1]);
+        document.getElementById('customer').value = row[2];
+        document.getElementById('machineType').value = row[3];
+        document.getElementById('supportType').value = row[4];
+        document.getElementById('content').value = row[5];
+        document.getElementById('techName').value = row[6];
+        document.getElementById('note').value = row[8] || "";
+        const btn = document.getElementById('btnSave');
+        btn.innerHTML = "💾 CẬP NHẬT";
+        btn.onclick = async () => {
+            showLoading(true);
+            await db.collection("logs").doc(row[0]).update({
+                workDate: document.getElementById('hiddenDate').value,
+                customer: document.getElementById('customer').value,
+                content: document.getElementById('content').value.trim(),
+                note: document.getElementById('note').value.trim(),
+                tech: document.getElementById('techName').value,
+                machineType: document.getElementById('machineType').value,
+                support: document.getElementById('supportType').value
+            });
+            showLoading(false); resetSaveButton(); switchTab('data-tab', document.querySelector('.tab-btn'));
+        };
+    }
+
+    function resetSaveButton() {
+        const btn = document.getElementById('btnSave');
+        btn.innerHTML = "LƯU BÁO CÁO";
+        btn.onclick = saveData;
         document.getElementById('content').value = '';
-        switchTab('data-tab', document.querySelector('.tab-btn'));
+        document.getElementById('note').value = '';
     }
 
     function applyPermissions() {
-        if(AUTH.role !== "ADMIN") {
-            document.getElementById('btnTabMeta').style.display = 'none';
-        } else {
-            document.getElementById('tabBar').style.display = 'flex';
-        }
+        const currentRole = AUTH ? AUTH.role : USER_ROLE;
+        document.getElementById('tabBar').style.display = currentRole === "VIEWER" ? "none" : "flex";
+        document.getElementById('btnTabMeta').style.display = currentRole === "ADMIN" ? "block" : "none";
     }
 
     function showApp() { document.getElementById('lock-screen').style.display = 'none'; document.getElementById('main-content').style.display = 'block'; document.getElementById('helloUser').innerText = "Chào, " + AUTH.user; }
@@ -371,20 +494,7 @@
     function formatVN(s) { if(!s) return ''; const d = new Date(s); return d.getDate().toString().padStart(2,'0')+'/'+(d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getFullYear(); }
     function filterTable() { const v = document.getElementById('searchBox').value.toUpperCase(); const rows = document.getElementById('tableBody').getElementsByTagName('tr'); for (let r of rows) r.style.display = r.innerText.toUpperCase().includes(v) ? "" : "none"; }
     function showLoading(s, t) { document.getElementById('loading-overlay').style.display = s ? 'flex' : 'none'; if(t) document.getElementById('loading-text').innerText = t; }
-    function showToast(m, type) { 
-        const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = 'toast'; t.innerText = m; c.appendChild(t);
-        setTimeout(() => t.remove(), 2500);
-    }
-    
-    function openInfoModal(i) {
-        const row = window.currentLogs[i];
-        document.getElementById('modalBody').innerHTML = `<div style="font-size:14px; line-height:1.8">
-            <b>Ngày:</b> ${formatVN(row[1])}<br><b>Khách:</b> ${row[2]}<br><b>Máy:</b> ${row[3]}<br><b>Hỗ trợ:</b> ${row[4]}<br><b>Kỹ thuật:</b> ${row[6]}<br>
-            <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:8px; margin-top:10px">${row[5]}</div>
-            <div style="color:var(--primary); font-style:italic; margin-top:5px">Ghi chú: ${row[8] || 'Không'}</div>
-        </div>`;
-        document.getElementById('infoModal').style.display = 'flex';
-    }
+    function showToast(m, type) { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = m; c.appendChild(t); setTimeout(() => t.remove(), 2500); }
 </script>
 </body>
 </html>
