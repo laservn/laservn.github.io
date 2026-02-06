@@ -530,28 +530,125 @@
     function openInfoModal(index) {
         const row = window.currentLogs[index];
         if(!row) return;
-        document.getElementById('modalBody').innerHTML = `
-            <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border)">
-                <div class="detail-grid">
-                    <div class="detail-item"><span class="detail-label">🗓️ Ngày làm:</span><span class="detail-value">${formatVN(row[1])}</span></div>
-                    <div class="detail-item"><span class="detail-label">🕵️‍♂️ Khách:</span><span class="detail-value">${row[2]}</span></div>
-                    <div class="detail-item"><span class="detail-label">⚙️ Loại máy:</span><span class="detail-value">${row[3] || '---'}</span></div>
-                    <div class="detail-item"><span class="detail-label">📌 Hỗ trợ:</span><span class="detail-value">${row[4] || '---'}</span></div>
-                    <div class="detail-item"><span class="detail-label">👷‍♂️ Kỹ thuật:</span><span class="detail-value">${row[6]}</span></div>
-                    <div class="detail-item"><span class="detail-label">🪪 User:</span><span class="detail-value">${row[7] || '---'}</span></div>
-                </div>
-                <div style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px">
-                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">📝 NỘI DUNG CÔNG VIỆC:</p>
-                    <div style="white-space:pre-wrap; color:#fff; background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; font-size:14px; line-height:1.6">${row[5]}</div>
-                </div>
-                <div style="margin-top:10px">
-                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">🗒️ GHI CHÚ:</p>
-                    <div style="color:var(--primary); font-style:italic; font-size:13px">${row[8] || 'Không có ghi chú.'}</div>
-                </div>
+
+    // Kiểm tra quyền Admin
+    const isAdmin = (AUTH && AUTH.role === "ADMIN");
+
+    let modalHtml = `
+        <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border)">
+            <div class="detail-grid">
+                <div class="detail-item"><span class="detail-label">🗓️ Ngày làm:</span><span class="detail-value">${formatVN(row[1])}</span></div>
+                <div class="detail-item"><span class="detail-label">🕵️‍♂️ Khách:</span><span class="detail-value">${row[2]}</span></div>
+                <div class="detail-item"><span class="detail-label">⚙️ Loại máy:</span><span class="detail-value">${row[3] || '---'}</span></div>
+                <div class="detail-item"><span class="detail-label">📌 Hỗ trợ:</span><span class="detail-value">${row[4] || '---'}</span></div>
+                <div class="detail-item"><span class="detail-label">👷‍♂️ Kỹ thuật:</span><span class="detail-value">${row[6]}</span></div>
+                <div class="detail-item"><span class="detail-label">🪪 User:</span><span class="detail-value">${row[7] || '---'}</span></div>
+            </div>
+            <div style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px">
+                <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">📝 NỘI DUNG:</p>
+                <div style="white-space:pre-wrap; color:#fff; background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; font-size:14px;">${row[5]}</div>
+            </div>
+            <div style="margin-top:10px">
+                <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">🗒️ GHI CHÚ:</p>
+                <div style="color:var(--primary); font-style:italic; font-size:13px">${row[8] || 'Không có ghi chú.'}</div>
+            </div>
+        </div>
+    `;
+
+    // Nếu là Admin, thêm bộ nút điều khiển
+    if (isAdmin) {
+        modalHtml += `
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px">
+                <button onclick="deleteLog('${row[0]}')" style="background:#450a0a; color:#f87171; border:1px solid #7f1d1d; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold">🗑️ XÓA BỎ</button>
+                <button onclick="editLog(${index})" style="background:#1e1b4b; color:#818cf8; border:1px solid #312e81; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold">✏️ CHỈNH SỬA</button>
             </div>
         `;
-        document.getElementById('infoModal').style.display = 'flex';
     }
+
+    document.getElementById('modalBody').innerHTML = modalHtml;
+    document.getElementById('infoModal').style.display = 'flex';
+
+        
+    }
+
+    async function deleteLog(docId) {
+    if (!confirm("Bạn có chắc chắn muốn XÓA báo cáo này không? Thao tác này không thể hoàn tác!")) return;
+    
+    showLoading(true, "ĐANG XÓA...");
+    try {
+        await db.collection("logs").doc(docId).delete();
+        document.getElementById('infoModal').style.display = 'none';
+        showToast("Đã xóa báo cáo thành công", "success");
+    } catch (e) {
+        showToast("Lỗi khi xóa dữ liệu", "error");
+    } finally {
+        showLoading(false);
+    }
+}
+
+    function editLog(index) {
+    const row = window.currentLogs[index];
+    
+    // Đóng modal chi tiết
+    document.getElementById('infoModal').style.display = 'none';
+    
+    // Mở form nhập liệu
+    const form = document.getElementById('formContainer');
+    form.style.display = "block";
+    document.getElementById('toggleBtn').innerHTML = "📒 THU GỌN";
+
+    // Đổ dữ liệu vào form
+    document.getElementById('hiddenDate').value = row[1]; // Sửa ngày ở đây
+    document.getElementById('workDateDisplay').value = formatVN(row[1]);
+    document.getElementById('customer').value = row[2];
+    document.getElementById('machineType').value = row[3];
+    document.getElementById('supportType').value = row[4];
+    document.getElementById('content').value = row[5];
+    document.getElementById('techName').value = row[6];
+    document.getElementById('note').value = row[8] || "";
+
+    // Đổi nút "Lưu" thành "Cập nhật"
+    const btnSave = document.getElementById('btnSave');
+    btnSave.innerHTML = "💾 CẬP NHẬT THAY ĐỔI";
+    btnSave.onclick = function() { updateLog(row[0]); }; // Gán hàm update thay vì add
+    
+    // Cuộn lên đầu trang để sửa
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Hàm gửi lệnh cập nhật lên Firestore
+async function updateLog(docId) {
+    showLoading(true, "ĐANG CẬP NHẬT...");
+    try {
+        await db.collection("logs").doc(docId).update({
+            workDate: document.getElementById('hiddenDate').value,
+            customer: document.getElementById('customer').value,
+            tech: document.getElementById('techName').value,
+            machineType: document.getElementById('machineType').value,
+            support: document.getElementById('supportType').value,
+            content: document.getElementById('content').value.trim(),
+            note: document.getElementById('note').value.trim(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp() // Lưu vết ngày sửa
+        });
+
+        showToast("Cập nhật thành công!", "success");
+        toggleForm(); // Đóng form
+        resetSaveButton(); // Reset nút về trạng thái Lưu mới
+    } catch (e) {
+        showToast("Lỗi cập nhật", "error");
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Reset lại nút Lưu sau khi sửa xong
+function resetSaveButton() {
+    const btn = document.getElementById('btnSave');
+    btn.innerHTML = "LƯU BÁO CÁO";
+    btn.onclick = saveData;
+    document.getElementById('content').value = '';
+    document.getElementById('note').value = '';
+}
 
     function showApp() {
         document.getElementById('lock-screen').style.display = 'none';
