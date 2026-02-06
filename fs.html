@@ -250,11 +250,11 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Thêm cấu hình này để ép buộc sử dụng Long Polling (giúp vượt qua một số bộ chặn)
+    // 3. Thiết lập settings với tham số {merge: true} để tránh cảnh báo ghi đè
     db.settings({
-      experimentalForceLongPolling: true, // Ép buộc dùng HTTP thay vì WebChannel/WebSocket
-      useFetchStreams: false // Tắt Fetch streams nếu gặp lỗi kết nối
-    });
+        experimentalForceLongPolling: true,
+        useFetchStreams: false
+    }, { merge: true }); // Thêm { merge: true } ở đây để xóa lỗi logger.ts:115
 
     let AUTH = JSON.parse(localStorage.getItem('tech_auth_v4')) || null;
     let USER_ROLE = "VIEWER"; 
