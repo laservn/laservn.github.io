@@ -191,6 +191,13 @@
     filter: drop-shadow(0 0 10px var(--primary));
      filter: drop-shadow(0 0 25px var(--primary)) brightness(1.2); /* Sáng rực lên khi di chuột */
 }
+.tab-btn {
+    flex: 1; padding: 12px; border: none; background: none; color: var(--text-muted);
+    font-weight: bold; cursor: pointer; border-radius: 8px; transition: 0.3s;
+}
+.tab-btn.active { background: var(--primary); color: var(--dark); }
+.tab-content { animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -226,45 +233,77 @@
         </div>
     </div>
 
-    <button class="btn-toggle-form" id="toggleBtn" onclick="toggleForm()" style="display:none;">📑 BÁO CÁO MỚI</button>
-
-    <div id="formContainer" style="display:none; background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
-        <input type="text" id="workDateDisplay" readonly onclick="document.getElementById('dateModal').style.display='flex'">
-        
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <select id="customer"><option value="">Tải khách hàng...</option></select>
-            <select id="techName"><option value="">Tải kỹ thuật...</option></select>
-        </div>
-
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <select id="machineType"><option value="">-- Loại máy --</option></select>
-            <select id="supportType"><option value="">-- Hỗ trợ --</option></select>
-        </div>
-
-        <textarea id="content" placeholder="Mô tả công việc thực hiện (Bắt buộc)..." style="height:100px"></textarea>
-        <input type="text" id="note" placeholder="Ghi chú thêm (Không bắt buộc)...">
-        
-        <button class="btn-save" id="btnSave" onclick="saveData()">LƯU BÁO CÁO</button>
+    <div class="tab-bar" style="display: flex; gap: 5px; margin-bottom: 20px; background: var(--card); padding: 5px; border-radius: 12px; border: 1px solid var(--border);">
+        <button class="tab-btn active" onclick="switchTab('tab-logs')" id="btn-tab-logs">📊 BÁO CÁO</button>
+        <button class="tab-btn" onclick="switchTab('tab-system')" id="btn-tab-system">⚙️ HỆ THỐNG</button>
+        <button class="tab-btn" onclick="switchTab('tab-users')" id="btn-tab-users">👤 USER</button>
     </div>
 
-    <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="🔍 Tìm kiếm nhanh (Máy, khách, nội dung...)">
+    <div id="tab-logs" class="tab-content">
+        <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="🔍 Tìm kiếm nhanh...">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ngày</th><th>Khách</th><th>Máy</th><th>Hỗ trợ</th><th>Nội dung</th><th>Kỹ thuật</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="tab-system" class="tab-content" style="display:none;">
+        <div id="formContainer" style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
+            <h3 id="formTitle">📑 TẠO BÁO CÁO MỚI</h3>
+            <input type="text" id="workDateDisplay" readonly onclick="document.getElementById('dateModal').style.display='flex'">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <select id="customer"></select>
+                <select id="techName"></select>
+            </div>
+            <textarea id="content" placeholder="Mô tả công việc..."></textarea>
+            <button class="btn-save" id="btnSave" onclick="saveData()">LƯU BÁO CÁO</button>
+        </div>
+
+        <div class="admin-only" style="margin-top:30px; border-top:1px solid var(--border); padding-top:20px;">
+            <h3>🛠️ QUẢN LÝ DANH MỤC (METADATA)</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                <div>
+                    <label>Khách hàng (Ngăn cách bởi dấu phẩy):</label>
+                    <textarea id="meta-customers" style="height:100px"></textarea>
+                </div>
+                <div>
+                    <label>Kỹ thuật viên:</label>
+                    <textarea id="meta-techs" style="height:100px"></textarea>
+                </div>
+            </div>
+            <button class="btn-save" style="background:#059669" onclick="updateMetadata()">CẬP NHẬT DANH MỤC</button>
+        </div>
+    </div>
+
+    <div id="tab-users" class="tab-content" style="display:none;">
+        <div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #818cf8; margin-bottom: 20px;">
+            <h3>➕ THÊM/SỬA NGƯỜI DÙNG</h3>
+            <input type="text" id="u-id" placeholder="Username (Dùng để đăng nhập)">
+            <input type="text" id="u-name" placeholder="Tên hiển thị">
+            <input type="text" id="u-pass" placeholder="Mật khẩu">
+            <select id="u-role">
+                <option value="VIEWER">VIEWER (Chỉ xem)</option>
+                <option value="EDIT">EDIT (Thêm/Sửa báo cáo)</option>
+                <option value="ADMIN">ADMIN (Toàn quyền)</option>
+            </select>
+            <input type="text" id="u-access" placeholder="Quyền truy cập (ALL hoặc Tên Khách 1, Tên Khách 2)">
+            <button class="btn-save" style="background:#4f46e5" onclick="saveUser()">LƯU USER</button>
+        </div>
+        <div class="table-container">
+            <table id="userTable">
+                <thead><tr><th>User</th><th>Tên</th><th>Quyền</th><th>Truy cập</th><th>Thao tác</th></tr></thead>
+                <tbody id="userTableBody"></tbody>
+            </table>
+        </div>
+    </div>
     
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Ngày làm</th>
-                    <th>Khách hàng</th>
-                    <th>Loại máy</th>
-                    <th>Hỗ trợ</th>
-                    <th>Nội dung</th>
-                    <th>Kỹ thuật</th>
-                    <th>Ghi chú</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-        </table>
-    </div>
+
 </div>
 
 <div id="infoModal" class="modal" onclick="if(event.target==this) this.style.display='none'">
@@ -747,6 +786,64 @@ function resetSaveButton() {
             setTimeout(() => toast.remove(), 200);
         }, 2500);
     }
+
+    function switchTab(tabId) {
+    // Ẩn tất cả tab
+    document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    
+    // Hiện tab được chọn
+    document.getElementById(tabId).style.display = 'block';
+    document.getElementById('btn-' + tabId).classList.add('active');
+
+    // Nếu vào tab User, tải dữ liệu user
+    if(tabId === 'tab-users') fetchUsers();
+}
+
+    async function updateMetadata() {
+    const customers = document.getElementById('meta-customers').value.split(',').map(s => s.trim());
+    const techs = document.getElementById('meta-techs').value.split(',').map(s => s.trim());
+    
+    try {
+        await db.collection("metadata").doc("dropdowns").update({
+            customers: customers,
+            techs: techs
+        });
+        showToast("Đã cập nhật danh mục hệ thống!", "success");
+    } catch (e) { showToast("Lỗi: " + e.message, "error"); }
+}
+
+    async function saveUser() {
+    const id = document.getElementById('u-id').value.trim();
+    const data = {
+        name: document.getElementById('u-name').value,
+        pass: document.getElementById('u-pass').value,
+        role: document.getElementById('u-role').value,
+        access: document.getElementById('u-access').value || "ALL"
+    };
+
+    try {
+        await db.collection("users").doc(id).set(data);
+        showToast("Đã lưu người dùng!", "success");
+        fetchUsers(); // Tải lại bảng user
+    } catch (e) { showToast("Lỗi lưu user", "error"); }
+}
+
+async function fetchUsers() {
+    const snap = await db.collection("users").get();
+    let html = '';
+    snap.forEach(doc => {
+        const u = doc.data();
+        html += `<tr>
+            <td>${doc.id}</td>
+            <td>${u.name}</td>
+            <td><span class="badge-tech">${u.role}</span></td>
+            <td>${u.access}</td>
+            <td><button onclick="deleteUser('${doc.id}')" style="color:#f87171; background:none; border:none; cursor:pointer">❌</button></td>
+        </tr>`;
+    });
+    document.getElementById('userTableBody').innerHTML = html;
+}
 </script>
 </body>
 </html>
