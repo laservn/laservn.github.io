@@ -387,6 +387,13 @@
                 query = query.where("customer", "in", allowedList);
             }
         }
+        // Phân quyền cho Edit (Chỉ xem khách hàng được phép)
+        if (AUTH.role === "EDIT" && AUTH.access) {
+            const allowedList = AUTH.access.split(",").map(s => s.trim());
+            if (allowedList.length > 0) {
+                query = query.where("customer", "in", allowedList);
+            }
+        }        
 
         // Lắng nghe thay đổi tự động (onSnapshot)
         query.onSnapshot((snapshot) => {
