@@ -427,6 +427,23 @@
                 }
             });
         }
+        // Lấy Dropdowns (Chỉ cho EDIT)
+        if (AUTH.role === "EDIT") {
+            db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
+                if (doc.exists) {
+                    const d = doc.data();
+                    // Giả lập object để renderData cập nhật dropdown
+                    renderData({ 
+                        logs: [["Header"], ...window.currentLogs], 
+                        role: "EDIT",
+                        customers: d.customers,
+                        techs: d.techs,
+                        machineTypes: d.machineTypes,
+                        supports: d.supports
+                    });
+                }
+            });
+        }
     }
 
     // 6. Hàm Lưu dữ liệu
@@ -525,6 +542,10 @@
                 if (btn) btn.style.display = "block";
                 // Có thể thêm quyền xóa/sửa cho Admin ở đây sau này
             }
+            else if (currentRole === "EDIT") {
+                if (btn) btn.style.display = "block";
+                // Có thể thêm quyền xóa/sửa cho EDIT ở đây sau này
+            }
         }
 
     function openInfoModal(index) {
@@ -533,6 +554,7 @@
 
     // Kiểm tra quyền Admin
     const isAdmin = (AUTH && AUTH.role === "ADMIN");
+    const isEdit = (AUTH && AUTH.role === "EDIT");
 
     let modalHtml = `
         <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border)">
@@ -564,6 +586,14 @@
             </div>
         `;
     }
+    // Nếu là Edit, thêm bộ nút điều khiển
+    if (isEdit) {
+        modalHtml += `
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px">
+                 <button onclick="editLog(${index})" style="background:#1e1b4b; color:#818cf8; border:1px solid #312e81; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold">✏️ CHỈNH SỬA</button>
+            </div>
+        `;
+    }        
 
     document.getElementById('modalBody').innerHTML = modalHtml;
     document.getElementById('infoModal').style.display = 'flex';
