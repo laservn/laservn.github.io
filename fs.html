@@ -250,11 +250,10 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // 3. Thiết lập settings với tham số {merge: true} để tránh cảnh báo ghi đè
-    db.settings({
-        experimentalForceLongPolling: true,
-        useFetchStreams: false
-    }, { merge: true }); // Thêm { merge: true } ở đây để xóa lỗi logger.ts:115
+db.settings({
+    experimentalForceLongPolling: true,
+    useFetchStreams: false
+});
 
     let AUTH = JSON.parse(localStorage.getItem('tech_auth_v4')) || null;
     let USER_ROLE = "VIEWER"; 
@@ -300,65 +299,53 @@
         showLoading(false);
     }
 
- // --- TÌM VÀ THAY THẾ TOÀN BỘ HÀM fetchData() CŨ BẰNG HÀM NÀY ---
-
 function fetchData() {
     if (!AUTH) return;
 
-    let logsRef = db.collection("logs");
-    let query = logsRef;
+    let query = db.collection("logs");
 
-    // 1. XỬ LÝ PHÂN QUYỀN CHO VIEWER
+    // LỌC DỮ LIỆU CHO VIEWER
     if (AUTH.role === "VIEWER") {
-        if (AUTH.access && AUTH.access.trim() !== "") {
-            // Chuyển chuỗi "Khách A, Khách B" thành mảng ["Khách A", "Khách B"]
+        if (AUTH.access) {
+            // Chuyển "Khách A, Khách B" thành mảng ["Khách A", "Khách B"]
             const allowedList = AUTH.access.split(",").map(s => s.trim()).filter(s => s !== "");
             
             if (allowedList.length > 0) {
-                // Lọc theo danh sách khách hàng được phép
+                // Ép buộc lọc theo danh sách
                 query = query.where("customer", "in", allowedList);
             } else {
-                // Nếu VIEWER không có tên khách nào trong access -> Không hiện gì cả
+                // Nếu không có tên khách nào -> trả về bảng trống
                 renderData({ logs: [["Header"]], role: AUTH.role });
                 return;
             }
         } else {
-            // Không có trường access -> Coi như không có quyền xem khách nào
+            // Không có quyền truy cập cụ thể -> không hiện gì
             renderData({ logs: [["Header"]], role: AUTH.role });
             return;
         }
     }
 
-    // 2. SẮP XẾP (Lưu ý: Nếu có WHERE ở trên, bạn phải tạo INDEX trong Firebase Console)
+    // Sắp xếp dữ liệu
     query = query.orderBy("createdAt", "desc").limit(500);
 
-    // 3. LẮNG NGHE DỮ LIỆU LOGS
+    // Lắng nghe dữ liệu
     query.onSnapshot((snapshot) => {
         const logs = snapshot.docs.map(doc => {
             const d = doc.data();
-            return [
-                doc.id, 
-                d.workDate, 
-                d.customer, 
-                d.machineType, 
-                d.support, 
-                d.content, 
-                d.tech, 
-                d.createdBy || "", 
-                d.note || ""
-            ];
+            return [doc.id, d.workDate, d.customer, d.machineType, d.support, d.content, d.tech, d.createdBy || "", d.note || ""];
         });
         renderData({ logs: [["Header"], ...logs], role: AUTH.role });
         applyPermissions();
     }, (error) => {
-        console.error("Lỗi lấy dữ liệu: ", error);
-        // Nếu lỗi do thiếu Index, Firebase sẽ trả về 1 link trong Console log, bạn nhấn vào đó để tạo.
-        if (error.code === 'failed-precondition') {
-            showToast("Cần tạo Index trên Firestore để lọc dữ liệu!", "error");
+        console.error("Lỗi Firestore:", error);
+        // QUAN TRỌNG: Nếu bảng không hiện gì, hãy nhấn F12. 
+        // Nếu thấy link "https://console.firebase.google.com/..." trong console, hãy click vào đó để TẠO INDEX.
+        if (error.code === "failed-precondition") {
+            showToast("Vui lòng tạo Index trong Console Firebase để Viewer lọc được khách hàng!", "error");
         }
     });
 
-    // 4. LẤY DROPDOWNS (Dành cho ADMIN và EDIT để nhập liệu)
+    // Lấy metadata cho Admin/Edit
     if (AUTH.role === "ADMIN" || AUTH.role === "EDIT") {
         db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
             if (doc.exists) {
