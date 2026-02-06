@@ -511,16 +511,21 @@
         showLoading(false);
     }
 
-    function applyPermissions() {
-        const btn = document.getElementById('toggleBtn');
-        const form = document.getElementById('formContainer');
-        if (USER_ROLE === "VIEWER") {
-            if (btn) btn.style.display = "none";
-            if (form) form.style.display = "none";
-        } else {
-            if (btn) btn.style.display = "block";
+        function applyPermissions() {
+            const btn = document.getElementById('toggleBtn');
+            const form = document.getElementById('formContainer');
+            
+            // Sử dụng trực tiếp AUTH.role để chính xác nhất
+            const currentRole = AUTH ? AUTH.role : USER_ROLE;
+        
+            if (currentRole === "VIEWER") {
+                if (btn) btn.style.display = "none";
+                if (form) form.style.display = "none";
+            } else if (currentRole === "ADMIN") {
+                if (btn) btn.style.display = "block";
+                // Có thể thêm quyền xóa/sửa cho Admin ở đây sau này
+            }
         }
-    }
 
     function openInfoModal(index) {
         const row = window.currentLogs[index];
