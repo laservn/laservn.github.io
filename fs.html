@@ -374,38 +374,60 @@
     }
 
     // 5. Hàm lấy dữ liệu (Real-time từ Firestore)
-function fetchData() {
-    if (!AUTH) return;
+    function fetchData() {
+        if (!AUTH) return;
 
-    let query = db.collection("logs").orderBy("createdAt", "desc").limit(500);
+        // Lấy Logs
+        let query = db.collection("logs").orderBy("createdAt", "desc").limit(500);
 
-    // Xử lý phân quyền xem dữ liệu
-    if (AUTH.role === "VIEWER") {
-        // Chuyển chuỗi "HOME, ABC" thành mảng ["HOME", "ABC"]
-        const allowedList = AUTH.access.split(",").map(s => s.trim()).filter(s => s !== "");
-        
-        if (allowedList.length > 0) {
-            // Chỉ lấy những log có khách hàng nằm trong danh sách được phép
-            query = query.where("customer", "in", allowedList);
-        } else {
-            // Nếu VIEWER không có danh sách access, không cho xem gì cả
-            renderData({ logs: [["Header"]], role: AUTH.role });
-            return;
+        // Phân quyền cho Viewer (Chỉ xem khách hàng được phép)
+        if (AUTH.role === "VIEWER" && AUTH.access) {
+            const allowedList = AUTH.access.split(",").map(s => s.trim());
+            if (allowedList.length > 0) {
+                query = query.where("customer", "in", allowedList);
+            }
+        }
+
+        // Lắng nghe thay đổi tự động (onSnapshot)
+        query.onSnapshot((snapshot) => {
+            const logs = snapshot.docs.map(doc => {
+                const d = doc.data();
+                return [
+                    doc.id, 
+                    d.workDate, 
+                    d.customer, 
+                    d.machineType, 
+                    d.support, 
+                    d.content, 
+                    d.tech, 
+                    d.createdBy || "", 
+                    d.note || ""
+                ];
+            });
+
+            // Map lại để dùng chung hàm renderData cũ của bạn
+            renderData({ logs: [["Header"], ...logs], role: AUTH.role });
+            applyPermissions();
+        });
+
+        // Lấy Dropdowns (Chỉ cho Admin)
+        if (AUTH.role === "ADMIN") {
+            db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
+                if (doc.exists) {
+                    const d = doc.data();
+                    // Giả lập object để renderData cập nhật dropdown
+                    renderData({ 
+                        logs: [["Header"], ...window.currentLogs], 
+                        role: "ADMIN",
+                        customers: d.customers,
+                        techs: d.techs,
+                        machineTypes: d.machineTypes,
+                        supports: d.supports
+                    });
+                }
+            });
         }
     }
-
-    // Lắng nghe thay đổi real-time
-    query.onSnapshot((snapshot) => {
-        const logs = snapshot.docs.map(doc => {
-            const d = doc.data();
-            return [doc.id, d.workDate, d.customer, d.machineType, d.support, d.content, d.tech, d.createdBy || "", d.note || ""];
-        });
-        renderData({ logs: [["Header"], ...logs], role: AUTH.role });
-        applyPermissions();
-    }, (error) => {
-        console.error("Lỗi lấy dữ liệu: ", error);
-        showToast("Bạn không có quyền xem dữ liệu này", "error");
-    });
 
     // 6. Hàm Lưu dữ liệu
     async function saveData() {
