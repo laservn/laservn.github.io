@@ -248,12 +248,18 @@
         appId: "1:992766098254:web:8e9f5d3216541023d03c1f"
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+// Khởi tạo Firestore
+const db = firebase.firestore();
 
-db.settings({
-    experimentalForceLongPolling: true,
-    useFetchStreams: false
-});
+// Kiểm tra nếu chưa thiết lập thì mới thiết lập, tránh ghi đè nhiều lần gây lỗi logger.ts:115
+try {
+    db.settings({
+        experimentalForceLongPolling: true,
+        useFetchStreams: false
+    });
+} catch (e) {
+    console.warn("Firestore settings already configured");
+}
 
     let AUTH = JSON.parse(localStorage.getItem('tech_auth_v4')) || null;
     let USER_ROLE = "VIEWER"; 
@@ -283,52 +289,59 @@ db.settings({
         }
     }
 
-    async function unlock() {
-        const u = document.getElementById('userInput').value.trim();
-        const p = document.getElementById('passInput').value.trim();
-        showLoading(true, "ĐANG XÁC THỰC...");
-        try {
-            const userDoc = await db.collection("users").doc(u).get();
-            if (userDoc.exists && userDoc.data().pass === p) {
-                USER_ROLE = userDoc.data().role;
-                AUTH = { user: u, role: USER_ROLE, expire: new Date().getTime() + (24*60*60*1000) };
-                localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
-                showApp(); fetchData();
-            } else { showToast("Sai tài khoản hoặc mật khẩu!", "error"); }
-        } catch (e) { showToast("Lỗi kết nối Firestore!", "error"); }
-        showLoading(false);
+async function unlock() {
+    const u = document.getElementById('userInput').value.trim();
+    const p = document.getElementById('passInput').value.trim();
+    showLoading(true, "ĐANG XÁC THỰC...");
+    try {
+        const userDoc = await db.collection("users").doc(u).get();
+        if (userDoc.exists && userDoc.data().pass === p) {
+            const userData = userDoc.data(); // Lấy toàn bộ data của user
+            USER_ROLE = userData.role;
+            
+            // THÊM TRƯỜNG ACCESS VÀO ĐÂY
+            AUTH = { 
+                user: u, 
+                role: USER_ROLE, 
+                access: userData.access || "", // Lưu danh sách khách hàng được phép
+                expire: new Date().getTime() + (24*60*60*1000) 
+            };
+            
+            localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
+            showApp(); 
+            fetchData();
+        } else { 
+            showToast("Sai tài khoản hoặc mật khẩu!", "error"); 
+        }
+    } catch (e) { 
+        showToast("Lỗi kết nối Firestore!", "error"); 
     }
+    showLoading(false);
+}
 
 function fetchData() {
     if (!AUTH) return;
 
     let query = db.collection("logs");
 
-    // LỌC DỮ LIỆU CHO VIEWER
+    // Lọc cho VIEWER
     if (AUTH.role === "VIEWER") {
-        if (AUTH.access) {
-            // Chuyển "Khách A, Khách B" thành mảng ["Khách A", "Khách B"]
+        // Kiểm tra biến AUTH.access vừa được thêm ở hàm unlock
+        if (AUTH.access && AUTH.access.trim() !== "") {
             const allowedList = AUTH.access.split(",").map(s => s.trim()).filter(s => s !== "");
-            
             if (allowedList.length > 0) {
-                // Ép buộc lọc theo danh sách
                 query = query.where("customer", "in", allowedList);
-            } else {
-                // Nếu không có tên khách nào -> trả về bảng trống
-                renderData({ logs: [["Header"]], role: AUTH.role });
-                return;
             }
         } else {
-            // Không có quyền truy cập cụ thể -> không hiện gì
+            // Nếu là VIEWER mà không có danh sách access thì không cho xem gì cả (an toàn hơn)
             renderData({ logs: [["Header"]], role: AUTH.role });
             return;
         }
     }
 
-    // Sắp xếp dữ liệu
+    // Sắp xếp (Nhớ check Console F12 để tạo Index nếu có lỗi link đỏ)
     query = query.orderBy("createdAt", "desc").limit(500);
 
-    // Lắng nghe dữ liệu
     query.onSnapshot((snapshot) => {
         const logs = snapshot.docs.map(doc => {
             const d = doc.data();
@@ -336,27 +349,19 @@ function fetchData() {
         });
         renderData({ logs: [["Header"], ...logs], role: AUTH.role });
         applyPermissions();
-    }, (error) => {
-        console.error("Lỗi Firestore:", error);
-        // QUAN TRỌNG: Nếu bảng không hiện gì, hãy nhấn F12. 
-        // Nếu thấy link "https://console.firebase.google.com/..." trong console, hãy click vào đó để TẠO INDEX.
-        if (error.code === "failed-precondition") {
-            showToast("Vui lòng tạo Index trong Console Firebase để Viewer lọc được khách hàng!", "error");
-        }
     });
 
-    // Lấy metadata cho Admin/Edit
+    // --- TẢI METADATA CHO TAB 3 (CHỈ ADMIN/EDIT CẦN) ---
     if (AUTH.role === "ADMIN" || AUTH.role === "EDIT") {
         db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
             if (doc.exists) {
                 const d = doc.data();
-                updateDropdowns(d);
-                if (AUTH.role === "ADMIN") renderMetaBlock(d);
+                updateDropdowns(d); // Cập nhật danh sách chọn ở Tab 2
+                if (AUTH.role === "ADMIN") renderMetaBlock(d); // Hiển thị khối sửa ở Tab 3
             }
         });
     }
 }
-
     // --- UI RENDER (KHÔI PHỤC CẤU TRÚC GỐC CỦA BẠN) ---
     function renderData(data) {
         window.currentLogs = data.logs.slice(1);
