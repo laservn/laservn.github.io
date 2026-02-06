@@ -294,78 +294,75 @@
         showLoading(false);
     }
 
-    // 5. Hàm lấy dữ liệu (Real-time từ Firestore)
-    function fetchData() {
-        if (!AUTH) return;
+ // --- TÌM VÀ THAY THẾ TOÀN BỘ HÀM fetchData() CŨ BẰNG HÀM NÀY ---
 
-        // Lấy Logs
-        let query = db.collection("logs").orderBy("createdAt", "desc").limit(500);
+function fetchData() {
+    if (!AUTH) return;
 
-        // Phân quyền cho Viewer (Chỉ xem khách hàng được phép)
-        if (AUTH.role === "VIEWER" && AUTH.access) {
-            const allowedList = AUTH.access.split(",").map(s => s.trim());
+    let logsRef = db.collection("logs");
+    let query = logsRef;
+
+    // 1. XỬ LÝ PHÂN QUYỀN CHO VIEWER
+    if (AUTH.role === "VIEWER") {
+        if (AUTH.access && AUTH.access.trim() !== "") {
+            // Chuyển chuỗi "Khách A, Khách B" thành mảng ["Khách A", "Khách B"]
+            const allowedList = AUTH.access.split(",").map(s => s.trim()).filter(s => s !== "");
+            
             if (allowedList.length > 0) {
+                // Lọc theo danh sách khách hàng được phép
                 query = query.where("customer", "in", allowedList);
+            } else {
+                // Nếu VIEWER không có tên khách nào trong access -> Không hiện gì cả
+                renderData({ logs: [["Header"]], role: AUTH.role });
+                return;
             }
-        }      
-
-        // Lắng nghe thay đổi tự động (onSnapshot)
-        query.onSnapshot((snapshot) => {
-            const logs = snapshot.docs.map(doc => {
-                const d = doc.data();
-                return [
-                    doc.id, 
-                    d.workDate, 
-                    d.customer, 
-                    d.machineType, 
-                    d.support, 
-                    d.content, 
-                    d.tech, 
-                    d.createdBy || "", 
-                    d.note || ""
-                ];
-            });
-
-            // Map lại để dùng chung hàm renderData cũ của bạn
-            renderData({ logs: [["Header"], ...logs], role: AUTH.role });
-            applyPermissions();
-        });
-
-        // Lấy Dropdowns (Chỉ cho Admin)
-        if (AUTH.role === "ADMIN") {
-            db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
-                if (doc.exists) {
-                    const d = doc.data();
-                    // Giả lập object để renderData cập nhật dropdown
-                    renderData({ 
-                        logs: [["Header"], ...window.currentLogs], 
-                        role: "ADMIN",
-                        customers: d.customers,
-                        techs: d.techs,
-                        machineTypes: d.machineTypes,
-                        supports: d.supports
-                    });
-                }
-            });
-        }
-        // Lấy Dropdowns (Chỉ cho EDIT)
-        if (AUTH.role === "EDIT") {
-            db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
-                if (doc.exists) {
-                    const d = doc.data();
-                    // Giả lập object để renderData cập nhật dropdown
-                    renderData({ 
-                        logs: [["Header"], ...window.currentLogs], 
-                        role: "EDIT",
-                        customers: d.customers,
-                        techs: d.techs,
-                        machineTypes: d.machineTypes,
-                        supports: d.supports
-                    });
-                }
-            });
+        } else {
+            // Không có trường access -> Coi như không có quyền xem khách nào
+            renderData({ logs: [["Header"]], role: AUTH.role });
+            return;
         }
     }
+
+    // 2. SẮP XẾP (Lưu ý: Nếu có WHERE ở trên, bạn phải tạo INDEX trong Firebase Console)
+    query = query.orderBy("createdAt", "desc").limit(500);
+
+    // 3. LẮNG NGHE DỮ LIỆU LOGS
+    query.onSnapshot((snapshot) => {
+        const logs = snapshot.docs.map(doc => {
+            const d = doc.data();
+            return [
+                doc.id, 
+                d.workDate, 
+                d.customer, 
+                d.machineType, 
+                d.support, 
+                d.content, 
+                d.tech, 
+                d.createdBy || "", 
+                d.note || ""
+            ];
+        });
+        renderData({ logs: [["Header"], ...logs], role: AUTH.role });
+        applyPermissions();
+    }, (error) => {
+        console.error("Lỗi lấy dữ liệu: ", error);
+        // Nếu lỗi do thiếu Index, Firebase sẽ trả về 1 link trong Console log, bạn nhấn vào đó để tạo.
+        if (error.code === 'failed-precondition') {
+            showToast("Cần tạo Index trên Firestore để lọc dữ liệu!", "error");
+        }
+    });
+
+    // 4. LẤY DROPDOWNS (Dành cho ADMIN và EDIT để nhập liệu)
+    if (AUTH.role === "ADMIN" || AUTH.role === "EDIT") {
+        db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
+            if (doc.exists) {
+                const d = doc.data();
+                updateDropdowns(d);
+                if (AUTH.role === "ADMIN") renderMetaBlock(d);
+            }
+        });
+    }
+}
 
     // --- UI RENDER (KHÔI PHỤC CẤU TRÚC GỐC CỦA BẠN) ---
     function renderData(data) {
