@@ -294,26 +294,77 @@
         showLoading(false);
     }
 
+    // 5. Hàm lấy dữ liệu (Real-time từ Firestore)
     function fetchData() {
         if (!AUTH) return;
-        // Logs Table
-        db.collection("logs").orderBy("createdAt", "desc").limit(500).onSnapshot((snapshot) => {
+
+        // Lấy Logs
+        let query = db.collection("logs").orderBy("createdAt", "desc").limit(500);
+
+        // Phân quyền cho Viewer (Chỉ xem khách hàng được phép)
+        if (AUTH.role === "VIEWER" && AUTH.access) {
+            const allowedList = AUTH.access.split(",").map(s => s.trim());
+            if (allowedList.length > 0) {
+                query = query.where("customer", "in", allowedList);
+            }
+        }      
+
+        // Lắng nghe thay đổi tự động (onSnapshot)
+        query.onSnapshot((snapshot) => {
             const logs = snapshot.docs.map(doc => {
                 const d = doc.data();
-                return [doc.id, d.workDate, d.customer, d.machineType, d.support, d.content, d.tech, d.createdBy || "", d.note || ""];
+                return [
+                    doc.id, 
+                    d.workDate, 
+                    d.customer, 
+                    d.machineType, 
+                    d.support, 
+                    d.content, 
+                    d.tech, 
+                    d.createdBy || "", 
+                    d.note || ""
+                ];
             });
+
+            // Map lại để dùng chung hàm renderData cũ của bạn
             renderData({ logs: [["Header"], ...logs], role: AUTH.role });
             applyPermissions();
         });
 
-        // Dropdowns & Meta Block
-        db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
-            if (doc.exists) {
-                const d = doc.data();
-                updateDropdowns(d);
-                renderMetaBlock(d);
-            }
-        });
+        // Lấy Dropdowns (Chỉ cho Admin)
+        if (AUTH.role === "ADMIN") {
+            db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
+                if (doc.exists) {
+                    const d = doc.data();
+                    // Giả lập object để renderData cập nhật dropdown
+                    renderData({ 
+                        logs: [["Header"], ...window.currentLogs], 
+                        role: "ADMIN",
+                        customers: d.customers,
+                        techs: d.techs,
+                        machineTypes: d.machineTypes,
+                        supports: d.supports
+                    });
+                }
+            });
+        }
+        // Lấy Dropdowns (Chỉ cho EDIT)
+        if (AUTH.role === "EDIT") {
+            db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
+                if (doc.exists) {
+                    const d = doc.data();
+                    // Giả lập object để renderData cập nhật dropdown
+                    renderData({ 
+                        logs: [["Header"], ...window.currentLogs], 
+                        role: "EDIT",
+                        customers: d.customers,
+                        techs: d.techs,
+                        machineTypes: d.machineTypes,
+                        supports: d.supports
+                    });
+                }
+            });
+        }
     }
 
     // --- UI RENDER (KHÔI PHỤC CẤU TRÚC GỐC CỦA BẠN) ---
