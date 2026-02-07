@@ -785,24 +785,25 @@ function renderDocs(docs) {
 }
 
 function handleDocClick(id, name, link, custs) {
-    if (AUTH.role === "VIEWER") return;
+    if (AUTH && AUTH.role === "VIEWER") return;
     selectedDocId = id;
     document.getElementById('doc_name').value = name;
     document.getElementById('doc_link').value = link;
     
-    // reset toàn bộ checkbox trước khi load
+    // Reset toàn bộ checkbox về false
     const checks = document.querySelectorAll('input[name="doc_cust"]');
     checks.forEach(ch => ch.checked = false);
 
-    // Kiểm tra nếu custs là mảng hoặc chuỗi
-    if (custs) {
-        let allowedList = [];
-        if (Array.isArray(custs)) {
-            allowedList = custs;
-        } else if (typeof custs === 'string') {
-            allowedList = custs.split(",").map(s => s.trim());
-        }
+    // Xử lý custs: Ép kiểu về mảng dù Firestore trả về kiểu gì
+    let allowedList = [];
+    if (Array.isArray(custs)) {
+        allowedList = custs;
+    } else if (typeof custs === 'string' && custs.trim() !== "") {
+        allowedList = custs.split(",").map(s => s.trim());
+    }
 
+    // Tích chọn checkbox dựa trên mảng
+    if (allowedList.length > 0) {
         checks.forEach(ch => {
             if (allowedList.includes(ch.value)) {
                 ch.checked = true;
@@ -812,22 +813,32 @@ function handleDocClick(id, name, link, custs) {
     
     document.getElementById('btnUpdateDoc').style.display = 'block';
     document.getElementById('btnDeleteDoc').style.display = 'block';
-    showToast("Đã chọn: " + name, "info");
+    showToast("Đã chọn tài liệu: " + name, "info");
 }
 
-async function addDoc() {
+async function updateDoc() {
+    if (!selectedDocId) return;
     const name = document.getElementById('doc_name').value.trim();
     const link = document.getElementById('doc_link').value.trim();
-    if (!name || !link) return showToast("Vui lòng nhập tên và link!", "error");
-
-    const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked'))
-                           .map(cb => cb.value);
     
-    showLoading(true);
-    await db.collection("documents").add({
-        name, link, customers: selectedCusts, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    resetDocForm();
+    // Lấy mảng khách hàng từ các checkbox được tích
+    const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked'))
+                               .map(cb => cb.value);
+
+    if (!name || !link) return showToast("Thiếu thông tin!", "error");
+
+    showLoading(true, "ĐANG CẬP NHẬT...");
+    try {
+        await db.collection("documents").doc(selectedDocId).update({
+            name: name,
+            link: link,
+            customers: selectedCusts // Lưu dưới dạng Array
+        });
+        showToast("Đã cập nhật tài liệu!", "success");
+        resetDocForm();
+    } catch (e) {
+        showToast("Lỗi: " + e.message, "error");
+    }
     showLoading(false);
 }
 
