@@ -785,23 +785,34 @@ function renderDocs(docs) {
 }
 
 function handleDocClick(id, name, link, custs) {
-    if (AUTH.role === "VIEWER") return; // Viewer chỉ được tải, không được sửa
+    if (AUTH.role === "VIEWER") return;
     selectedDocId = id;
     document.getElementById('doc_name').value = name;
     document.getElementById('doc_link').value = link;
     
-    // Xử lý Checkbox: Đảm bảo custs luôn là một mảng để so sánh
-    const allowedList = Array.isArray(custs) ? custs : (custs ? custs.split(",").map(s => s.trim()) : []);
-    
+    // reset toàn bộ checkbox trước khi load
     const checks = document.querySelectorAll('input[name="doc_cust"]');
-    checks.forEach(ch => {
-        // Nếu allowedList trống (tương đương ALL) hoặc chứa giá trị checkbox thì tích chọn
-        ch.checked = allowedList.includes(ch.value);
-    });
+    checks.forEach(ch => ch.checked = false);
+
+    // Kiểm tra nếu custs là mảng hoặc chuỗi
+    if (custs) {
+        let allowedList = [];
+        if (Array.isArray(custs)) {
+            allowedList = custs;
+        } else if (typeof custs === 'string') {
+            allowedList = custs.split(",").map(s => s.trim());
+        }
+
+        checks.forEach(ch => {
+            if (allowedList.includes(ch.value)) {
+                ch.checked = true;
+            }
+        });
+    }
     
     document.getElementById('btnUpdateDoc').style.display = 'block';
     document.getElementById('btnDeleteDoc').style.display = 'block';
-    showToast("Đã chọn tài liệu: " + name, "info");
+    showToast("Đã chọn: " + name, "info");
 }
 
 async function addDoc() {
@@ -809,7 +820,8 @@ async function addDoc() {
     const link = document.getElementById('doc_link').value.trim();
     if (!name || !link) return showToast("Vui lòng nhập tên và link!", "error");
 
-    const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked')).map(cb => cb.value);
+    const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked'))
+                           .map(cb => cb.value);
     
     showLoading(true);
     await db.collection("documents").add({
@@ -820,7 +832,8 @@ async function addDoc() {
 }
 
 async function updateDoc() {
-    const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked')).map(cb => cb.value);
+    const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked'))
+                           .map(cb => cb.value);
     showLoading(true);
     await db.collection("documents").doc(selectedDocId).update({
         name: document.getElementById('doc_name').value,
