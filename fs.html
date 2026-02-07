@@ -149,6 +149,7 @@
         <button class="tab-btn active" onclick="switchTab('data-tab', this)">📊 Bảng Dữ Liệu</button>
         <button class="tab-btn" onclick="switchTab('form-tab', this)">📑 Báo Cáo Mới</button>
         <button class="tab-btn" id="btnTabMeta" onclick="switchTab('meta-tab', this)">🧱 Thông Tin Khối</button>
+        <button class="tab-btn" id="btnTabUser" onclick="switchTab('user-tab', this)">👥 Tài Khoản</button>
     </div>
 
     <div id="data-tab" class="tab-content active">
@@ -216,6 +217,45 @@
             </div>
         </div>
     </div>
+
+    <div id="user-tab" class="tab-content">
+    <div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+            <input type="text" id="u_id" placeholder="User ID (Tên đăng nhập)">
+            <input type="text" id="u_name" placeholder="Họ tên">
+            <input type="text" id="u_pass" placeholder="Mật khẩu">
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 2fr; gap:10px;">
+            <select id="u_role">
+                <option value="VIEWER">VIEWER</option>
+                <option value="EDIT">EDIT</option>
+                <option value="ADMIN">ADMIN</option>
+            </select>
+            <input type="text" id="u_access" placeholder="Quyền truy cập (ALL hoặc Khách A, Khách B...)">
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px; margin-top:10px;">
+            <button class="btn-save" onclick="addUser()" style="background:#065f46">➕ THÊM</button>
+            <button class="btn-save" onclick="updateUser()" style="background:#1e3a8a">💾 CẬP NHẬT</button>
+            <button class="btn-save" onclick="deleteUser()" style="background:#7f1d1d">🗑️ XÓA</button>
+            <button class="btn-save" onclick="resetUserForm()" style="background:#475569">🧹 LÀM MỚI</button>
+        </div>
+    </div>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Họ tên</th>
+                    <th>Quyền</th>
+                    <th>Mật khẩu</th>
+                    <th>Truy cập</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody"></tbody>
+        </table>
+    </div>
+</div>
 </div>
 
 <div id="infoModal" class="modal" onclick="if(event.target==this) this.style.display='none'">
@@ -541,6 +581,100 @@ function fetchData() {
     function filterTable() { const v = document.getElementById('searchBox').value.toUpperCase(); const rows = document.getElementById('tableBody').getElementsByTagName('tr'); for (let r of rows) r.style.display = r.innerText.toUpperCase().includes(v) ? "" : "none"; }
     function showLoading(s, t) { document.getElementById('loading-overlay').style.display = s ? 'flex' : 'none'; if(t) document.getElementById('loading-text').innerText = t; }
     function showToast(m, type) { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = m; c.appendChild(t); setTimeout(() => t.remove(), 2500); }
+    // --- LOGIC QUẢN LÝ TÀI KHOẢN (TAB 4) ---
+
+// 1. Tự động lấy danh sách user khi tab mở
+function fetchUsers() {
+    if (AUTH.role !== "ADMIN") return;
+    db.collection("users").onSnapshot((snapshot) => {
+        const html = snapshot.docs.map(doc => {
+            const u = doc.data();
+            return `
+                <tr onclick="loadUserToForm('${doc.id}', '${u.name}', '${u.role}', '${u.pass}', '${u.access || ""}')">
+                    <td><b style="color:var(--primary)">${doc.id}</b></td>
+                    <td>${u.name}</td>
+                    <td><span class="badge-tech">${u.role}</span></td>
+                    <td>••••••</td>
+                    <td style="font-size:11px; color:var(--text-muted)">${u.access || 'ALL'}</td>
+                </tr>
+            `;
+        }).join('');
+        document.getElementById('userTableBody').innerHTML = html;
+    });
+}
+
+// 2. Load dữ liệu từ bảng lên form khi kích vào dòng
+function loadUserToForm(id, name, role, pass, access) {
+    document.getElementById('u_id').value = id;
+    document.getElementById('u_id').readOnly = true; // Không cho sửa ID khi đang chế độ cập nhật
+    document.getElementById('u_name').value = name;
+    document.getElementById('u_role').value = role;
+    document.getElementById('u_pass').value = pass;
+    document.getElementById('u_access').value = access;
+    showToast("Đã chọn user: " + id, "info");
+}
+
+// 3. Thêm User mới
+async function addUser() {
+    const id = document.getElementById('u_id').value.trim();
+    if(!id) return showToast("Vui lòng nhập User ID", "error");
+    
+    showLoading(true, "ĐANG TẠO...");
+    try {
+        await db.collection("users").doc(id).set({
+            name: document.getElementById('u_name').value,
+            role: document.getElementById('u_role').value,
+            pass: document.getElementById('u_pass').value,
+            access: document.getElementById('u_access').value
+        });
+        showToast("Thêm thành công!", "success");
+        resetUserForm();
+    } catch (e) { showToast("Lỗi: " + e.message, "error"); }
+    showLoading(false);
+}
+
+// 4. Cập nhật User
+async function updateUser() {
+    const id = document.getElementById('u_id').value.trim();
+    showLoading(true, "ĐANG CẬP NHẬT...");
+    try {
+        await db.collection("users").doc(id).update({
+            name: document.getElementById('u_name').value,
+            role: document.getElementById('u_role').value,
+            pass: document.getElementById('u_pass').value,
+            access: document.getElementById('u_access').value
+        });
+        showToast("Đã cập nhật!", "success");
+    } catch (e) { showToast("Lỗi khi cập nhật!", "error"); }
+    showLoading(false);
+}
+
+// 5. Xóa User
+async function deleteUser() {
+    const id = document.getElementById('u_id').value.trim();
+    if(!confirm("Xóa tài khoản " + id + "?")) return;
+    showLoading(true);
+    await db.collection("users").doc(id).delete();
+    resetUserForm();
+    showLoading(false);
+}
+
+function resetUserForm() {
+    document.getElementById('u_id').value = "";
+    document.getElementById('u_id').readOnly = false;
+    document.getElementById('u_name').value = "";
+    document.getElementById('u_pass').value = "";
+    document.getElementById('u_access').value = "";
+}
+
+// Cập nhật hàm applyPermissions để hiển thị tab 4 cho ADMIN
+const originalApplyPermissions = applyPermissions;
+applyPermissions = function() {
+    originalApplyPermissions(); // Chạy hàm cũ
+    const currentRole = AUTH ? AUTH.role : USER_ROLE;
+    document.getElementById('btnTabUser').style.display = currentRole === "ADMIN" ? "block" : "none";
+    if(currentRole === "ADMIN") fetchUsers();
+};
 </script>
 </body>
 </html>
