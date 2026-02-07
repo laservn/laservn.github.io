@@ -3,308 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BÁO CÁO KỸ THUẬT</title>
+    <title>HỆ THỐNG KỸ THUẬT V5</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
     <style>
         :root { 
-            --primary: #00d2ff; 
-            --secondary: #3a7bd5; 
-            --dark: #0f172a; 
-            --card: #1e293b; 
-            --border: rgba(255,255,255,0.1);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --primary: #00d2ff; --secondary: #3a7bd5; --dark: #0f172a; 
+            --card: #1e293b; --border: rgba(255,255,255,0.1);
+            --text-main: #f8fafc; --text-muted: #94a3b8;
         }
 
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background: var(--dark); 
-            color: var(--text-main); 
-            margin: 0; 
-            padding: 12px; 
-            line-height: 1.5;
-            -webkit-tap-highlight-color: transparent;
-        }
+        body { font-family: 'Inter', sans-serif; background: var(--dark); color: var(--text-main); margin: 0; padding: 12px; line-height: 1.5; }
         
-        /* Tab Navigation */
-        .tab-navigation { display: flex; gap: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 12px; border: 1px solid var(--border); }
-        .tab-btn { flex: 1; padding: 12px; border: none; background: none; color: var(--text-muted); font-weight: 600; cursor: pointer; border-radius: 8px; transition: 0.3s; font-size: 13px; text-transform: uppercase; }
-        .tab-btn.active { background: var(--primary); color: var(--dark); box-shadow: 0 0 15px rgba(0, 210, 255, 0.4); }
-        .tab-content { display: none; }
+        /* Navigation Tabs */
+        .tab-navigation { display: flex; gap: 5px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px solid var(--border); sticky; top: 0; z-index: 100; background: var(--dark); }
+        .tab-btn { 
+            background: #1e293b; color: var(--text-muted); border: 1px solid var(--border); 
+            padding: 10px 18px; border-radius: 8px; cursor: pointer; white-space: nowrap; font-size: 13px; font-weight: 600; transition: 0.3s;
+        }
+        .tab-btn.active { background: var(--primary); color: var(--dark); border-color: var(--primary); }
+        .tab-content { display: none; animation: fadeIn 0.3s; }
         .tab-content.active { display: block; }
 
-        /* Login Screen */
-        #lock-screen { position: fixed; inset: 0; background: var(--dark); z-index: 3000; display: flex; justify-content: center; align-items: center; }
-        .login-box { width: 320px; padding: 30px; background: var(--card); border-radius: 20px; border: 1px solid var(--border); text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        
-        /* Container & Header */
-        .container { max-width: 1000px; margin: auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px; }
-        
-        /* Inputs */
-        input, select, textarea { 
-            background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; 
-            border-radius: 10px; width: 100%; box-sizing: border-box; margin-bottom: 12px; outline: none; transition: 0.3s; font-size: 14px;
-        }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(0, 210, 255, 0.2); }
-        
-        .btn-save { 
-            background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; 
-            padding: 14px; border-radius: 10px; cursor: pointer; font-weight: 600; width: 100%; transition: transform 0.1s;
-        }
+        /* Tables */
+        .table-container { overflow-x: auto; background: var(--card); border-radius: 12px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th { background: rgba(0,0,0,0.2); color: var(--text-muted); font-size: 11px; padding: 12px; text-align: left; text-transform: uppercase; letter-spacing: 1px; }
+        td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+        tr:hover { background: rgba(0, 210, 255, 0.05); cursor: pointer; }
+
+        /* Forms */
+        input, select, textarea { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px; width: 100%; margin-bottom: 10px; box-sizing: border-box; }
+        input:focus { border-color: var(--primary); outline: none; }
+        .btn-save { background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.3s; }
         .btn-save:active { transform: scale(0.98); }
-        .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
-        
-        /* Professional Table (GIỮ NGUYÊN GỐC) */
-        .table-container { 
-            margin-top: 15px; border: 1px solid var(--border); border-radius: 12px; 
-            overflow-x: auto; background: var(--card); box-shadow: 0 4px 20px rgba(0,0,0,0.3); 
-        }
-        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 850px; }
-        th { 
-            background: #111827; color: var(--text-muted); font-size: 11px; font-weight: 600; 
-            text-transform: uppercase; letter-spacing: 0.05em; padding: 14px 12px; border-bottom: 2px solid var(--border); text-align: left;
-        }
-        td { padding: 14px 12px; border-bottom: 1px solid var(--border); font-size: 13px; cursor: pointer; transition: 0.2s; }
-        tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
-        tbody tr:hover td { background: rgba(0, 210, 255, 0.08); }
 
-        .badge-tech { background: rgba(58, 123, 213, 0.2); color: #93c5fd; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-        .badge-mec { background: rgba(58, 123, 213, 0.2); color: #93c5ff; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-        .badge-sup { background: rgba(58, 123, 213, 0.2); color: #93c5dd; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-
-        /* Popup Modals (GIỮ NGUYÊN GỐC) */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 20px; }
-        .modal-content { 
-            background: var(--card); width: 95%; max-width: 600px; border-radius: 20px; border: 1px solid var(--primary); 
-            padding: 25px; max-height: 85vh; display: flex; flex-direction: column;
-        }
-        #modalBody { overflow-y: auto; margin-top: 15px; padding-right: 5px; }
-
-        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .detail-item { display: flex; align-items: center; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 6px 0; }
-        .detail-label { color: var(--text-muted); width: 85px; flex-shrink: 0; }
-        .detail-value { color: var(--primary); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        /* Metadata Block Style (Tab 3) */
-        .meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
-        .meta-col { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; }
-        .meta-col h4 { margin: 0 0 12px 0; color: var(--primary); font-size: 12px; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
-        .meta-list { flex-grow: 1; min-height: 250px; max-height: 400px; overflow-y: auto; }
-        .meta-item { background: rgba(0,0,0,0.2); margin-bottom: 4px; border-radius: 6px; border: 1px solid transparent; }
-        .meta-item input { margin-bottom: 0; padding: 8px; font-size: 12px; background: transparent; border: none; color: #fff; }
-        .meta-item.editing { background: #0f172a; border-color: var(--primary); }
-        .meta-item.editing input { background: #1e293b; }
-        .meta-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 12px; }
-        .btn-meta { padding: 8px; border-radius: 6px; border: none; font-size: 11px; font-weight: 600; cursor: pointer; text-transform: uppercase; }
-        .btn-edit-mode { background: rgba(0, 210, 255, 0.1); color: var(--primary); border: 1px solid var(--primary); }
-        .btn-save-mode { background: var(--primary); color: var(--dark); }
-
-        @media (max-width: 480px) { .meta-grid { grid-template-columns: 1fr; } .detail-grid { grid-template-columns: 1fr; } }
-        
-        #workDateDisplay { background: rgba(0, 210, 255, 0.1); border: 1px solid var(--primary); color: var(--primary); font-weight: bold; cursor: pointer; text-align: center; }
-        #searchBox { border: 1px solid var(--primary); background: rgba(0, 210, 255, 0.05); margin-top: 10px; }
-
-        /* Progress & Loading */
-        #top-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(to right, var(--primary), #fff); z-index: 9999; transition: width 0.3s; width: 0%; display: none; }
-        #loading-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px); z-index: 4000; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Toasts */
-        #toast-container { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; display: flex; flex-direction: column; align-items: center; pointer-events: none; }
-        .toast { background: rgba(30, 41, 59, 0.95); color: white; padding: 16px 28px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); text-align: center; border: 1px solid rgba(255,255,255,0.1); animation: toastPop 0.3s forwards; }
-        @keyframes toastPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .header-logo { height: 55px; filter: drop-shadow(0 0 15px var(--primary)) brightness(1.2); }
+        /* Grid Selection Bảng chọn khách hàng */
+        .cust-selection-box { background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 15px; }
+        .cust-header { display: grid; grid-template-columns: 1fr 80px; background: rgba(255,255,255,0.05); padding: 8px 15px; font-size: 11px; font-weight: bold; color: var(--text-muted); }
+        .cust-row { display: grid; grid-template-columns: 1fr 80px; align-items: center; padding: 8px 15px; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer; }
         .cust-row:hover { background: rgba(0, 210, 255, 0.1); }
+        
+        /* Overlays */
+        #lock-screen { position: fixed; inset: 0; background: var(--dark); z-index: 3000; display: flex; justify-content: center; align-items: center; }
+        #loading-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); z-index: 4000; display: none; justify-content: center; align-items: center; flex-direction: column; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Toast */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 5000; }
+        .toast { background: var(--card); color: white; padding: 15px 25px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--primary); box-shadow: 0 10px 20px rgba(0,0,0,0.3); animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
     </style>
 </head>
 <body>
-    
+
+<div id="loading-overlay"><div style="color:var(--primary); font-weight:bold;" id="loading-text">ĐANG XỬ LÝ...</div></div>
 <div id="toast-container"></div>
-<div id="top-progress"></div>
-<div id="loading-overlay"><div class="spinner"></div><div id="loading-text" style="color:var(--primary); font-weight:600; margin-top:10px;">ĐANG XỬ LÝ...</div></div>
-    
+
 <div id="lock-screen">
-    <div class="login-box">
-        <img src="https://lh3.googleusercontent.com/pw/AP1GczNyKJCNBen1I6WeBIOFBHnduEAc-raKjpQsiE-xMOPlkgBLUxSUPtPfnGUO-h_gVE4xbhoZyycDSfpCjJD_uk7EkCLQJEXeuBytxHxBTDS0NEIMKC7RqBA-GIxKhZed7ddwzYsTmKsh5fKxggPZvFM=w483-h154" alt="Logo" style="width: 250px; margin-bottom: 20px;">
-        <h2 style="color:var(--primary); margin:0 0 20px 0;">BÁO CÁO KỸ THUẬT</h2>
+    <div style="width: 320px; background: var(--card); padding: 30px; border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+        <h2 style="color:var(--primary); text-align:center; margin-top:0;">HỆ THỐNG KỸ THUẬT</h2>
         <input type="text" id="userInput" placeholder="Tên đăng nhập">
         <input type="password" id="passInput" placeholder="Mật khẩu">
         <button class="btn-save" onclick="unlock()">ĐĂNG NHẬP</button>
     </div>
 </div>
 
-<div class="container" id="main-content" style="display:none;">
-    <div class="header">
-        <img src="https://lh3.googleusercontent.com/pw/AP1GczNyKJCNBen1I6WeBIOFBHnduEAc-raKjpQsiE-xMOPlkgBLUxSUPtPfnGUO-h_gVE4xbhoZyycDSfpCjJD_uk7EkCLQJEXeuBytxHxBTDS0NEIMKC7RqBA-GIxKhZed7ddwzYsTmKsh5fKxggPZvFM=w483-h154" class="header-logo" alt="Logo">
-        <div style="text-align: right">
-            <span id="helloUser" style="color:var(--primary); font-size:13px; font-weight:600">---</span>
-            <button onclick="logout()" style="color:#ef4444; background:none; border:none; cursor:pointer; margin-left:12px; font-size:12px; font-weight:bold">THOÁT</button>
-            <small id="syncStatus" style="font-size:10px; color:var(--text-muted); display:block; margin-top:4px">Đang đồng bộ...</small>
-        </div>
+<div id="main-content" style="display:none;">
+    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3 style="color:var(--primary); margin:0;">TECH SYSTEM V5</h3>
+        <button onclick="logout()" style="color:#ef4444; background:none; border:none; font-weight:bold; cursor:pointer;">THOÁT</button>
     </div>
 
-    <div class="tab-navigation" id="tabBar" style="display:none;">
-        <button class="tab-btn active" onclick="switchTab('data-tab', this)">📊 Bảng Dữ Liệu</button>
-        <button class="tab-btn" onclick="switchTab('form-tab', this)">📑 Báo Cáo Mới</button>
-        <button class="tab-btn" id="btnTabMeta" onclick="switchTab('meta-tab', this)">🧱 Thông Tin Khối</button>
-        <button class="tab-btn" id="btnTabUser" onclick="switchTab('user-tab', this)">👥 Tài Khoản</button>
+    <div class="tab-navigation" id="tabBar">
+        <button class="tab-btn active" onclick="switchTab('data-tab', this)">📊 Dữ liệu</button>
+        <button class="tab-btn" id="btnTabForm" onclick="switchTab('form-tab', this)">📑 Báo cáo</button>
+        <button class="tab-btn" id="btnTabMeta" onclick="switchTab('meta-tab', this)">🧱 Khối</button>
+        <button class="tab-btn" id="btnTabUser" onclick="switchTab('user-tab', this)">👥 User</button>
         <button class="tab-btn" id="btnTabDoc" onclick="switchTab('doc-tab', this)">📂 Tài liệu</button>
     </div>
 
     <div id="data-tab" class="tab-content active">
-        <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="🔍 Tìm kiếm nhanh (Máy, khách, nội dung...)">
+        <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="🔍 Tìm kiếm nhanh khách hàng, nội dung...">
         <div class="table-container">
             <table>
-                <thead>
-                    <tr><th>Ngày làm</th><th>Khách hàng</th><th>Loại máy</th><th>Hỗ trợ</th><th>Nội dung</th><th>Kỹ thuật</th><th>Ghi chú</th></tr>
-                </thead>
+                <thead><tr><th>Ngày</th><th>Khách hàng</th><th>Máy</th><th>Kỹ thuật</th><th>Nội dung</th></tr></thead>
                 <tbody id="tableBody"></tbody>
             </table>
         </div>
     </div>
 
     <div id="form-tab" class="tab-content">
-        <div id="formContainer" style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
-            <input type="text" id="workDateDisplay" readonly onclick="document.getElementById('dateModal').style.display='flex'">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <select id="customer"><option value="">Tải khách hàng...</option></select>
-                <select id="techName"><option value="">Tải kỹ thuật...</option></select>
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <select id="machineType"><option value="">-- Loại máy --</option></select>
-                <select id="supportType"><option value="">-- Hỗ trợ --</option></select>
-            </div>
-            <textarea id="content" placeholder="Mô tả công việc thực hiện (Bắt buộc)..." style="height:100px"></textarea>
-            <input type="text" id="note" placeholder="Ghi chú thêm (Không bắt buộc)...">
-            <button class="btn-save" id="btnSave" onclick="saveData()">LƯU BÁO CÁO</button>
+        <div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary);">
+            <input type="date" id="workDate">
+            <select id="customer"></select>
+            <select id="techName"></select>
+            <select id="machineType"></select>
+            <select id="supportType"></select>
+            <textarea id="content" rows="4" placeholder="Nội dung chi tiết công việc..."></textarea>
+            <input type="text" id="note" placeholder="Ghi chú thêm...">
+            <button class="btn-save" onclick="saveData()">LƯU BÁO CÁO</button>
         </div>
     </div>
 
     <div id="meta-tab" class="tab-content">
-        <div class="meta-grid">
-            <div class="meta-col">
-                <h4>KHÁCH HÀNG</h4>
-                <div class="meta-list" id="list-customers"></div>
-                <div class="meta-actions">
-                    <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('customers')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('customers')">LƯU</button>
-                </div>
-            </div>
-            <div class="meta-col">
-                <h4>LOẠI MÁY</h4>
-                <div class="meta-list" id="list-machineTypes"></div>
-                <div class="meta-actions">
-                    <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('machineTypes')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('machineTypes')">LƯU</button>
-                </div>
-            </div>
-            <div class="meta-col">
-                <h4>KỸ THUẬT</h4>
-                <div class="meta-list" id="list-techs"></div>
-                <div class="meta-actions">
-                    <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('techs')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('techs')">LƯU</button>
-                </div>
-            </div>
-            <div class="meta-col">
-                <h4>HỖ TRỢ</h4>
-                <div class="meta-list" id="list-supports"></div>
-                <div class="meta-actions">
-                    <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('supports')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('supports')">LƯU</button>
-                </div>
-            </div>
-        </div>
+        <div id="meta-container"></div>
     </div>
 
     <div id="user-tab" class="tab-content">
-    <div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
-        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-            <input type="text" id="u_id" placeholder="User ID (Tên đăng nhập)">
-            <input type="text" id="u_name" placeholder="Họ tên">
-            <input type="text" id="u_pass" placeholder="Mật khẩu">
+        <div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <input type="text" id="u_id" placeholder="Tên đăng nhập">
+                <input type="text" id="u_name" placeholder="Họ tên">
+                <input type="text" id="u_pass" placeholder="Mật khẩu">
+                <select id="u_role"><option value="VIEWER">VIEWER</option><option value="EDIT">EDIT</option><option value="ADMIN">ADMIN</option></select>
+            </div>
+            <p style="font-size:12px; color:var(--primary); margin:5px 0;">Quyền xem khách hàng:</p>
+            <div class="cust-selection-box">
+                <div class="cust-header"><div>TÊN KHÁCH HÀNG</div><div style="text-align:center">CHO PHÉP</div></div>
+                <div id="user_customer_checks" style="max-height:150px; overflow-y:auto;"></div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:5px;">
+                <button class="btn-save" onclick="saveUser(false)" style="background:#065f46">THÊM</button>
+                <button class="btn-save" onclick="saveUser(true)" style="background:#1e3a8a">LƯU</button>
+                <button class="btn-save" onclick="deleteUser()" style="background:#7f1d1d">XÓA</button>
+                <button class="btn-save" onclick="resetUserForm()" style="background:#475569">MỚI</button>
+            </div>
         </div>
-        <div style="display:grid; grid-template-columns: 1fr 2fr; gap:10px;">
-            <select id="u_role">
-                <option value="VIEWER">VIEWER</option>
-                <option value="EDIT">EDIT</option>
-                <option value="ADMIN">ADMIN</option>
-            </select>
-            <input type="text" id="u_access" placeholder="Quyền truy cập (ALL hoặc Khách A, Khách B...)">
-        </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px; margin-top:10px;">
-            <button class="btn-save" onclick="addUser()" style="background:#065f46">➕ THÊM</button>
-            <button class="btn-save" onclick="updateUser()" style="background:#1e3a8a">💾 CẬP NHẬT</button>
-            <button class="btn-save" onclick="deleteUser()" style="background:#7f1d1d">🗑️ XÓA</button>
-            <button class="btn-save" onclick="resetUserForm()" style="background:#475569">🧹 LÀM MỚI</button>
+        <div class="table-container">
+            <table><thead><tr><th>ID</th><th>Tên</th><th>Quyền</th><th>Truy cập</th></tr></thead><tbody id="userTableBody"></tbody></table>
         </div>
     </div>
-    
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>User ID</th>
-                    <th>Họ tên</th>
-                    <th>Quyền</th>
-                    <th>Mật khẩu</th>
-                    <th>Truy cập</th>
-                </tr>
-            </thead>
-            <tbody id="userTableBody"></tbody>
-        </table>
-    </div>
-</div>
 
     <div id="doc-tab" class="tab-content">
-    <div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
-        <div style="display:grid; grid-template-columns: 1fr 2fr; gap:10px;">
-            <input type="text" id="doc_name" placeholder="Tên tài liệu (VD: Hướng dẫn sử dụng...)">
-            <input type="text" id="doc_link" placeholder="Dán link tài liệu vào đây (Google Drive, Dropbox...)">
-        </div>
-        
-        <p style="font-size: 12px; color: var(--primary); margin: 5px 0;">Chọn khách hàng được phép xem (Để trống = Tất cả):</p>
-        <p style="font-size: 12px; color: var(--primary); margin: 5px 0;">Phân quyền xem tài liệu:</p>
-        <div style="background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--border); overflow: hidden;">
-            <div style="display: grid; grid-template-columns: 1fr 80px; background: rgba(255,255,255,0.05); padding: 8px 15px; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; color: var(--text-muted);">
-                <div>TÊN KHÁCH HÀNG</div>
-                <div style="text-align: center;">CHỌN</div>
+        <div id="doc-admin-panel" style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
+            <input type="text" id="doc_name" placeholder="Tên tài liệu">
+            <input type="text" id="doc_link" placeholder="Link tải tài liệu">
+            <p style="font-size:12px; color:var(--primary); margin:5px 0;">Hiển thị cho khách hàng:</p>
+            <div class="cust-selection-box">
+                <div class="cust-header"><div>TÊN KHÁCH HÀNG</div><div style="text-align:center">CHỌN</div></div>
+                <div id="doc_customer_checks" style="max-height:150px; overflow-y:auto;"></div>
             </div>
-            <div id="doc_customer_checks" style="max-height: 200px; overflow-y: auto; padding: 5px 0;">
-                </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:5px;">
+                <button class="btn-save" onclick="handleDoc(false)" style="background:#065f46">THÊM</button>
+                <button class="btn-save" onclick="handleDoc(true)" style="background:#1e3a8a">LƯU</button>
+                <button class="btn-save" onclick="deleteDoc()" style="background:#7f1d1d">XÓA</button>
+                <button class="btn-save" onclick="resetDocForm()" style="background:#475569">MỚI</button>
+            </div>
         </div>
-
-        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:15px;">
-            <button class="btn-save" onclick="addDoc()" style="background:#065f46">➕ THÊM</button>
-            <button class="btn-save" id="btnUpdateDoc" onclick="updateDoc()" style="background:#1e3a8a; display:none;">💾 CẬP NHẬT</button>
-            <button class="btn-save" id="btnDeleteDoc" onclick="deleteDoc()" style="background:#7f1d1d; display:none;">🗑️ XÓA</button>
-            <button class="btn-save" onclick="resetDocForm()" style="background:#475569">🧹 LÀM MỚI</button>
-        </div>
-    </div>
-
-    <input type="text" id="searchDoc" onkeyup="filterDocs()" placeholder="🔍 Tìm kiếm tài liệu..." style="border: 1px solid var(--primary); background: rgba(0,210,255,0.05);">
-    
-    <div id="doc_list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 10px;">
-        </div>
-</div>
-</div>
-
-<div id="infoModal" class="modal" onclick="if(event.target==this) this.style.display='none'">
-    <div class="modal-content">
-        <h3 style="color:var(--primary); text-align:center; margin:0 0 20px 0">CHI TIẾT 🔎</h3>
-        <div id="modalBody"></div>
-        <button class="btn-save" style="margin-top:25px" onclick="document.getElementById('infoModal').style.display='none'">ĐÓNG</button>
-    </div>
-</div>
-
-<div id="dateModal" class="modal" onclick="if(event.target==this) this.style.display='none'">
-    <div class="modal-content" style="text-align:center">
-        <h4 style="margin:0 0 15px 0">CHỌN NGÀY LÀM VIỆC</h4>
-        <input type="date" id="hiddenDate" onchange="confirmDate(this.value)">
-        <button class="btn-save" onclick="document.getElementById('dateModal').style.display='none'">XÁC NHẬN</button>
+        <div id="doc_display_list" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:15px;"></div>
     </div>
 </div>
 
@@ -312,7 +159,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
 <script>
-    // --- FIREBASE CONFIG (ORIGINAL) ---
+    // --- CẤU HÌNH FIREBASE ---
     const firebaseConfig = {
         apiKey: "AIzaSyC-WW6N3ZzmZ8gk_XypHWa3oW6VJMMGloM",
         authDomain: "data-260206.firebaseapp.com",
@@ -321,522 +168,277 @@
         messagingSenderId: "992766098254",
         appId: "1:992766098254:web:8e9f5d3216541023d03c1f"
     };
-if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
+    firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Sửa lỗi Logger.ts:115 bằng cách kiểm tra trước khi set settings
+    // Fix lỗi settings lặp lại
     try {
-        db.settings({
-            experimentalForceLongPolling: true,
-            useFetchStreams: false
-        });
-    } catch (e) {
-        console.warn("Firestore settings đã được thiết lập trước đó.");
-    }
+        db.settings({ experimentalForceLongPolling: true });
+    } catch(e) {}
 
-    // 2. Cập nhật hàm Load Checkbox cho Tab 4 và Tab 5 (Dạng cột)
-    function loadCustomerCheckboxesUI(containerId, checkboxName, customers) {
-        const container = document.getElementById(containerId);
-        if (!container) return;
-        
-        container.innerHTML = (customers || []).map(c => `
-            <label style="display: grid; grid-template-columns: 1fr 80px; align-items: center; padding: 8px 15px; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer;">
-                <span style="font-size: 13px;">${c}</span>
-                <div style="text-align: center;">
-                    <input type="checkbox" name="${checkboxName}" value="${c}" style="width: 18px; height: 18px; accent-color: var(--primary);">
-                </div>
-            </label>
-        `).join('');
-    }
+    let AUTH = JSON.parse(localStorage.getItem('tech_auth_v5')) || null;
+    let selectedUserId = null;
+    let selectedDocId = null;
 
-    // 3. Hàm Fetch Metadata cập nhật đồng thời cả 2 Tab
-    function fetchMetadata() {
-        db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
-            if (doc.exists) {
-                const d = doc.data();
-                const customers = d.customers || [];
-                
-                // Cập nhật dropdown cho Form báo cáo (Tab 2)
-                updateDropdowns(d); 
-                
-                // Cập nhật bảng chọn khách hàng cho User (Tab 4)
-                loadCustomerCheckboxesUI('user_customer_checks', 'u_access_cust', customers);
-                
-                // Cập nhật bảng chọn khách hàng cho Tài liệu (Tab 5)
-                loadCustomerCheckboxesUI('doc_customer_checks', 'doc_cust', customers);
-            }
-        });
-    }
+    // --- KHỞI CHẠY ---
+    window.onload = () => {
+        if (AUTH && new Date().getTime() < AUTH.expire) showApp();
+        else logout();
+    };
 
-    // 4. Sửa hàm Unlock để lấy đúng quyền 'access'
+    // --- XÁC THỰC ---
     async function unlock() {
         const u = document.getElementById('userInput').value.trim();
         const p = document.getElementById('passInput').value.trim();
-        showLoading(true, "ĐANG XÁC THỰC...");
+        showLoading(true);
         try {
             const userDoc = await db.collection("users").doc(u).get();
             if (userDoc.exists && userDoc.data().pass === p) {
-                const userData = userDoc.data();
-                USER_ROLE = userData.role;
+                const d = userDoc.data();
                 AUTH = { 
-                    user: u, 
-                    role: USER_ROLE, 
-                    access: userData.access || "", // Quan trọng để Viewer lọc được dữ liệu
+                    user: u, role: d.role, 
+                    access: d.access || "", 
                     expire: new Date().getTime() + (24*60*60*1000) 
                 };
-                localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
-                showApp(); 
-                fetchData();
-                fetchMetadata(); // Khởi tạo các bảng chọn khách hàng
-            } else { 
-                showToast("Sai tài khoản hoặc mật khẩu!", "error"); 
-            }
-        } catch (e) { 
-            showToast("Lỗi kết nối Firestore!", "error"); 
-        }
+                localStorage.setItem('tech_auth_v5', JSON.stringify(AUTH));
+                showApp();
+            } else { showToast("Sai tài khoản hoặc mật khẩu!", "error"); }
+        } catch(e) { showToast("Lỗi kết nối!", "error"); }
         showLoading(false);
     }
 
-    // 5. Hàm lưu User với danh sách khách hàng đã chọn (Tab 4)
-    async function saveUserLogic(isUpdate = false) {
-        const id = document.getElementById('u_id').value.trim();
-        const selectedCusts = Array.from(document.querySelectorAll('input[name="u_access_cust"]:checked'))
-                                   .map(cb => cb.value)
-                                   .join(', ');
+    function showApp() {
+        document.getElementById('lock-screen').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
         
-        const userData = {
-            name: document.getElementById('u_name').value,
-            role: document.getElementById('u_role').value,
-            pass: document.getElementById('u_pass').value,
-            access: selectedCusts
-        };
-
-        try {
-            if (isUpdate) {
-                await db.collection("users").doc(id).update(userData);
-                showToast("Cập nhật thành công!", "success");
-            } else {
-                await db.collection("users").doc(id).set(userData);
-                showToast("Thêm User thành công!", "success");
-            }
-        } catch (e) {
-            showToast("Lỗi: " + e.message, "error");
-        }
-    }
-    // --- UI RENDER (KHÔI PHỤC CẤU TRÚC GỐC CỦA BẠN) ---
-    function renderData(data) {
-        window.currentLogs = data.logs.slice(1);
-        const html = window.currentLogs.map((row, index) => `
-            <tr onclick="openInfoModal(${index})">
-                <td style="color:var(--text-muted)">${formatVN(row[1])}</td>
-                <td><b style="color:var(--primary)">${row[2] || ''}</b></td>
-                <td style="font-size:11px"><span class="badge-mec">${row[3] || ''}</span></td>
-                <td><small>${row[4] || ''}</small></td>
-                <td style="color:#cbd5e1">${(row[5]||"").substring(0,30)}${(row[5]||"").length>30?'...':''}</td>
-                <td><span class="badge-tech">${row[6] || ''}</span></td>
-                <td style="font-style:italic; color:var(--text-muted); font-size:12px">
-                    ${(row[8] || '').substring(0,15)}${(row[8]||'').length > 15 ? '...' : ''}
-                </td>
-            </tr>
-        `).join('');
-        document.getElementById('tableBody').innerHTML = html;
-        document.getElementById('syncStatus').innerText = "Đồng bộ: " + new Date().toLocaleTimeString();
-    }
-
-    function updateDropdowns(d) {
-        const update = (id, list, txt) => {
-            const select = document.getElementById(id);
-            const val = select.value;
-            select.innerHTML = `<option value="">-- ${txt} --</option>` + list.map(i => `<option value="${i}">${i}</option>`).join('');
-            select.value = val;
-        };
-        if(d.customers) update('customer', d.customers, 'Khách hàng');
-        if(d.techs) update('techName', d.techs, 'Kỹ thuật');
-        if(d.machineTypes) update('machineType', d.machineTypes, 'Loại máy');
-        if(d.supports) update('supportType', d.supports, 'Hỗ trợ');
-    }
-
-    // --- POPUP CHI TIẾT (KHÔI PHỤC CẤU TRÚC GỐC CỦA BẠN) ---
-    function openInfoModal(index) {
-        const row = window.currentLogs[index];
-        const isAdmin = (AUTH && AUTH.role === "ADMIN");
-        let modalHtml = `
-            <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border)">
-                <div class="detail-grid">
-                    <div class="detail-item"><span class="detail-label">🗓️ Ngày làm:</span><span class="detail-value">${formatVN(row[1])}</span></div>
-                    <div class="detail-item"><span class="detail-label">🕵️‍♂️ Khách:</span><span class="detail-value">${row[2]}</span></div>
-                    <div class="detail-item"><span class="detail-label">⚙️ Loại máy:</span><span class="detail-value">${row[3] || '---'}</span></div>
-                    <div class="detail-item"><span class="detail-label">📌 Hỗ trợ:</span><span class="detail-value">${row[4] || '---'}</span></div>
-                    <div class="detail-item"><span class="detail-label">👷‍♂️ Kỹ thuật:</span><span class="detail-value">${row[6]}</span></div>
-                    <div class="detail-item"><span class="detail-label">🪪 User:</span><span class="detail-value">${row[7] || '---'}</span></div>
-                </div>
-                <div style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px">
-                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">📝 NỘI DUNG:</p>
-                    <div style="white-space:pre-wrap; color:#fff; background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; font-size:14px;">${row[5]}</div>
-                </div>
-                <div style="margin-top:10px">
-                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">🗒️ GHI CHÚ:</p>
-                    <div style="color:var(--primary); font-style:italic; font-size:13px">${row[8] || 'Không có ghi chú.'}</div>
-                </div>
-            </div>
-        `;
-        if (isAdmin) {
-            modalHtml += `<div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px">
-                <button onclick="deleteLog('${row[0]}')" style="background:#450a0a; color:#f87171; border:1px solid #7f1d1d; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold">🗑️ XÓA</button>
-                <button onclick="editLog(${index})" style="background:#1e1b4b; color:#818cf8; border:1px solid #312e81; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold">✏️ SỬA</button>
-            </div>`;
-        }
-        document.getElementById('modalBody').innerHTML = modalHtml;
-        document.getElementById('infoModal').style.display = 'flex';
-    }
-
-    // --- TAB 3 LOGIC (THEO YÊU CẦU MỚI) ---
-    function renderMetaBlock(data) {
-        const renderCol = (id, list) => {
-            const container = document.getElementById('list-' + id);
-            const fullList = [...(list || []), "", "", ""]; // Thêm dòng trống để nhập mới
-            container.innerHTML = fullList.map(v => `<div class="meta-item"><input type="text" value="${v}" readonly></div>`).join('');
-        };
-        renderCol('customers', data.customers);
-        renderCol('machineTypes', data.machineTypes);
-        renderCol('techs', data.techs);
-        renderCol('supports', data.supports);
-    }
-
-    function enableMetaEdit(id) {
-        document.querySelectorAll(`#list-${id} .meta-item`).forEach(item => {
-            item.classList.add('editing');
-            item.querySelector('input').readOnly = false;
-        });
-        showToast("Đã mở chế độ sửa", "info");
-    }
-
-    async function saveMetaData(id) {
-        const inputs = document.querySelectorAll(`#list-${id} input`);
-        const newList = [...new Set(Array.from(inputs).map(i => i.value.trim()).filter(v => v !== ""))];
-        showLoading(true, "ĐANG CẬP NHẬT...");
-        try {
-            await db.collection("metadata").doc("dropdowns").update({ [id]: newList });
-            showToast("Cập nhật thành công!", "success");
-        } catch (e) { showToast("Lỗi khi lưu dữ liệu!", "error"); }
-        showLoading(false);
-    }
-
-    // --- OTHER LOGIC (GIỮ NGUYÊN GỐC) ---
-    async function saveData() {
-        const d = document.getElementById('hiddenDate').value;
-        const c = document.getElementById('customer').value;
-        const n = document.getElementById('content').value.trim();
-        if(!c || !n) return showToast("Vui lòng điền đủ thông tin!", "error");
-        showLoading(true, "ĐANG LƯU...");
-        try {
-            await db.collection("logs").add({
-                workDate: d, customer: c, tech: document.getElementById('techName').value,
-                machineType: document.getElementById('machineType').value,
-                support: document.getElementById('supportType').value,
-                content: n, note: document.getElementById('note').value.trim(),
-                createdBy: AUTH.user, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            showToast("Đã lưu báo cáo!", "success");
-            resetSaveButton(); switchTab('data-tab', document.querySelector('.tab-btn'));
-        } catch (e) { showToast("Lỗi khi lưu!", "error"); }
-        showLoading(false);
-    }
-
-    async function deleteLog(id) {
-        if(!confirm("Xóa báo cáo này?")) return;
-        showLoading(true);
-        await db.collection("logs").doc(id).delete();
-        document.getElementById('infoModal').style.display = 'none';
-        showLoading(false);
-    }
-
-    function editLog(index) {
-        const row = window.currentLogs[index];
-        document.getElementById('infoModal').style.display = 'none';
-        switchTab('form-tab', document.querySelectorAll('.tab-btn')[1]);
-        document.getElementById('hiddenDate').value = row[1];
-        document.getElementById('workDateDisplay').value = formatVN(row[1]);
-        document.getElementById('customer').value = row[2];
-        document.getElementById('machineType').value = row[3];
-        document.getElementById('supportType').value = row[4];
-        document.getElementById('content').value = row[5];
-        document.getElementById('techName').value = row[6];
-        document.getElementById('note').value = row[8] || "";
-        const btn = document.getElementById('btnSave');
-        btn.innerHTML = "💾 CẬP NHẬT";
-        btn.onclick = async () => {
-            showLoading(true);
-            await db.collection("logs").doc(row[0]).update({
-                workDate: document.getElementById('hiddenDate').value,
-                customer: document.getElementById('customer').value,
-                content: document.getElementById('content').value.trim(),
-                note: document.getElementById('note').value.trim(),
-                tech: document.getElementById('techName').value,
-                machineType: document.getElementById('machineType').value,
-                support: document.getElementById('supportType').value
-            });
-            showLoading(false); resetSaveButton(); switchTab('data-tab', document.querySelector('.tab-btn'));
-        };
-    }
-
-    function resetSaveButton() {
-        const btn = document.getElementById('btnSave');
-        btn.innerHTML = "LƯU BÁO CÁO";
-        btn.onclick = saveData;
-        document.getElementById('content').value = '';
-        document.getElementById('note').value = '';
+        applyPermissions();
+        fetchData();
+        fetchMetadata();
+        if(AUTH.role === "ADMIN") fetchUsers();
+        fetchDocs();
     }
 
     function applyPermissions() {
-        const currentRole = AUTH ? AUTH.role : USER_ROLE;
-        document.getElementById('tabBar').style.display = currentRole === "VIEWER" ? "none" : "flex";
-        document.getElementById('btnTabMeta').style.display = currentRole === "ADMIN" ? "block" : "none";
+        const r = AUTH.role;
+        document.getElementById('btnTabForm').style.display = (r === 'ADMIN' || r === 'EDIT') ? 'block' : 'none';
+        document.getElementById('btnTabMeta').style.display = (r === 'ADMIN') ? 'block' : 'none';
+        document.getElementById('btnTabUser').style.display = (r === 'ADMIN') ? 'block' : 'none';
+        document.getElementById('doc-admin-panel').style.display = (r === 'ADMIN' || r === 'EDIT') ? 'block' : 'none';
     }
 
-    function showApp() { document.getElementById('lock-screen').style.display = 'none'; document.getElementById('main-content').style.display = 'block'; document.getElementById('helloUser').innerText = "Chào, " + AUTH.user; }
-    function logout() { localStorage.removeItem('tech_auth_v4'); location.reload(); }
-    function setInitialDate() { const iso = new Date().toISOString().split('T')[0]; document.getElementById('hiddenDate').value = iso; document.getElementById('workDateDisplay').value = formatVN(iso); }
-    function confirmDate(v) { document.getElementById('workDateDisplay').value = formatVN(v); document.getElementById('dateModal').style.display = 'none'; }
-    function formatVN(s) { if(!s) return ''; const d = new Date(s); return d.getDate().toString().padStart(2,'0')+'/'+(d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getFullYear(); }
-    function filterTable() { const v = document.getElementById('searchBox').value.toUpperCase(); const rows = document.getElementById('tableBody').getElementsByTagName('tr'); for (let r of rows) r.style.display = r.innerText.toUpperCase().includes(v) ? "" : "none"; }
-    function showLoading(s, t) { document.getElementById('loading-overlay').style.display = s ? 'flex' : 'none'; if(t) document.getElementById('loading-text').innerText = t; }
-    function showToast(m, type) { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = m; c.appendChild(t); setTimeout(() => t.remove(), 2500); }
-    // --- LOGIC QUẢN LÝ TÀI KHOẢN (TAB 4) ---
+    // --- DỮ LIỆU BÁO CÁO (TAB 1) ---
+    function fetchData() {
+        let query = db.collection("logs").orderBy("createdAt", "desc").limit(200);
+        if (AUTH.role === "VIEWER") {
+            const allowed = AUTH.access.split(",").map(s => s.trim()).filter(s => s !== "");
+            if (allowed.length > 0) query = query.where("customer", "in", allowed);
+            else { document.getElementById('tableBody').innerHTML = ""; return; }
+        }
 
-// 1. Tự động lấy danh sách user khi tab mở
-function fetchUsers() {
-    if (AUTH.role !== "ADMIN") return;
-    db.collection("users").onSnapshot((snapshot) => {
-        const html = snapshot.docs.map(doc => {
-            const u = doc.data();
-            return `
-                <tr onclick="loadUserToForm('${doc.id}', '${u.name}', '${u.role}', '${u.pass}', '${u.access || ""}')">
-                    <td><b style="color:var(--primary)">${doc.id}</b></td>
-                    <td>${u.name}</td>
-                    <td><span class="badge-tech">${u.role}</span></td>
-                    <td>••••••</td>
-                    <td style="font-size:11px; color:var(--text-muted)">${u.access || 'ALL'}</td>
-                </tr>
-            `;
-        }).join('');
-        document.getElementById('userTableBody').innerHTML = html;
-    });
-}
+        query.onSnapshot(snap => {
+            document.getElementById('tableBody').innerHTML = snap.docs.map(doc => {
+                const d = doc.data();
+                return `<tr onclick="alert('${d.content}')">
+                    <td>${d.workDate}</td>
+                    <td><b>${d.customer}</b></td>
+                    <td>${d.machineType}</td>
+                    <td>${d.tech}</td>
+                    <td style="color:var(--text-muted)">${d.content.substring(0,40)}...</td>
+                </tr>`;
+            }).join('');
+        });
+    }
 
-// 2. Load dữ liệu từ bảng lên form khi kích vào dòng
-function loadUserToForm(id, name, role, pass, access) {
-    document.getElementById('u_id').value = id;
-    document.getElementById('u_id').readOnly = true; // Không cho sửa ID khi đang chế độ cập nhật
-    document.getElementById('u_name').value = name;
-    document.getElementById('u_role').value = role;
-    document.getElementById('u_pass').value = pass;
-    document.getElementById('u_access').value = access;
-    showToast("Đã chọn user: " + id, "info");
-}
+    async function saveData() {
+        const data = {
+            workDate: document.getElementById('workDate').value,
+            customer: document.getElementById('customer').value,
+            tech: document.getElementById('techName').value,
+            machineType: document.getElementById('machineType').value,
+            support: document.getElementById('supportType').value,
+            content: document.getElementById('content').value,
+            note: document.getElementById('note').value,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            createdBy: AUTH.user
+        };
+        showLoading(true);
+        await db.collection("logs").add(data);
+        showToast("Đã lưu báo cáo thành công!", "success");
+        switchTab('data-tab', document.querySelector('.tab-btn'));
+        showLoading(false);
+    }
 
-// 3. Thêm User mới
-async function addUser() {
-    const id = document.getElementById('u_id').value.trim();
-    if(!id) return showToast("Vui lòng nhập User ID", "error");
-    
-    showLoading(true, "ĐANG TẠO...");
-    try {
-        await db.collection("users").doc(id).set({
+    // --- QUẢN LÝ KHỐI (TAB 3) ---
+    function fetchMetadata() {
+        db.collection("metadata").doc("dropdowns").onSnapshot(doc => {
+            if (!doc.exists) return;
+            const d = doc.data();
+            const custs = d.customers || [];
+            
+            // Load dropdowns tab báo cáo
+            const updateSelect = (id, list) => {
+                document.getElementById(id).innerHTML = list.map(v => `<option value="${v}">${v}</option>`).join('');
+            };
+            updateSelect('customer', custs);
+            updateSelect('techName', d.techs || []);
+            updateSelect('machineType', d.machineTypes || []);
+            updateSelect('supportType', d.supports || []);
+
+            // Load Checkbox bảng chọn (Tab 4 & 5)
+            const fillChecks = (containerId, name) => {
+                document.getElementById(containerId).innerHTML = custs.map(c => `
+                    <label class="cust-row">
+                        <span>${c}</span>
+                        <input type="checkbox" name="${name}" value="${c}">
+                    </label>
+                `).join('');
+            };
+            fillChecks('user_customer_checks', 'u_access_cust');
+            fillChecks('doc_customer_checks', 'doc_cust');
+            
+            if(AUTH.role === "ADMIN") renderMetaAdmin(d);
+        });
+    }
+
+    // --- QUẢN LÝ TÀI KHOẢN (TAB 4) ---
+    function fetchUsers() {
+        db.collection("users").onSnapshot(snap => {
+            document.getElementById('userTableBody').innerHTML = snap.docs.map(doc => {
+                const u = doc.data();
+                return `<tr onclick="loadUserToForm('${doc.id}', '${u.name}', '${u.role}', '${u.pass}', '${u.access || ""}')">
+                    <td><b>${doc.id}</b></td><td>${u.name}</td><td>${u.role}</td><td>${u.access || "ALL"}</td>
+                </tr>`;
+            }).join('');
+        });
+    }
+
+    function loadUserToForm(id, name, role, pass, access) {
+        selectedUserId = id;
+        document.getElementById('u_id').value = id;
+        document.getElementById('u_name').value = name;
+        document.getElementById('u_role').value = role;
+        document.getElementById('u_pass').value = pass;
+        const allowed = access.split(",").map(s => s.trim());
+        document.querySelectorAll('input[name="u_access_cust"]').forEach(ch => ch.checked = allowed.includes(ch.value));
+    }
+
+    async function saveUser(isUpdate) {
+        const id = document.getElementById('u_id').value.trim();
+        const access = Array.from(document.querySelectorAll('input[name="u_access_cust"]:checked')).map(c => c.value).join(", ");
+        const data = {
             name: document.getElementById('u_name').value,
             role: document.getElementById('u_role').value,
             pass: document.getElementById('u_pass').value,
-            access: document.getElementById('u_access').value
-        });
-        showToast("Thêm thành công!", "success");
+            access: access
+        };
+        showLoading(true);
+        if(isUpdate) await db.collection("users").doc(id).update(data);
+        else await db.collection("users").doc(id).set(data);
+        showToast("Thao tác tài khoản thành công!");
         resetUserForm();
-    } catch (e) { showToast("Lỗi: " + e.message, "error"); }
-    showLoading(false);
-}
-
-// 4. Cập nhật User
-async function updateUser() {
-    const id = document.getElementById('u_id').value.trim();
-    showLoading(true, "ĐANG CẬP NHẬT...");
-    try {
-        await db.collection("users").doc(id).update({
-            name: document.getElementById('u_name').value,
-            role: document.getElementById('u_role').value,
-            pass: document.getElementById('u_pass').value,
-            access: document.getElementById('u_access').value
-        });
-        showToast("Đã cập nhật!", "success");
-    } catch (e) { showToast("Lỗi khi cập nhật!", "error"); }
-    showLoading(false);
-}
-
-// 5. Xóa User
-async function deleteUser() {
-    const id = document.getElementById('u_id').value.trim();
-    if(!confirm("Xóa tài khoản " + id + "?")) return;
-    showLoading(true);
-    await db.collection("users").doc(id).delete();
-    resetUserForm();
-    showLoading(false);
-}
-
-function resetUserForm() {
-    document.getElementById('u_id').value = "";
-    document.getElementById('u_id').readOnly = false;
-    document.getElementById('u_name').value = "";
-    document.getElementById('u_pass').value = "";
-    document.getElementById('u_access').value = "";
-}
-
-// Cập nhật hàm applyPermissions để hiển thị tab 4 cho ADMIN
-const originalApplyPermissions = applyPermissions;
-applyPermissions = function() {
-    originalApplyPermissions(); // Chạy hàm cũ
-    const currentRole = AUTH ? AUTH.role : USER_ROLE;
-    document.getElementById('btnTabUser').style.display = currentRole === "ADMIN" ? "block" : "none";
-    if(currentRole === "ADMIN") fetchUsers();
-};
-    let selectedDocId = null;
-
-// 1. Load danh sách khách hàng vào Checkbox (Chỉ gọi khi là Admin/Edit)
-function loadCustomerCheckboxes(customers) {
-    const container = document.getElementById('doc_customer_checks');
-    if (!container) return;
-    
-    if (!customers || customers.length === 0) {
-        container.innerHTML = `<div style="padding:15px; text-align:center; font-size:12px; color:var(--text-muted);">Chưa có dữ liệu khách hàng.</div>`;
-        return;
+        showLoading(false);
     }
 
-    container.innerHTML = customers.map(c => `
-        <label style="display: grid; grid-template-columns: 1fr 80px; align-items: center; padding: 8px 15px; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer; transition: 0.2s;" class="cust-row">
-            <span style="font-size: 13px; color: var(--text-main);">${c}</span>
-            <div style="text-align: center;">
-                <input type="checkbox" name="doc_cust" value="${c}" style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary);">
+    // --- QUẢN LÝ TÀI LIỆU (TAB 5) ---
+    function fetchDocs() {
+        db.collection("documents").onSnapshot(snap => {
+            const allDocs = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
+            let filtered = allDocs;
+            if(AUTH.role === "VIEWER") {
+                const myAccess = AUTH.access.split(",").map(s => s.trim());
+                filtered = allDocs.filter(d => !d.customers || d.customers.length === 0 || d.customers.some(c => myAccess.includes(c)));
+            }
+            
+            document.getElementById('doc_display_list').innerHTML = filtered.map(d => `
+                <div style="background:var(--card); padding:15px; border-radius:12px; border:1px solid var(--border); position:relative;" onclick="loadDocToForm('${d.id}','${d.name}','${d.link}',${JSON.stringify(d.customers||[])})">
+                    <h4 style="margin:0; color:var(--primary)">📄 ${d.name}</h4>
+                    <p style="font-size:11px; color:var(--text-muted); margin:5px 0;">Quyền: ${(!d.customers || d.customers.length===0) ? "Công khai" : d.customers.join(", ")}</p>
+                    <a href="${d.link}" target="_blank" style="display:block; background:var(--secondary); color:white; text-align:center; padding:10px; border-radius:8px; text-decoration:none; margin-top:10px; font-weight:600;">TẢI TÀI LIỆU</a>
+                </div>
+            `).join('');
+        });
+    }
+
+    async function handleDoc(isUpdate) {
+        const custs = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked')).map(c => c.value);
+        const data = {
+            name: document.getElementById('doc_name').value,
+            link: document.getElementById('doc_link').value,
+            customers: custs
+        };
+        showLoading(true);
+        if(isUpdate) await db.collection("documents").doc(selectedDocId).update(data);
+        else await db.collection("documents").add(data);
+        showToast("Lưu tài liệu thành công!");
+        resetDocForm();
+        showLoading(false);
+    }
+
+    function loadDocToForm(id, name, link, custs) {
+        if(AUTH.role === "VIEWER") return;
+        selectedDocId = id;
+        document.getElementById('doc_name').value = name;
+        document.getElementById('doc_link').value = link;
+        document.querySelectorAll('input[name="doc_cust"]').forEach(ch => ch.checked = custs.includes(ch.value));
+    }
+
+    // --- TIỆN ÍCH ---
+    function switchTab(id, btn) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    function showToast(m, type="success") {
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.style.borderLeftColor = type === "error" ? "#ef4444" : "#00d2ff";
+        t.innerText = m;
+        document.getElementById('toast-container').appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+    }
+
+    function showLoading(s) { document.getElementById('loading-overlay').style.display = s ? 'flex' : 'none'; }
+    function logout() { localStorage.removeItem('tech_auth_v5'); location.reload(); }
+    function filterTable() {
+        const v = document.getElementById('searchBox').value.toUpperCase();
+        document.querySelectorAll('#tableBody tr').forEach(tr => {
+            tr.style.display = tr.innerText.toUpperCase().includes(v) ? "" : "none";
+        });
+    }
+    function resetUserForm() {
+        document.getElementById('u_id').value = ""; document.getElementById('u_name').value = "";
+        document.querySelectorAll('input[name="u_access_cust"]').forEach(ch => ch.checked = false);
+    }
+    function resetDocForm() {
+        document.getElementById('doc_name').value = ""; document.getElementById('doc_link').value = "";
+        document.querySelectorAll('input[name="doc_cust"]').forEach(ch => ch.checked = false);
+    }
+
+    // Render Editor cho Admin ở Tab 3
+    function renderMetaAdmin(d) {
+        const container = document.getElementById('meta-container');
+        const keys = [
+            {k:'customers', n:'KHÁCH HÀNG'}, {k:'techs', n:'KỸ THUẬT'}, 
+            {k:'machineTypes', n:'LOẠI MÁY'}, {k:'supports', n:'HỖ TRỢ'}
+        ];
+        container.innerHTML = keys.map(obj => `
+            <div style="background:var(--card); padding:15px; border-radius:12px; border:1px solid var(--border); margin-bottom:15px;">
+                <h4 style="margin:0 0 10px 0; color:var(--primary)">${obj.n}</h4>
+                <textarea id="meta_${obj.k}" rows="3">${(d[obj.k] || []).join(', ')}</textarea>
+                <button class="btn-save" style="padding:8px;" onclick="saveMeta('${obj.k}')">CẬP NHẬT ${obj.n}</button>
             </div>
-        </label>
-    `).join('');
-}
-
-// 2. Lấy dữ liệu tài liệu
-function fetchDocs() {
-    db.collection("documents").onSnapshot((snapshot) => {
-        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderDocs(docs);
-    });
-}
-
-// 3. Hiển thị tài liệu (Có lọc theo quyền Viewer)
-function renderDocs(docs) {
-    const container = document.getElementById('doc_list');
-    let filtered = docs;
-
-    // Phân quyền cho Viewer: Chỉ thấy tài liệu mà khách hàng của họ được phép
-    if (AUTH.role === "VIEWER") {
-        const allowedList = (AUTH.access || "").split(",").map(s => s.trim());
-        filtered = docs.filter(d => {
-            if (!d.customers || d.customers.length === 0) return true; // Trống = Công khai
-            return d.customers.some(c => allowedList.includes(c));
-        });
+        `).join('');
     }
 
-    container.innerHTML = filtered.map(d => `
-        <div class="meta-col" style="cursor:pointer;" onclick="handleDocClick('${d.id}', '${d.name}', '${d.link}', ${JSON.stringify(d.customers || [])})">
-            <h4 style="border:none; margin:0; text-align:left;">📄 ${d.name}</h4>
-            <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Dành cho: ${(!d.customers || d.customers.length === 0) ? 'Tất cả' : d.customers.join(', ')}</div>
-            <a href="${d.link}" target="_blank" onclick="event.stopPropagation()" style="background:var(--primary); color:var(--dark); text-decoration:none; padding:8px; border-radius:6px; text-align:center; font-weight:600; font-size:12px;">TẢI TÀI LIỆU</a>
-        </div>
-    `).join('');
-}
-
-function handleDocClick(id, name, link, custs) {
-    if (AUTH.role === "VIEWER") return; // Viewer chỉ được tải, không được sửa
-    selectedDocId = id;
-    document.getElementById('doc_name').value = name;
-    document.getElementById('doc_link').value = link;
-    
-    // Check vào các ô khách hàng
-    const checks = document.querySelectorAll('input[name="doc_cust"]');
-    checks.forEach(ch => ch.checked = custs.includes(ch.value));
-    
-    document.getElementById('btnUpdateDoc').style.display = 'block';
-    document.getElementById('btnDeleteDoc').style.display = 'block';
-    showToast("Đã chọn: " + name, "info");
-}
-
-async function addDoc() {
-    const name = document.getElementById('doc_name').value.trim();
-    const link = document.getElementById('doc_link').value.trim();
-    if (!name || !link) return showToast("Vui lòng nhập tên và link!", "error");
-
-    const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked')).map(cb => cb.value);
-    
-    showLoading(true);
-    await db.collection("documents").add({
-        name, link, customers: selectedCusts, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    resetDocForm();
-    showLoading(false);
-}
-
-async function updateDoc() {
-    const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked')).map(cb => cb.value);
-    showLoading(true);
-    await db.collection("documents").doc(selectedDocId).update({
-        name: document.getElementById('doc_name').value,
-        link: document.getElementById('doc_link').value,
-        customers: selectedCusts
-    });
-    resetDocForm();
-    showLoading(false);
-}
-
-async function deleteDoc() {
-    if(!confirm("Xóa tài liệu này?")) return;
-    showLoading(true);
-    await db.collection("documents").doc(selectedDocId).delete();
-    resetDocForm();
-    showLoading(false);
-}
-
-function resetDocForm() {
-    selectedDocId = null;
-    document.getElementById('doc_name').value = "";
-    document.getElementById('doc_link').value = "";
-    document.querySelectorAll('input[name="doc_cust"]').forEach(ch => ch.checked = false);
-    document.getElementById('btnUpdateDoc').style.display = 'none';
-    document.getElementById('btnDeleteDoc').style.display = 'none';
-}
-
-function filterDocs() {
-    const val = document.getElementById('searchDoc').value.toUpperCase();
-    const cards = document.querySelectorAll('#doc_list .meta-col');
-    cards.forEach(c => c.style.display = c.innerText.toUpperCase().includes(val) ? "" : "none");
-}
-
-// Cập nhật hàm applyPermissions để hiển thị tab 5
-const finalApplyPermissions = applyPermissions;
-applyPermissions = function() {
-    finalApplyPermissions();
-    const currentRole = AUTH ? AUTH.role : USER_ROLE;
-    // Tab tài liệu hiện với tất cả mọi người, nhưng Form thêm xóa chỉ hiện với Admin/Edit
-    document.getElementById('btnTabDoc').style.display = "block"; 
-    fetchDocs();
-    
-    // Nếu là Viewer, ẩn form nhập tài liệu
-    const docForm = document.querySelector('#doc-tab > div:first-child');
-    if(currentRole === "VIEWER") docForm.style.display = 'none';
-    else docForm.style.display = 'block';
-};
-
-// Cập nhật hàm updateDropdowns để load checkbox khách hàng
-const originalUpdateDropdowns = updateDropdowns;
-updateDropdowns = function(d) {
-    originalUpdateDropdowns(d);
-    if(d.customers) loadCustomerCheckboxes(d.customers);
-};
+    async function saveMeta(key) {
+        const val = document.getElementById(`meta_${key}`).value.split(',').map(s => s.trim()).filter(s => s !== "");
+        showLoading(true);
+        await db.collection("metadata").doc("dropdowns").update({ [key]: val });
+        showToast("Đã cập nhật dữ liệu khối!");
+        showLoading(false);
+    }
 </script>
 </body>
 </html>
