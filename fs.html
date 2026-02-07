@@ -270,8 +270,8 @@
         </div>
         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px; margin-top:10px;">
             <button class="btn-save" onclick="addUser()" style="background:#065f46">➕ THÊM</button>
-            <button class="btn-save" onclick="updateUser()" style="background:#1e3a8a; display:none;">💾 CẬP NHẬT</button>
-            <button class="btn-save" onclick="deleteUser()" style="background:#7f1d1d; display:none;">🗑️ XÓA</button>
+            <button class="btn-save" id="btnUpdateUser" onclick="updateUser()" style="background:#1e3a8a; display:none;">💾 CẬP NHẬT</button>
+	    <button class="btn-save" id="btnDeleteUser" onclick="deleteUser()" style="background:#7f1d1d; display:none;">🗑️ XÓA</button>
             <button class="btn-save" onclick="resetUserForm()" style="background:#475569">🧹 LÀM MỚI</button>
         </div>
     
@@ -726,9 +726,9 @@ function loadUserToForm(id, name, role, pass, access) {
     checks.forEach(ch => {
         ch.checked = allowedList.includes(ch.value);
     });
-    // HIỆN các nút Cập nhật và Xóa
-    document.getElementById('updateUser').style.display = 'block';
-    document.getElementById('deleteUser').style.display = 'block';
+	// THÊM 2 DÒNG NÀY ĐỂ HIỆN NÚT
+    document.getElementById('btnUpdateUser').style.display = 'block';
+    document.getElementById('btnDeleteUser').style.display = 'block';
     showToast("Đã chọn user: " + id, "info");
 }
 
@@ -1038,29 +1038,29 @@ function updateDashboard(logs) {
         support: {}
     };
 
-    // 1. Phân tích dữ liệu từ logs
+    // Đếm số lần lặp lại của từng tên cụ thể
     logs.forEach(log => {
-        stats.cust[log.cust] = (stats.cust[log.cust] || 0) + 1;
-        stats.machine[log.machine] = (stats.machine[log.machine] || 0) + 1;
-        stats.staff[log.staff] = (stats.staff[log.staff] || 0) + 1;
-        stats.support[log.type] = (stats.support[log.type] || 0) + 1;
+        if (log.cust) stats.cust[log.cust] = (stats.cust[log.cust] || 0) + 1;
+        if (log.machine) stats.machine[log.machine] = (stats.machine[log.machine] || 0) + 1;
+        if (log.staff) stats.staff[log.staff] = (stats.staff[log.staff] || 0) + 1;
+        if (log.type) stats.support[log.type] = (stats.support[log.type] || 0) + 1;
     });
 
-    // 2. Vẽ biểu đồ
-    renderChart("chartCust", "Khách hàng", stats.cust, 'pie'); // Biểu đồ tròn
-    renderChart("chartMachine", "Loại máy", stats.machine, 'bar'); // Biểu đồ cột
-    renderChart("chartStaff", "Kỹ thuật", stats.staff, 'bar'); // Biểu đồ cột ngang
-    renderChart("chartSupport", "Hỗ trợ", stats.support, 'doughnut'); // Biểu đồ vòng
+    // Vẽ biểu đồ dạng cột cho tất cả để dễ so sánh tên chi tiết
+    renderChart("chartCust", "Số lần theo Khách hàng", stats.cust, 'bar');
+    renderChart("chartMachine", "Số lần theo Loại máy", stats.machine, 'bar');
+    renderChart("chartStaff", "Số lần theo Kỹ thuật", stats.staff, 'bar');
+    renderChart("chartSupport", "Số lần theo Loại hỗ trợ", stats.support, 'bar');
 }
 
 function renderChart(canvasId, label, dataObj, type) {
     const ctx = document.getElementById(canvasId).getContext('2d');
-    
-    // Nếu biểu đồ đã tồn tại thì xóa để vẽ mới
     if (charts[canvasId]) charts[canvasId].destroy();
 
-    const labels = Object.keys(dataObj);
-    const values = Object.values(dataObj);
+    // Sắp xếp dữ liệu từ cao xuống thấp để biểu đồ đẹp hơn
+    const sortedEntries = Object.entries(dataObj).sort((a, b) => b[1] - a[1]);
+    const labels = sortedEntries.map(el => el[0]);
+    const values = sortedEntries.map(el => el[1]);
 
     charts[canvasId] = new Chart(ctx, {
         type: type,
@@ -1069,25 +1069,28 @@ function renderChart(canvasId, label, dataObj, type) {
             datasets: [{
                 label: label,
                 data: values,
-                backgroundColor: [
-                    '#00d2ff', '#3a7bd5', '#60a5fa', '#34d399', '#facc15', '#f87171', '#a78bfa'
-                ],
-                borderWidth: 0
+                backgroundColor: 'rgba(0, 210, 255, 0.7)',
+                borderColor: '#00d2ff',
+                borderWidth: 1,
+                borderRadius: 5
             }]
         },
         options: {
-            indexAxis: type === 'bar' && canvasId === 'chartStaff' ? 'y' : 'x', // Quay ngang biểu đồ nhân viên
             responsive: true,
-            plugins: {
-                legend: {
-                    display: (type === 'pie' || type === 'doughnut'),
-                    labels: { color: '#94a3b8' }
+            scales: {
+                y: { 
+                    beginAtZero: true, 
+                    ticks: { stepSize: 1, color: '#94a3b8' },
+                    grid: { color: 'rgba(255,255,255,0.05)' }
+                },
+                x: { 
+                    ticks: { color: '#94a3b8', font: { size: 10 } },
+                    grid: { display: false }
                 }
             },
-            scales: type === 'bar' ? {
-                y: { beginAtZero: true, ticks: { color: '#94a3b8' } },
-                x: { ticks: { color: '#94a3b8' } }
-            } : {}
+            plugins: {
+                legend: { display: false } // Ẩn chú thích thừa vì đã có tiêu đề Card
+            }
         }
     });
 }
