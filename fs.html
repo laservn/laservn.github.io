@@ -776,24 +776,40 @@ function renderDocs(docs) {
         });
     }
 
-    container.innerHTML = filtered.map(d => `
-        <div class="meta-col" style="cursor:pointer;" onclick="handleDocClick('${d.id}', '${d.name}', '${d.link}', ${JSON.stringify(d.customers || [])})">
+    container.innerHTML = filtered.map(d => {
+    // Chuyển mảng thành chuỗi an toàn để truyền vào attribute
+    const custsAttr = encodeURIComponent(JSON.stringify(d.customers || []));
+    
+    return `
+        <div class="meta-col" style="cursor:pointer;" onclick="handleDocClick('${d.id}', '${d.name}', '${d.link}', '${custsAttr}')">
             <h4 style="border:none; margin:0; text-align:left;">📄 ${d.name}</h4>
-            <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Dành cho: ${(!d.customers || d.customers.length === 0) ? 'Tất cả' : d.customers.join(', ')}</div>
-            <a href="${d.link}" target="_blank" onclick="event.stopPropagation()" style="background:var(--primary); color:var(--dark); text-decoration:none; padding:8px; border-radius:6px; text-align:center; font-weight:600; font-size:12px;">TẢI TÀI LIỆU</a>
+            <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">
+                Dành cho: ${(!d.customers || d.customers.length === 0) ? 'Tất cả' : d.customers.join(', ')}
+            </div>
+            <a href="${d.link}" target="_blank" onclick="event.stopPropagation()" 
+               style="background:var(--primary); color:var(--dark); text-decoration:none; padding:8px; border-radius:6px; text-align:center; font-weight:600; font-size:12px;">
+               TẢI TÀI LIỆU
+            </a>
         </div>
-    `).join('');
+    `;
+}).join('');
 }
 
-function handleDocClick(id, name, link, custs) {
-    if (AUTH.role === "VIEWER") return; // Viewer chỉ được tải, không được sửa
+function handleDocClick(id, name, link, encodedCusts) {
+    if (AUTH.role === "VIEWER") return; 
+    
     selectedDocId = id;
     document.getElementById('doc_name').value = name;
     document.getElementById('doc_link').value = link;
     
+    // Giải mã mảng khách hàng
+    const custs = JSON.parse(decodeURIComponent(encodedCusts));
+    
     // Check vào các ô khách hàng
     const checks = document.querySelectorAll('input[name="doc_cust"]');
-    checks.forEach(ch => ch.checked = custs.includes(ch.value));
+    checks.forEach(ch => {
+        ch.checked = custs.includes(ch.value);
+    });
     
     document.getElementById('btnUpdateDoc').style.display = 'block';
     document.getElementById('btnDeleteDoc').style.display = 'block';
