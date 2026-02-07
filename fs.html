@@ -844,10 +844,43 @@ async function updateDoc() {
 }
 
 async function deleteDoc() {
-    if(!confirm("Xóa tài liệu này?")) return;
-    showLoading(true);
-    await db.collection("documents").doc(selectedDocId).delete();
-    resetDocForm();
+    // Thay vì dùng confirm(), ta mở một modal xác nhận
+    const modal = document.getElementById('infoModal');
+    const modalBody = document.getElementById('modalBody');
+    
+    modalBody.innerHTML = `
+        <div style="text-align:center; padding: 20px;">
+            <div style="font-size: 50px; margin-bottom: 10px;">⚠️</div>
+            <h4 style="color: var(--text-main); margin-bottom: 10px;">XÁC NHẬN XÓA</h4>
+            <p style="color: var(--text-muted); font-size: 14px;">Bạn có chắc chắn muốn xóa tài liệu này không? <br> Hành động này không thể hoàn tác.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
+                <button onclick="document.getElementById('infoModal').style.display='none'" 
+                        style="background: #475569; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    HỦY BỎ
+                </button>
+                <button onclick="executeDeleteDoc()" 
+                        style="background: #ef4444; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    ĐỒNG Ý XÓA
+                </button>
+            </div>
+        </div>
+    `;
+    modal.style.display = 'flex';
+}
+async function executeDeleteDoc() {
+    if (!selectedDocId) return;
+    
+    document.getElementById('infoModal').style.display = 'none'; // Đóng modal xác nhận
+    showLoading(true, "ĐANG XÓA...");
+    
+    try {
+        await db.collection("documents").doc(selectedDocId).delete();
+        showToast("Đã xóa tài liệu thành công", "success");
+        resetDocForm();
+    } catch (e) {
+        showToast("Lỗi khi xóa: " + e.message, "error");
+    }
+    
     showLoading(false);
 }
 
