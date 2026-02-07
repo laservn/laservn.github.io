@@ -442,6 +442,7 @@ function fetchData() {
         } else {
             // Nếu là VIEWER mà không có danh sách access thì không cho xem gì cả (an toàn hơn)
             renderData({ logs: [["Header"]], role: AUTH.role });
+            updateDashboard(logs); // Cập nhật thêm biểu đồ mới này
             return;
         }
     }
@@ -455,6 +456,7 @@ function fetchData() {
             return [doc.id, d.workDate, d.customer, d.machineType, d.support, d.content, d.tech, d.createdBy || "", d.note || ""];
         });
         renderData({ logs: [["Header"], ...logs], role: AUTH.role });
+        updateDashboard(logs); // Cập nhật thêm biểu đồ mới này
         applyPermissions();
     });
 
@@ -470,14 +472,7 @@ function fetchData() {
     }
     
     
-    // Tìm trong hàm fetchLogs đoạn .onSnapshot
-db.collection("logs").orderBy("date", "desc").onSnapshot(snap => {
-    const logs = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
-    renderLogs(logs); // Render bảng cũ
-    updateDashboard(logs); // Cập nhật thêm biểu đồ mới này
-});
-
-
+    
 }
     // --- UI RENDER (KHÔI PHỤC CẤU TRÚC GỐC CỦA BẠN) ---
     function renderData(data) {
@@ -732,8 +727,8 @@ function loadUserToForm(id, name, role, pass, access) {
         ch.checked = allowedList.includes(ch.value);
     });
     // HIỆN các nút Cập nhật và Xóa
-    document.getElementById('btnUpdateUser').style.display = 'block';
-    document.getElementById('btnDeleteUser').style.display = 'block';
+    document.getElementById('updateUser').style.display = 'block';
+    document.getElementById('deleteUser').style.display = 'block';
     showToast("Đã chọn user: " + id, "info");
 }
 
@@ -820,8 +815,8 @@ function resetUserForm() {
     // Bỏ chọn tất cả checkbox
     document.querySelectorAll('input[name="user_cust"]').forEach(ch => ch.checked = false);
     // ẨN các nút Cập nhật và Xóa
-    document.getElementById('btnUpdateUser').style.display = 'none';
-    document.getElementById('btnDeleteUser').style.display = 'none';
+    document.getElementById('updateUser').style.display = 'none';
+    document.getElementById('deleteUser').style.display = 'none';
 }
 
 // Cập nhật hàm applyPermissions để hiển thị tab 4 cho ADMIN
