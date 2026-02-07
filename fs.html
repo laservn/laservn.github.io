@@ -251,7 +251,7 @@
             <button class="btn-save" onclick="deleteUser()" style="background:#7f1d1d">🗑️ XÓA</button>
             <button class="btn-save" onclick="resetUserForm()" style="background:#475569">🧹 LÀM MỚI</button>
         </div>
-    
+    </div>
     
     <div class="table-container">
         <table>
@@ -791,13 +791,18 @@ function handleDocClick(id, name, link, custs) {
     document.getElementById('doc_name').value = name;
     document.getElementById('doc_link').value = link;
     
-    // Check vào các ô khách hàng
+    // Xử lý Checkbox: Đảm bảo custs luôn là một mảng để so sánh
+    const allowedList = Array.isArray(custs) ? custs : (custs ? custs.split(",").map(s => s.trim()) : []);
+    
     const checks = document.querySelectorAll('input[name="doc_cust"]');
-    checks.forEach(ch => ch.checked = custs.includes(ch.value));
+    checks.forEach(ch => {
+        // Nếu allowedList trống (tương đương ALL) hoặc chứa giá trị checkbox thì tích chọn
+        ch.checked = allowedList.includes(ch.value);
+    });
     
     document.getElementById('btnUpdateDoc').style.display = 'block';
     document.getElementById('btnDeleteDoc').style.display = 'block';
-    showToast("Đã chọn: " + name, "info");
+    showToast("Đã chọn tài liệu: " + name, "info");
 }
 
 async function addDoc() {
