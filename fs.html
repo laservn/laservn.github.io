@@ -566,13 +566,30 @@ function fetchData() {
         showLoading(false);
     }
 
-    async function deleteLog(id) {
-        if(!confirm("Xóa báo cáo này?")) return;
-        showLoading(true);
+function deleteLog(id) {
+    const confirmHtml = `
+        <div style="min-width: 200px;">
+            <p style="margin: 0 0 12px 0; font-weight: 600;">🗑️ XÓA BÁO CÁO NÀY?</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <button id="logNo" style="background: #475569; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">KHÔNG</button>
+                <button id="logYes" style="background: #7f1d1d; color: #f87171; border: 1px solid #7f1d1d; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">XÓA</button>
+            </div>
+        </div>
+    `;
+
+    const t = showToast("", "error", confirmHtml);
+
+    t.querySelector('#logNo').onclick = () => t.remove();
+    
+    t.querySelector('#logYes').onclick = async () => {
+        t.remove();
+        showLoading(true, "ĐANG XÓA...");
         await db.collection("logs").doc(id).delete();
         document.getElementById('infoModal').style.display = 'none';
         showLoading(false);
-    }
+        showToast("Đã xóa xong!", "success");
+    };
+}
 
     function editLog(index) {
         const row = window.currentLogs[index];
@@ -624,7 +641,27 @@ function fetchData() {
     function formatVN(s) { if(!s) return ''; const d = new Date(s); return d.getDate().toString().padStart(2,'0')+'/'+(d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getFullYear(); }
     function filterTable() { const v = document.getElementById('searchBox').value.toUpperCase(); const rows = document.getElementById('tableBody').getElementsByTagName('tr'); for (let r of rows) r.style.display = r.innerText.toUpperCase().includes(v) ? "" : "none"; }
     function showLoading(s, t) { document.getElementById('loading-overlay').style.display = s ? 'flex' : 'none'; if(t) document.getElementById('loading-text').innerText = t; }
-    function showToast(m, type) { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = m; c.appendChild(t); setTimeout(() => t.remove(), 2500); }
+    
+    function showToast(m, type, htmlContent = "") {
+    const c = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.style.pointerEvents = "auto"; // Cho phép tương tác với nút bấm bên trong
+    
+    if (htmlContent) {
+        t.innerHTML = htmlContent;
+    } else {
+        t.innerText = m;
+    }
+    
+    c.appendChild(t);
+    
+    // Nếu không có nội dung HTML (toast thông thường) thì tự biến mất sau 2.5s
+    if (!htmlContent) {
+        setTimeout(() => t.remove(), 2500);
+    }
+    return t; // Trả về element để có thể chủ động remove khi bấm nút
+}
     // --- LOGIC QUẢN LÝ TÀI KHOẢN (TAB 4) ---
 
 // 1. Tự động lấy danh sách user khi tab mở
@@ -706,15 +743,40 @@ async function updateUser() {
 }
 
 // 5. Xóa User
-async function deleteUser() {
+function deleteUser() {
     const id = document.getElementById('u_id').value.trim();
-    if(!confirm("Xóa tài khoản " + id + "?")) return;
-    showLoading(true);
-    await db.collection("users").doc(id).delete();
-    resetUserForm();
-    showLoading(false);
-}
+    if (!id) return showToast("Vui lòng chọn tài khoản cần xóa!", "error");
 
+    const confirmHtml = `
+        <div style="min-width: 220px;">
+            <p style="margin: 0 0 5px 0; font-weight: 600; color: #f87171;">⚠️ XÓA TÀI KHOẢN?</p>
+            <p style="margin: 0 0 12px 0; font-size: 13px; color: #cbd5e1;">Xác nhận xóa user: <b>${id}</b></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <button id="userNo" style="background: #475569; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">HỦY</button>
+                <button id="userYes" style="background: #7f1d1d; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">XÓA USER</button>
+            </div>
+        </div>
+    `;
+
+    const t = showToast("", "error", confirmHtml);
+
+    // Hủy bỏ
+    t.querySelector('#userNo').onclick = () => t.remove();
+    
+    // Đồng ý xóa
+    t.querySelector('#userYes').onclick = async () => {
+        t.remove();
+        showLoading(true, "ĐANG XÓA TÀI KHOẢN...");
+        try {
+            await db.collection("users").doc(id).delete();
+            showToast("Đã xóa tài khoản " + id, "success");
+            resetUserForm();
+        } catch (e) {
+            showToast("Lỗi khi xóa: " + e.message, "error");
+        }
+        showLoading(false);
+    };
+}
 function resetUserForm() {
     document.getElementById('u_id').value = "";
     document.getElementById('u_id').readOnly = false;
@@ -843,45 +905,34 @@ async function updateDoc() {
     showLoading(false);
 }
 
-async function deleteDoc() {
-    // Thay vì dùng confirm(), ta mở một modal xác nhận
-    const modal = document.getElementById('infoModal');
-    const modalBody = document.getElementById('modalBody');
-    
-    modalBody.innerHTML = `
-        <div style="text-align:center; padding: 20px;">
-            <div style="font-size: 50px; margin-bottom: 10px;">⚠️</div>
-            <h4 style="color: var(--text-main); margin-bottom: 10px;">XÁC NHẬN XÓA</h4>
-            <p style="color: var(--text-muted); font-size: 14px;">Bạn có chắc chắn muốn xóa tài liệu này không? <br> Hành động này không thể hoàn tác.</p>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
-                <button onclick="document.getElementById('infoModal').style.display='none'" 
-                        style="background: #475569; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                    HỦY BỎ
-                </button>
-                <button onclick="executeDeleteDoc()" 
-                        style="background: #ef4444; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                    ĐỒNG Ý XÓA
-                </button>
+function deleteDoc() {
+    const confirmHtml = `
+        <div style="min-width: 200px;">
+            <p style="margin: 0 0 12px 0; font-weight: 600;">⚠️ XÓA TÀI LIỆU NÀY?</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <button id="btnNo" style="background: #475569; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">HỦY</button>
+                <button id="btnYes" style="background: #ef4444; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">XÓA NGAY</button>
             </div>
         </div>
     `;
-    modal.style.display = 'flex';
-}
-async function executeDeleteDoc() {
-    if (!selectedDocId) return;
+
+    const t = showToast("", "info", confirmHtml);
+
+    // Xử lý sự kiện khi người dùng bấm nút
+    t.querySelector('#btnNo').onclick = () => t.remove();
     
-    document.getElementById('infoModal').style.display = 'none'; // Đóng modal xác nhận
-    showLoading(true, "ĐANG XÓA...");
-    
-    try {
-        await db.collection("documents").doc(selectedDocId).delete();
-        showToast("Đã xóa tài liệu thành công", "success");
-        resetDocForm();
-    } catch (e) {
-        showToast("Lỗi khi xóa: " + e.message, "error");
-    }
-    
-    showLoading(false);
+    t.querySelector('#btnYes').onclick = async () => {
+        t.remove(); // Xóa hộp thoại hỏi
+        showLoading(true, "ĐANG XÓA...");
+        try {
+            await db.collection("documents").doc(selectedDocId).delete();
+            showToast("Đã xóa tài liệu!", "success");
+            resetDocForm();
+        } catch (e) {
+            showToast("Lỗi: " + e.message, "error");
+        }
+        showLoading(false);
+    };
 }
 
 function resetDocForm() {
