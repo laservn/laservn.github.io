@@ -56,7 +56,7 @@
         .btn-save:active { transform: scale(0.98); }
         .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
         
-        /* Professional Table */
+        /* Professional Table (GIỮ NGUYÊN GỐC) */
         .table-container { 
             margin-top: 15px; border: 1px solid var(--border); border-radius: 12px; 
             overflow-x: auto; background: var(--card); box-shadow: 0 4px 20px rgba(0,0,0,0.3); 
@@ -72,8 +72,9 @@
 
         .badge-tech { background: rgba(58, 123, 213, 0.2); color: #93c5fd; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
         .badge-mec { background: rgba(58, 123, 213, 0.2); color: #93c5ff; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+        .badge-sup { background: rgba(58, 123, 213, 0.2); color: #93c5dd; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
 
-        /* Popup Modals */
+        /* Popup Modals (GIỮ NGUYÊN GỐC) */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 20px; }
         .modal-content { 
             background: var(--card); width: 95%; max-width: 600px; border-radius: 20px; border: 1px solid var(--primary); 
@@ -86,7 +87,7 @@
         .detail-label { color: var(--text-muted); width: 85px; flex-shrink: 0; }
         .detail-value { color: var(--primary); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Metadata Block Style */
+        /* Metadata Block Style (Tab 3) */
         .meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
         .meta-col { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; }
         .meta-col h4 { margin: 0 0 12px 0; color: var(--primary); font-size: 12px; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
@@ -94,6 +95,7 @@
         .meta-item { background: rgba(0,0,0,0.2); margin-bottom: 4px; border-radius: 6px; border: 1px solid transparent; }
         .meta-item input { margin-bottom: 0; padding: 8px; font-size: 12px; background: transparent; border: none; color: #fff; }
         .meta-item.editing { background: #0f172a; border-color: var(--primary); }
+        .meta-item.editing input { background: #1e293b; }
         .meta-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 12px; }
         .btn-meta { padding: 8px; border-radius: 6px; border: none; font-size: 11px; font-weight: 600; cursor: pointer; text-transform: uppercase; }
         .btn-edit-mode { background: rgba(0, 210, 255, 0.1); color: var(--primary); border: 1px solid var(--primary); }
@@ -105,6 +107,7 @@
         #searchBox { border: 1px solid var(--primary); background: rgba(0, 210, 255, 0.05); margin-top: 10px; }
 
         /* Progress & Loading */
+        #top-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(to right, var(--primary), #fff); z-index: 9999; transition: width 0.3s; width: 0%; display: none; }
         #loading-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px); z-index: 4000; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -120,6 +123,7 @@
 <body>
     
 <div id="toast-container"></div>
+<div id="top-progress"></div>
 <div id="loading-overlay"><div class="spinner"></div><div id="loading-text" style="color:var(--primary); font-weight:600; margin-top:10px;">ĐANG XỬ LÝ...</div></div>
     
 <div id="lock-screen">
@@ -229,14 +233,22 @@
                 <option value="EDIT">EDIT</option>
                 <option value="ADMIN">ADMIN</option>
             </select>
-            <div style="background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--border); overflow: hidden;">
-                <div style="display: grid; grid-template-columns: 1fr 80px; background: rgba(255,255,255,0.05); padding: 8px 15px; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; color: var(--text-muted);">
-                    <div>TÊN KHÁCH HÀNG (VIEWER)</div>
-                    <div style="text-align: center;">CHỌN</div>
-                </div>
-                <div id="u_access_checks" style="max-height: 150px; overflow-y: auto; padding: 5px 0;">
-                </div>
-            </div>
+            
+            <div style="display:grid; grid-template-columns: 1fr 2fr; gap:10px;">
+	    <select id="u_role">
+		<option value="VIEWER">VIEWER</option>
+		<option value="EDIT">EDIT</option>
+		<option value="ADMIN">ADMIN</option>
+	    </select>
+	    <div style="background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--border); overflow: hidden;">
+		<div style="padding: 5px 10px; font-size: 11px; color: var(--primary); font-weight: bold; border-bottom: 1px solid var(--border);">
+		    QUYỀN TRUY CẬP (CHỈNH KHÁCH HÀNG)
+		</div>
+		<div id="u_access_checks" style="max-height: 150px; overflow-y: auto; padding: 5px 0;">
+		    </div>
+	    </div>
+	</div>
+
         </div>
         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px; margin-top:10px;">
             <button class="btn-save" onclick="addUser()" style="background:#065f46">➕ THÊM</button>
@@ -266,9 +278,10 @@
     <div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
         <div style="display:grid; grid-template-columns: 1fr 2fr; gap:10px;">
             <input type="text" id="doc_name" placeholder="Tên tài liệu (VD: Hướng dẫn sử dụng...)">
-            <input type="text" id="doc_link" placeholder="Dán link tài liệu vào đây">
+            <input type="text" id="doc_link" placeholder="Dán link tài liệu vào đây (Google Drive, Dropbox...)">
         </div>
         
+        <p style="font-size: 12px; color: var(--primary); margin: 5px 0;">Chọn khách hàng được phép xem (Để trống = Tất cả):</p>
         <p style="font-size: 12px; color: var(--primary); margin: 5px 0;">Phân quyền xem tài liệu:</p>
         <div style="background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--border); overflow: hidden;">
             <div style="display: grid; grid-template-columns: 1fr 80px; background: rgba(255,255,255,0.05); padding: 8px 15px; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; color: var(--text-muted);">
@@ -288,7 +301,9 @@
     </div>
 
     <input type="text" id="searchDoc" onkeyup="filterDocs()" placeholder="🔍 Tìm kiếm tài liệu..." style="border: 1px solid var(--primary); background: rgba(0,210,255,0.05);">
-    <div id="doc_list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 10px;"></div>
+    
+    <div id="doc_list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 10px;">
+        </div>
 </div>
 </div>
 
@@ -312,6 +327,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
 <script>
+    // --- FIREBASE CONFIG (ORIGINAL) ---
     const firebaseConfig = {
         apiKey: "AIzaSyC-WW6N3ZzmZ8gk_XypHWa3oW6VJMMGloM",
         authDomain: "data-260206.firebaseapp.com",
@@ -321,11 +337,18 @@
         appId: "1:992766098254:web:8e9f5d3216541023d03c1f"
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+// Khởi tạo Firestore
+const db = firebase.firestore();
 
-    try {
-        db.settings({ experimentalForceLongPolling: true, useFetchStreams: false });
-    } catch (e) { console.warn("Firestore settings already configured"); }
+// Kiểm tra nếu chưa thiết lập thì mới thiết lập, tránh ghi đè nhiều lần gây lỗi logger.ts:115
+try {
+    db.settings({
+        experimentalForceLongPolling: true,
+        useFetchStreams: false
+    });
+} catch (e) {
+    console.warn("Firestore settings already configured");
+}
 
     let AUTH = JSON.parse(localStorage.getItem('tech_auth_v4')) || null;
     let USER_ROLE = "VIEWER"; 
@@ -355,56 +378,80 @@
         }
     }
 
-    async function unlock() {
-        const u = document.getElementById('userInput').value.trim();
-        const p = document.getElementById('passInput').value.trim();
-        showLoading(true, "ĐANG XÁC THỰC...");
-        try {
-            const userDoc = await db.collection("users").doc(u).get();
-            if (userDoc.exists && userDoc.data().pass === p) {
-                const userData = userDoc.data();
-                USER_ROLE = userData.role;
-                AUTH = { 
-                    user: u, role: USER_ROLE, 
-                    access: userData.access || "", 
-                    expire: new Date().getTime() + (24*60*60*1000) 
-                };
-                localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
-                showApp(); fetchData();
-            } else { showToast("Sai tài khoản hoặc mật khẩu!", "error"); }
-        } catch (e) { showToast("Lỗi kết nối Firestore!", "error"); }
-        showLoading(false);
+async function unlock() {
+    const u = document.getElementById('userInput').value.trim();
+    const p = document.getElementById('passInput').value.trim();
+    showLoading(true, "ĐANG XÁC THỰC...");
+    try {
+        const userDoc = await db.collection("users").doc(u).get();
+        if (userDoc.exists && userDoc.data().pass === p) {
+            const userData = userDoc.data(); // Lấy toàn bộ data của user
+            USER_ROLE = userData.role;
+            
+            // THÊM TRƯỜNG ACCESS VÀO ĐÂY
+            AUTH = { 
+                user: u, 
+                role: USER_ROLE, 
+                access: userData.access || "", // Lưu danh sách khách hàng được phép
+                expire: new Date().getTime() + (24*60*60*1000) 
+            };
+            
+            localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
+            showApp(); 
+            fetchData();
+        } else { 
+            showToast("Sai tài khoản hoặc mật khẩu!", "error"); 
+        }
+    } catch (e) { 
+        showToast("Lỗi kết nối Firestore!", "error"); 
+    }
+    showLoading(false);
+}
+
+function fetchData() {
+    if (!AUTH) return;
+
+    let query = db.collection("logs");
+
+    // Lọc cho VIEWER
+    if (AUTH.role === "VIEWER") {
+        // Kiểm tra biến AUTH.access vừa được thêm ở hàm unlock
+        if (AUTH.access && AUTH.access.trim() !== "") {
+            const allowedList = AUTH.access.split(",").map(s => s.trim()).filter(s => s !== "");
+            if (allowedList.length > 0) {
+                query = query.where("customer", "in", allowedList);
+            }
+        } else {
+            // Nếu là VIEWER mà không có danh sách access thì không cho xem gì cả (an toàn hơn)
+            renderData({ logs: [["Header"]], role: AUTH.role });
+            return;
+        }
     }
 
-    function fetchData() {
-        if (!AUTH) return;
-        let query = db.collection("logs");
-        if (AUTH.role === "VIEWER") {
-            if (AUTH.access && AUTH.access.trim() !== "") {
-                const allowedList = AUTH.access.split(",").map(s => s.trim()).filter(s => s !== "");
-                if (allowedList.length > 0) query = query.where("customer", "in", allowedList);
-            } else { renderData({ logs: [["Header"]], role: AUTH.role }); return; }
-        }
-        query.orderBy("createdAt", "desc").limit(500).onSnapshot((snapshot) => {
-            const logs = snapshot.docs.map(doc => {
-                const d = doc.data();
-                return [doc.id, d.workDate, d.customer, d.machineType, d.support, d.content, d.tech, d.createdBy || "", d.note || ""];
-            });
-            renderData({ logs: [["Header"], ...logs], role: AUTH.role });
-            applyPermissions();
+    // Sắp xếp (Nhớ check Console F12 để tạo Index nếu có lỗi link đỏ)
+    query = query.orderBy("createdAt", "desc").limit(500);
+
+    query.onSnapshot((snapshot) => {
+        const logs = snapshot.docs.map(doc => {
+            const d = doc.data();
+            return [doc.id, d.workDate, d.customer, d.machineType, d.support, d.content, d.tech, d.createdBy || "", d.note || ""];
         });
+        renderData({ logs: [["Header"], ...logs], role: AUTH.role });
+        applyPermissions();
+    });
 
-        if (AUTH.role === "ADMIN" || AUTH.role === "EDIT") {
-            db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
-                if (doc.exists) {
-                    const d = doc.data();
-                    updateDropdowns(d);
-                    if (AUTH.role === "ADMIN") renderMetaBlock(d);
-                }
-            });
-        }
+    // --- TẢI METADATA CHO TAB 3 (CHỈ ADMIN/EDIT CẦN) ---
+    if (AUTH.role === "ADMIN" || AUTH.role === "EDIT") {
+        db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
+            if (doc.exists) {
+                const d = doc.data();
+                updateDropdowns(d); // Cập nhật danh sách chọn ở Tab 2
+                if (AUTH.role === "ADMIN") renderMetaBlock(d); // Hiển thị khối sửa ở Tab 3
+            }
+        });
     }
-
+}
+    // --- UI RENDER (KHÔI PHỤC CẤU TRÚC GỐC CỦA BẠN) ---
     function renderData(data) {
         window.currentLogs = data.logs.slice(1);
         const html = window.currentLogs.map((row, index) => `
@@ -415,7 +462,9 @@
                 <td><small>${row[4] || ''}</small></td>
                 <td style="color:#cbd5e1">${(row[5]||"").substring(0,30)}${(row[5]||"").length>30?'...':''}</td>
                 <td><span class="badge-tech">${row[6] || ''}</span></td>
-                <td style="font-style:italic; color:var(--text-muted); font-size:12px">${(row[8] || '').substring(0,15)}</td>
+                <td style="font-style:italic; color:var(--text-muted); font-size:12px">
+                    ${(row[8] || '').substring(0,15)}${(row[8]||'').length > 15 ? '...' : ''}
+                </td>
             </tr>
         `).join('');
         document.getElementById('tableBody').innerHTML = html;
@@ -429,163 +478,426 @@
             select.innerHTML = `<option value="">-- ${txt} --</option>` + list.map(i => `<option value="${i}">${i}</option>`).join('');
             select.value = val;
         };
-        if(d.customers) {
-            update('customer', d.customers, 'Khách hàng');
-            loadCustomerCheckboxes(d.customers); // Tab Tài liệu
-            loadUserAccessCheckboxes(d.customers); // CẬP NHẬT: Tab Tài khoản
-        }
+        if(d.customers) update('customer', d.customers, 'Khách hàng');
         if(d.techs) update('techName', d.techs, 'Kỹ thuật');
         if(d.machineTypes) update('machineType', d.machineTypes, 'Loại máy');
         if(d.supports) update('supportType', d.supports, 'Hỗ trợ');
     }
 
-    // --- LOGIC QUẢN LÝ TÀI KHOẢN (TAB 4 - ĐÃ CẬP NHẬT) ---
-    function loadUserAccessCheckboxes(customers) {
-        const container = document.getElementById('u_access_checks');
-        if (!container || !customers) return;
-        container.innerHTML = customers.map(c => `
-            <label style="display: grid; grid-template-columns: 1fr 80px; align-items: center; padding: 8px 15px; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer;" class="cust-row">
-                <span style="font-size: 13px;">${c}</span>
-                <div style="text-align: center;"><input type="checkbox" name="user_cust" value="${c}" style="width: 18px; height: 18px; accent-color: var(--primary);"></div>
-            </label>
-        `).join('');
-    }
-
-    function fetchUsers() {
-        if (AUTH.role !== "ADMIN") return;
-        db.collection("users").onSnapshot((snapshot) => {
-            const html = snapshot.docs.map(doc => {
-                const u = doc.data();
-                return `
-                    <tr onclick="loadUserToForm('${doc.id}', '${u.name}', '${u.role}', '${u.pass}', '${u.access || ""}')">
-                        <td><b style="color:var(--primary)">${doc.id}</b></td>
-                        <td>${u.name}</td>
-                        <td><span class="badge-tech">${u.role}</span></td>
-                        <td>••••••</td>
-                        <td style="font-size:11px; color:var(--text-muted)">${u.access || 'ALL'}</td>
-                    </tr>
-                `;
-            }).join('');
-            document.getElementById('userTableBody').innerHTML = html;
-        });
-    }
-
-    function loadUserToForm(id, name, role, pass, access) {
-        document.getElementById('u_id').value = id;
-        document.getElementById('u_id').readOnly = true;
-        document.getElementById('u_name').value = name;
-        document.getElementById('u_role').value = role;
-        document.getElementById('u_pass').value = pass;
-        // CẬP NHẬT: Load checkbox từ chuỗi access
-        const allowedList = (access || "").split(",").map(s => s.trim());
-        const checks = document.querySelectorAll('input[name="user_cust"]');
-        checks.forEach(ch => ch.checked = allowedList.includes(ch.value));
-        showToast("Đã chọn user: " + id, "info");
-    }
-
-    async function addUser() {
-        const id = document.getElementById('u_id').value.trim();
-        if(!id) return showToast("Vui lòng nhập User ID", "error");
-        // CẬP NHẬT: Lấy access từ checkbox
-        const selectedAccess = Array.from(document.querySelectorAll('input[name="user_cust"]:checked')).map(cb => cb.value).join(', ');
-        showLoading(true, "ĐANG TẠO...");
-        try {
-            await db.collection("users").doc(id).set({
-                name: document.getElementById('u_name').value,
-                role: document.getElementById('u_role').value,
-                pass: document.getElementById('u_pass').value,
-                access: selectedAccess
-            });
-            showToast("Thêm thành công!", "success"); resetUserForm();
-        } catch (e) { showToast("Lỗi: " + e.message, "error"); }
-        showLoading(false);
-    }
-
-    async function updateUser() {
-        const id = document.getElementById('u_id').value.trim();
-        const selectedAccess = Array.from(document.querySelectorAll('input[name="user_cust"]:checked')).map(cb => cb.value).join(', ');
-        showLoading(true, "ĐANG CẬP NHẬT...");
-        try {
-            await db.collection("users").doc(id).update({
-                name: document.getElementById('u_name').value,
-                role: document.getElementById('u_role').value,
-                pass: document.getElementById('u_pass').value,
-                access: selectedAccess
-            });
-            showToast("Đã cập nhật!", "success");
-        } catch (e) { showToast("Lỗi khi cập nhật!", "error"); }
-        showLoading(false);
-    }
-
-    async function deleteUser() {
-        const id = document.getElementById('u_id').value.trim();
-        if(!confirm("Xóa tài khoản " + id + "?")) return;
-        showLoading(true); await db.collection("users").doc(id).delete();
-        resetUserForm(); showLoading(false);
-    }
-
-    function resetUserForm() {
-        document.getElementById('u_id').value = ""; document.getElementById('u_id').readOnly = false;
-        document.getElementById('u_name').value = ""; document.getElementById('u_pass').value = "";
-        document.querySelectorAll('input[name="user_cust"]').forEach(ch => ch.checked = false);
-    }
-
-    // --- PHẦN CÒN LẠI (GIỮ NGUYÊN) ---
+    // --- POPUP CHI TIẾT (KHÔI PHỤC CẤU TRÚC GỐC CỦA BẠN) ---
     function openInfoModal(index) {
         const row = window.currentLogs[index];
         const isAdmin = (AUTH && AUTH.role === "ADMIN");
-        let modalHtml = `<div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border)"><div class="detail-grid"><div class="detail-item"><span class="detail-label">🗓️ Ngày:</span><span class="detail-value">${formatVN(row[1])}</span></div><div class="detail-item"><span class="detail-label">🕵️‍♂️ Khách:</span><span class="detail-value">${row[2]}</span></div></div><div style="margin-top:10px;"><p style="font-size:11px; color:var(--text-muted);">📝 NỘI DUNG:</p><div style="white-space:pre-wrap; color:#fff; background:rgba(0,0,0,0.3); padding:12px; border-radius:10px;">${row[5]}</div></div></div>`;
-        if (isAdmin) modalHtml += `<div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px"><button onclick="deleteLog('${row[0]}')" style="background:#450a0a; color:#f87171; border:1px solid #7f1d1d; padding:10px; border-radius:8px;">🗑️ XÓA</button><button onclick="editLog(${index})" style="background:#1e1b4b; color:#818cf8; border:1px solid #312e81; padding:10px; border-radius:8px;">✏️ SỬA</button></div>`;
-        document.getElementById('modalBody').innerHTML = modalHtml; document.getElementById('infoModal').style.display = 'flex';
+        let modalHtml = `
+            <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border)">
+                <div class="detail-grid">
+                    <div class="detail-item"><span class="detail-label">🗓️ Ngày làm:</span><span class="detail-value">${formatVN(row[1])}</span></div>
+                    <div class="detail-item"><span class="detail-label">🕵️‍♂️ Khách:</span><span class="detail-value">${row[2]}</span></div>
+                    <div class="detail-item"><span class="detail-label">⚙️ Loại máy:</span><span class="detail-value">${row[3] || '---'}</span></div>
+                    <div class="detail-item"><span class="detail-label">📌 Hỗ trợ:</span><span class="detail-value">${row[4] || '---'}</span></div>
+                    <div class="detail-item"><span class="detail-label">👷‍♂️ Kỹ thuật:</span><span class="detail-value">${row[6]}</span></div>
+                    <div class="detail-item"><span class="detail-label">🪪 User:</span><span class="detail-value">${row[7] || '---'}</span></div>
+                </div>
+                <div style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px">
+                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">📝 NỘI DUNG:</p>
+                    <div style="white-space:pre-wrap; color:#fff; background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; font-size:14px;">${row[5]}</div>
+                </div>
+                <div style="margin-top:10px">
+                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">🗒️ GHI CHÚ:</p>
+                    <div style="color:var(--primary); font-style:italic; font-size:13px">${row[8] || 'Không có ghi chú.'}</div>
+                </div>
+            </div>
+        `;
+        if (isAdmin) {
+            modalHtml += `<div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px">
+                <button onclick="deleteLog('${row[0]}')" style="background:#450a0a; color:#f87171; border:1px solid #7f1d1d; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold">🗑️ XÓA</button>
+                <button onclick="editLog(${index})" style="background:#1e1b4b; color:#818cf8; border:1px solid #312e81; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold">✏️ SỬA</button>
+            </div>`;
+        }
+        document.getElementById('modalBody').innerHTML = modalHtml;
+        document.getElementById('infoModal').style.display = 'flex';
     }
 
-    async function saveData() {
-        const d = document.getElementById('hiddenDate').value; const c = document.getElementById('customer').value; const n = document.getElementById('content').value.trim();
-        if(!c || !n) return showToast("Vui lòng điền đủ thông tin!", "error");
-        showLoading(true);
+    // --- TAB 3 LOGIC (THEO YÊU CẦU MỚI) ---
+    function renderMetaBlock(data) {
+        const renderCol = (id, list) => {
+            const container = document.getElementById('list-' + id);
+            const fullList = [...(list || []), "", "", ""]; // Thêm dòng trống để nhập mới
+            container.innerHTML = fullList.map(v => `<div class="meta-item"><input type="text" value="${v}" readonly></div>`).join('');
+        };
+        renderCol('customers', data.customers);
+        renderCol('machineTypes', data.machineTypes);
+        renderCol('techs', data.techs);
+        renderCol('supports', data.supports);
+    }
+
+    function enableMetaEdit(id) {
+        document.querySelectorAll(`#list-${id} .meta-item`).forEach(item => {
+            item.classList.add('editing');
+            item.querySelector('input').readOnly = false;
+        });
+        showToast("Đã mở chế độ sửa", "info");
+    }
+
+    async function saveMetaData(id) {
+        const inputs = document.querySelectorAll(`#list-${id} input`);
+        const newList = [...new Set(Array.from(inputs).map(i => i.value.trim()).filter(v => v !== ""))];
+        showLoading(true, "ĐANG CẬP NHẬT...");
         try {
-            await db.collection("logs").add({ workDate: d, customer: c, tech: document.getElementById('techName').value, machineType: document.getElementById('machineType').value, support: document.getElementById('supportType').value, content: n, note: document.getElementById('note').value.trim(), createdBy: AUTH.user, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-            showToast("Đã lưu!", "success"); resetSaveButton(); switchTab('data-tab', document.querySelector('.tab-btn'));
+            await db.collection("metadata").doc("dropdowns").update({ [id]: newList });
+            showToast("Cập nhật thành công!", "success");
+        } catch (e) { showToast("Lỗi khi lưu dữ liệu!", "error"); }
+        showLoading(false);
+    }
+
+    // --- OTHER LOGIC (GIỮ NGUYÊN GỐC) ---
+    async function saveData() {
+        const d = document.getElementById('hiddenDate').value;
+        const c = document.getElementById('customer').value;
+        const n = document.getElementById('content').value.trim();
+        if(!c || !n) return showToast("Vui lòng điền đủ thông tin!", "error");
+        showLoading(true, "ĐANG LƯU...");
+        try {
+            await db.collection("logs").add({
+                workDate: d, customer: c, tech: document.getElementById('techName').value,
+                machineType: document.getElementById('machineType').value,
+                support: document.getElementById('supportType').value,
+                content: n, note: document.getElementById('note').value.trim(),
+                createdBy: AUTH.user, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            showToast("Đã lưu báo cáo!", "success");
+            resetSaveButton(); switchTab('data-tab', document.querySelector('.tab-btn'));
         } catch (e) { showToast("Lỗi khi lưu!", "error"); }
         showLoading(false);
     }
 
-    // --- DOCUMENT TAB LOGIC ---
-    function loadCustomerCheckboxes(customers) {
-        const container = document.getElementById('doc_customer_checks'); if (!container) return;
-        container.innerHTML = customers.map(c => `<label style="display: grid; grid-template-columns: 1fr 80px; align-items: center; padding: 8px 15px; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer;" class="cust-row"><span>${c}</span><div style="text-align: center;"><input type="checkbox" name="doc_cust" value="${c}" style="width: 18px; height: 18px; accent-color: var(--primary);"></div></label>`).join('');
+    async function deleteLog(id) {
+        if(!confirm("Xóa báo cáo này?")) return;
+        showLoading(true);
+        await db.collection("logs").doc(id).delete();
+        document.getElementById('infoModal').style.display = 'none';
+        showLoading(false);
     }
 
-    function fetchDocs() { db.collection("documents").onSnapshot(s => renderDocs(s.docs.map(d => ({id:d.id, ...d.data()})))); }
-    function renderDocs(docs) {
-        const container = document.getElementById('doc_list'); let filtered = docs;
-        if (AUTH.role === "VIEWER") { const allowed = (AUTH.access || "").split(",").map(s => s.trim()); filtered = docs.filter(d => !d.customers || d.customers.length === 0 || d.customers.some(c => allowed.includes(c))); }
-        container.innerHTML = filtered.map(d => `<div class="meta-col" onclick="handleDocClick('${d.id}', '${d.name}', '${d.link}', ${JSON.stringify(d.customers || [])})"><h4>📄 ${d.name}</h4><a href="${d.link}" target="_blank" style="background:var(--primary); color:var(--dark); text-decoration:none; padding:8px; border-radius:6px; text-align:center; font-weight:600; font-size:12px; margin-top:10px;">TẢI TÀI LIỆU</a></div>`).join('');
+    function editLog(index) {
+        const row = window.currentLogs[index];
+        document.getElementById('infoModal').style.display = 'none';
+        switchTab('form-tab', document.querySelectorAll('.tab-btn')[1]);
+        document.getElementById('hiddenDate').value = row[1];
+        document.getElementById('workDateDisplay').value = formatVN(row[1]);
+        document.getElementById('customer').value = row[2];
+        document.getElementById('machineType').value = row[3];
+        document.getElementById('supportType').value = row[4];
+        document.getElementById('content').value = row[5];
+        document.getElementById('techName').value = row[6];
+        document.getElementById('note').value = row[8] || "";
+        const btn = document.getElementById('btnSave');
+        btn.innerHTML = "💾 CẬP NHẬT";
+        btn.onclick = async () => {
+            showLoading(true);
+            await db.collection("logs").doc(row[0]).update({
+                workDate: document.getElementById('hiddenDate').value,
+                customer: document.getElementById('customer').value,
+                content: document.getElementById('content').value.trim(),
+                note: document.getElementById('note').value.trim(),
+                tech: document.getElementById('techName').value,
+                machineType: document.getElementById('machineType').value,
+                support: document.getElementById('supportType').value
+            });
+            showLoading(false); resetSaveButton(); switchTab('data-tab', document.querySelector('.tab-btn'));
+        };
     }
 
-    // --- COMMON HELPERS ---
+    function resetSaveButton() {
+        const btn = document.getElementById('btnSave');
+        btn.innerHTML = "LƯU BÁO CÁO";
+        btn.onclick = saveData;
+        document.getElementById('content').value = '';
+        document.getElementById('note').value = '';
+    }
+
+    function applyPermissions() {
+        const currentRole = AUTH ? AUTH.role : USER_ROLE;
+        document.getElementById('tabBar').style.display = currentRole === "VIEWER" ? "none" : "flex";
+        document.getElementById('btnTabMeta').style.display = currentRole === "ADMIN" ? "block" : "none";
+    }
+
     function showApp() { document.getElementById('lock-screen').style.display = 'none'; document.getElementById('main-content').style.display = 'block'; document.getElementById('helloUser').innerText = "Chào, " + AUTH.user; }
     function logout() { localStorage.removeItem('tech_auth_v4'); location.reload(); }
     function setInitialDate() { const iso = new Date().toISOString().split('T')[0]; document.getElementById('hiddenDate').value = iso; document.getElementById('workDateDisplay').value = formatVN(iso); }
+    function confirmDate(v) { document.getElementById('workDateDisplay').value = formatVN(v); document.getElementById('dateModal').style.display = 'none'; }
     function formatVN(s) { if(!s) return ''; const d = new Date(s); return d.getDate().toString().padStart(2,'0')+'/'+(d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getFullYear(); }
+    function filterTable() { const v = document.getElementById('searchBox').value.toUpperCase(); const rows = document.getElementById('tableBody').getElementsByTagName('tr'); for (let r of rows) r.style.display = r.innerText.toUpperCase().includes(v) ? "" : "none"; }
     function showLoading(s, t) { document.getElementById('loading-overlay').style.display = s ? 'flex' : 'none'; if(t) document.getElementById('loading-text').innerText = t; }
     function showToast(m, type) { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = m; c.appendChild(t); setTimeout(() => t.remove(), 2500); }
+    // --- LOGIC QUẢN LÝ TÀI KHOẢN (TAB 4) ---
 
-    function applyPermissions() {
-        const r = AUTH ? AUTH.role : USER_ROLE;
-        document.getElementById('tabBar').style.display = r === "VIEWER" ? "none" : "flex";
-        document.getElementById('btnTabMeta').style.display = r === "ADMIN" ? "block" : "none";
-        document.getElementById('btnTabUser').style.display = r === "ADMIN" ? "block" : "none";
-        document.getElementById('btnTabDoc').style.display = "block";
-        if(r === "ADMIN") fetchUsers();
-        fetchDocs();
-        const docForm = document.querySelector('#doc-tab > div:first-child');
-        if(r === "VIEWER") docForm.style.display = 'none'; else docForm.style.display = 'block';
-    }
+// 1. Tự động lấy danh sách user khi tab mở
+function fetchUsers() {
+    if (AUTH.role !== "ADMIN") return;
+    db.collection("users").onSnapshot((snapshot) => {
+        const html = snapshot.docs.map(doc => {
+            const u = doc.data();
+            return `
+                <tr onclick="loadUserToForm('${doc.id}', '${u.name}', '${u.role}', '${u.pass}', '${u.access || ""}')">
+                    <td><b style="color:var(--primary)">${doc.id}</b></td>
+                    <td>${u.name}</td>
+                    <td><span class="badge-tech">${u.role}</span></td>
+                    <td>••••••</td>
+                    <td style="font-size:11px; color:var(--text-muted)">${u.access || 'ALL'}</td>
+                </tr>
+            `;
+        }).join('');
+        document.getElementById('userTableBody').innerHTML = html;
+    });
+}
+
+// 2. Load dữ liệu từ bảng lên form khi kích vào dòng
+function loadUserToForm(id, name, role, pass, access) {
+    document.getElementById('u_id').value = id;
+    document.getElementById('u_id').readOnly = true;
+    document.getElementById('u_name').value = name;
+    document.getElementById('u_role').value = role;
+    document.getElementById('u_pass').value = pass;
     
-    function filterTable() { const v = document.getElementById('searchBox').value.toUpperCase(); const rows = document.getElementById('tableBody').getElementsByTagName('tr'); for (let r of rows) r.style.display = r.innerText.toUpperCase().includes(v) ? "" : "none"; }
-    function confirmDate(v) { document.getElementById('workDateDisplay').value = formatVN(v); document.getElementById('dateModal').style.display = 'none'; }
-    function resetSaveButton() { document.getElementById('btnSave').innerHTML = "LƯU BÁO CÁO"; document.getElementById('content').value = ''; document.getElementById('note').value = ''; }
+    // Xử lý Checkbox quyền truy cập
+    const allowedList = (access || "").split(",").map(s => s.trim());
+    const checks = document.querySelectorAll('input[name="user_cust"]');
+    checks.forEach(ch => {
+        ch.checked = allowedList.includes(ch.value);
+    });
+    
+    showToast("Đã chọn user: " + id, "info");
+}
+
+// 3. Thêm User mới
+async function addUser() {
+    const id = document.getElementById('u_id').value.trim();
+    if(!id) return showToast("Vui lòng nhập User ID", "error");
+    const selectedAccess = Array.from(document.querySelectorAll('input[name="user_cust"]:checked'))
+                            .map(cb => cb.value)
+                            .join(', ');
+    showLoading(true, "ĐANG TẠO...");
+    try {
+        await db.collection("users").doc(id).set({
+            name: document.getElementById('u_name').value,
+            role: document.getElementById('u_role').value,
+            pass: document.getElementById('u_pass').value,
+            access: selectedAccess // Sử dụng danh sách đã chọn
+        });
+        showToast("Thêm thành công!", "success");
+        resetUserForm();
+    } catch (e) { showToast("Lỗi: " + e.message, "error"); }
+    showLoading(false);
+}
+
+// 4. Cập nhật User
+async function updateUser() {
+    const id = document.getElementById('u_id').value.trim();
+    const selectedAccess = Array.from(document.querySelectorAll('input[name="user_cust"]:checked'))
+                                .map(cb => cb.value)
+                                .join(', ');
+    showLoading(true, "ĐANG CẬP NHẬT...");
+    try {
+        await db.collection("users").doc(id).update({
+            name: document.getElementById('u_name').value,
+            role: document.getElementById('u_role').value,
+            pass: document.getElementById('u_pass').value,
+            access: selectedAccess // Sử dụng danh sách đã chọn
+        });
+        showToast("Đã cập nhật!", "success");
+    } catch (e) { showToast("Lỗi khi cập nhật!", "error"); }
+    showLoading(false);
+}
+
+// 5. Xóa User
+async function deleteUser() {
+    const id = document.getElementById('u_id').value.trim();
+    if(!confirm("Xóa tài khoản " + id + "?")) return;
+    showLoading(true);
+    await db.collection("users").doc(id).delete();
+    resetUserForm();
+    showLoading(false);
+}
+
+function resetUserForm() {
+    document.getElementById('u_id').value = "";
+    document.getElementById('u_id').readOnly = false;
+    document.getElementById('u_name').value = "";
+    document.getElementById('u_pass').value = "";
+    // Bỏ chọn tất cả checkbox
+    document.querySelectorAll('input[name="user_cust"]').forEach(ch => ch.checked = false);
+}
+
+// Cập nhật hàm applyPermissions để hiển thị tab 4 cho ADMIN
+const originalApplyPermissions = applyPermissions;
+applyPermissions = function() {
+    originalApplyPermissions(); // Chạy hàm cũ
+    const currentRole = AUTH ? AUTH.role : USER_ROLE;
+    document.getElementById('btnTabUser').style.display = currentRole === "ADMIN" ? "block" : "none";
+    if(currentRole === "ADMIN") fetchUsers();
+};
+    let selectedDocId = null;
+
+// 1. Load danh sách khách hàng vào Checkbox (Chỉ gọi khi là Admin/Edit)
+function loadCustomerCheckboxes(customers) {
+    const container = document.getElementById('doc_customer_checks');
+    if (!container) return;
+    
+    if (!customers || customers.length === 0) {
+        container.innerHTML = `<div style="padding:15px; text-align:center; font-size:12px; color:var(--text-muted);">Chưa có dữ liệu khách hàng.</div>`;
+        return;
+    }
+
+    container.innerHTML = customers.map(c => `
+        <label style="display: grid; grid-template-columns: 1fr 80px; align-items: center; padding: 8px 15px; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer; transition: 0.2s;" class="cust-row">
+            <span style="font-size: 13px; color: var(--text-main);">${c}</span>
+            <div style="text-align: center;">
+                <input type="checkbox" name="doc_cust" value="${c}" style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary);">
+            </div>
+        </label>
+    `).join('');
+}
+
+// 2. Lấy dữ liệu tài liệu
+function fetchDocs() {
+    db.collection("documents").onSnapshot((snapshot) => {
+        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderDocs(docs);
+    });
+}
+
+// 3. Hiển thị tài liệu (Có lọc theo quyền Viewer)
+function renderDocs(docs) {
+    const container = document.getElementById('doc_list');
+    let filtered = docs;
+
+    // Phân quyền cho Viewer: Chỉ thấy tài liệu mà khách hàng của họ được phép
+    if (AUTH.role === "VIEWER") {
+        const allowedList = (AUTH.access || "").split(",").map(s => s.trim());
+        filtered = docs.filter(d => {
+            if (!d.customers || d.customers.length === 0) return true; // Trống = Công khai
+            return d.customers.some(c => allowedList.includes(c));
+        });
+    }
+
+    container.innerHTML = filtered.map(d => `
+        <div class="meta-col" style="cursor:pointer;" onclick="handleDocClick('${d.id}', '${d.name}', '${d.link}', ${JSON.stringify(d.customers || [])})">
+            <h4 style="border:none; margin:0; text-align:left;">📄 ${d.name}</h4>
+            <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Dành cho: ${(!d.customers || d.customers.length === 0) ? 'Tất cả' : d.customers.join(', ')}</div>
+            <a href="${d.link}" target="_blank" onclick="event.stopPropagation()" style="background:var(--primary); color:var(--dark); text-decoration:none; padding:8px; border-radius:6px; text-align:center; font-weight:600; font-size:12px;">TẢI TÀI LIỆU</a>
+        </div>
+    `).join('');
+}
+
+function handleDocClick(id, name, link, custs) {
+    if (AUTH.role === "VIEWER") return; // Viewer chỉ được tải, không được sửa
+    selectedDocId = id;
+    document.getElementById('doc_name').value = name;
+    document.getElementById('doc_link').value = link;
+    
+    // Check vào các ô khách hàng
+    const checks = document.querySelectorAll('input[name="doc_cust"]');
+    checks.forEach(ch => ch.checked = custs.includes(ch.value));
+    
+    document.getElementById('btnUpdateDoc').style.display = 'block';
+    document.getElementById('btnDeleteDoc').style.display = 'block';
+    showToast("Đã chọn: " + name, "info");
+}
+
+async function addDoc() {
+    const name = document.getElementById('doc_name').value.trim();
+    const link = document.getElementById('doc_link').value.trim();
+    if (!name || !link) return showToast("Vui lòng nhập tên và link!", "error");
+
+    const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked')).map(cb => cb.value);
+    
+    showLoading(true);
+    await db.collection("documents").add({
+        name, link, customers: selectedCusts, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    resetDocForm();
+    showLoading(false);
+}
+
+async function updateDoc() {
+    const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked')).map(cb => cb.value);
+    showLoading(true);
+    await db.collection("documents").doc(selectedDocId).update({
+        name: document.getElementById('doc_name').value,
+        link: document.getElementById('doc_link').value,
+        customers: selectedCusts
+    });
+    resetDocForm();
+    showLoading(false);
+}
+
+async function deleteDoc() {
+    if(!confirm("Xóa tài liệu này?")) return;
+    showLoading(true);
+    await db.collection("documents").doc(selectedDocId).delete();
+    resetDocForm();
+    showLoading(false);
+}
+
+function resetDocForm() {
+    selectedDocId = null;
+    document.getElementById('doc_name').value = "";
+    document.getElementById('doc_link').value = "";
+    document.querySelectorAll('input[name="doc_cust"]').forEach(ch => ch.checked = false);
+    document.getElementById('btnUpdateDoc').style.display = 'none';
+    document.getElementById('btnDeleteDoc').style.display = 'none';
+}
+
+function filterDocs() {
+    const val = document.getElementById('searchDoc').value.toUpperCase();
+    const cards = document.querySelectorAll('#doc_list .meta-col');
+    cards.forEach(c => c.style.display = c.innerText.toUpperCase().includes(val) ? "" : "none");
+}
+
+// Cập nhật hàm applyPermissions để hiển thị tab 5
+const finalApplyPermissions = applyPermissions;
+applyPermissions = function() {
+    finalApplyPermissions();
+    const currentRole = AUTH ? AUTH.role : USER_ROLE;
+    // Tab tài liệu hiện với tất cả mọi người, nhưng Form thêm xóa chỉ hiện với Admin/Edit
+    document.getElementById('btnTabDoc').style.display = "block"; 
+    fetchDocs();
+    
+    // Nếu là Viewer, ẩn form nhập tài liệu
+    const docForm = document.querySelector('#doc-tab > div:first-child');
+    if(currentRole === "VIEWER") docForm.style.display = 'none';
+    else docForm.style.display = 'block';
+};
+
+// Cập nhật hàm updateDropdowns để load checkbox khách hàng
+const originalUpdateDropdowns = updateDropdowns;
+updateDropdowns = function(d) {
+    originalUpdateDropdowns(d);
+    if(d.customers) loadCustomerCheckboxes(d.customers);
+};
+
+function loadUserAccessCheckboxes(customers) {
+    const container = document.getElementById('u_access_checks');
+    if (!container || !customers) return;
+    
+    container.innerHTML = customers.map(c => `
+        <label style="display: flex; align-items: center; padding: 5px 15px; cursor: pointer;" class="cust-row">
+            <input type="checkbox" name="user_cust" value="${c}" style="width: 16px; height: 16px; margin-right: 10px; accent-color: var(--primary);">
+            <span style="font-size: 13px;">${c}</span>
+        </label>
+    `).join('');
+}
+
+// Cập nhật lại hàm updateDropdowns để gọi hàm trên
+const oldUpdateDropdowns = updateDropdowns;
+updateDropdowns = function(d) {
+    oldUpdateDropdowns(d);
+    if(d.customers) {
+        loadCustomerCheckboxes(d.customers); // Cho Tab 5
+        loadUserAccessCheckboxes(d.customers); // Cho Tab 4
+    }
+};
 </script>
 </body>
 </html>
