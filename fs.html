@@ -114,7 +114,7 @@
 
         /* Toasts */
         #toast-container { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; display: flex; flex-direction: column; align-items: center; pointer-events: none; }
-        .toast { background: rgba(30, 41, 59, 0.95); color: white; padding: 16px 28px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); text-align: center; border: 1px solid rgba(255,255,255,0.1); animation: toastPop 0.3s forwards; }
+        .toast { background: rgba(30, 41, 59, 0.95); color: white; padding: 20px 30px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); text-align: center; border: 1px solid rgba(255,255,255,0.1); animation: toastPop 0.3s forwards; min-width: 300px; /* Chiều rộng tối thiểu */    max-width: 90vw;  /* Chiều rộng tối đa (không tràn màn hình điện thoại) */}
         @keyframes toastPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .header-logo { height: 55px; filter: drop-shadow(0 0 15px var(--primary)) brightness(1.2); }
         .cust-row:hover { background: rgba(0, 210, 255, 0.1); }
@@ -247,8 +247,8 @@
         </div>
         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px; margin-top:10px;">
             <button class="btn-save" onclick="addUser()" style="background:#065f46">➕ THÊM</button>
-            <button class="btn-save" onclick="updateUser()" style="background:#1e3a8a">💾 CẬP NHẬT</button>
-            <button class="btn-save" onclick="deleteUser()" style="background:#7f1d1d">🗑️ XÓA</button>
+            <button class="btn-save" onclick="updateUser()" style="background:#1e3a8a; display:none;">💾 CẬP NHẬT</button>
+            <button class="btn-save" onclick="deleteUser()" style="background:#7f1d1d; display:none;">🗑️ XÓA</button>
             <button class="btn-save" onclick="resetUserForm()" style="background:#475569">🧹 LÀM MỚI</button>
         </div>
     
@@ -698,7 +698,9 @@ function loadUserToForm(id, name, role, pass, access) {
     checks.forEach(ch => {
         ch.checked = allowedList.includes(ch.value);
     });
-    
+    // HIỆN các nút Cập nhật và Xóa
+    document.getElementById('btnUpdateUser').style.display = 'block';
+    document.getElementById('btnDeleteUser').style.display = 'block';
     showToast("Đã chọn user: " + id, "info");
 }
 
@@ -784,6 +786,9 @@ function resetUserForm() {
     document.getElementById('u_pass').value = "";
     // Bỏ chọn tất cả checkbox
     document.querySelectorAll('input[name="user_cust"]').forEach(ch => ch.checked = false);
+    // ẨN các nút Cập nhật và Xóa
+    document.getElementById('btnUpdateUser').style.display = 'none';
+    document.getElementById('btnDeleteUser').style.display = 'none';
 }
 
 // Cập nhật hàm applyPermissions để hiển thị tab 4 cho ADMIN
