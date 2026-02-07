@@ -1038,15 +1038,21 @@ function updateDashboard(logs) {
         support: {}
     };
 
-    // Đếm số lần lặp lại của từng tên cụ thể
+    // Truy cập theo đúng chỉ mục (index) trong mảng logs đã map ở fetchData
     logs.forEach(log => {
-        if (log.cust) stats.cust[log.cust] = (stats.cust[log.cust] || 0) + 1;
-        if (log.machine) stats.machine[log.machine] = (stats.machine[log.machine] || 0) + 1;
-        if (log.staff) stats.staff[log.staff] = (stats.staff[log.staff] || 0) + 1;
-        if (log.type) stats.support[log.type] = (stats.support[log.type] || 0) + 1;
+        // log[2]: Khách hàng, log[3]: Loại máy, log[4]: Hỗ trợ, log[6]: Kỹ thuật
+        const customer = log[2];
+        const machine = log[3];
+        const support = log[4];
+        const staff = log[6];
+
+        if (customer) stats.cust[customer] = (stats.cust[customer] || 0) + 1;
+        if (machine) stats.machine[machine] = (stats.machine[machine] || 0) + 1;
+        if (staff) stats.staff[staff] = (stats.staff[staff] || 0) + 1;
+        if (support) stats.support[support] = (stats.support[support] || 0) + 1;
     });
 
-    // Vẽ biểu đồ dạng cột cho tất cả để dễ so sánh tên chi tiết
+    // Vẽ lại biểu đồ với dữ liệu đã được đếm chính xác
     renderChart("chartCust", "Số lần theo Khách hàng", stats.cust, 'bar');
     renderChart("chartMachine", "Số lần theo Loại máy", stats.machine, 'bar');
     renderChart("chartStaff", "Số lần theo Kỹ thuật", stats.staff, 'bar');
