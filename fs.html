@@ -126,7 +126,7 @@
     gap: 15px;
 }
 .dashboard-grid .card {
-    height: 350px; /* Ép tất cả các khung biểu đồ cao bằng nhau */
+    height: 200px; /* Ép tất cả các khung biểu đồ cao bằng nhau */
     display: flex;
     flex-direction: column;
 }
@@ -682,7 +682,7 @@ function deleteLog(id) {
         document.getElementById('content').value = '';
         document.getElementById('note').value = '';
     }
-
+let currentUserRole = "VIEWER"; // Giá trị này sẽ nhận từ Firebase sau khi login
 function applyPermissions(role) {
         currentUserRole = role;
         const dashTab = document.getElementById('tabDashBtn');
