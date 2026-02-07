@@ -119,33 +119,6 @@
         @keyframes toastPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .header-logo { height: 55px; filter: drop-shadow(0 0 15px var(--primary)) brightness(1.2); }
         .cust-row:hover { background: rgba(0, 210, 255, 0.1); }
-        /* Thiết lập mặc định cho Dashboard là 2 cột */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Chia 2 cột bằng nhau */
-    gap: 15px;
-}
-.dashboard-grid .card {
-    height: 200px; /* Ép tất cả các khung biểu đồ cao bằng nhau */
-    display: flex;
-    flex-direction: column;
-}
-
-.dashboard-grid .card canvas {
-    flex-grow: 1; /* Để biểu đồ chiếm nốt không gian còn lại của card */
-    max-height: 100%; 
-}
-/* Khi chiều rộng màn hình nhỏ hơn 600px (Điện thoại) */
-@media (max-width: 600px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr; /* Chuyển về 1 cột */
-    }
-}
-
-/* Chỉnh thêm để biểu đồ thu nhỏ thanh mảnh hơn */
-.card canvas {
-    max-height: 250px; /* Giới hạn chiều cao để không bị quá dài trên điện thoại */
-}
     </style>
 </head>
 <body>
@@ -175,7 +148,7 @@
     </div>
 
     <div class="tab-navigation" id="tabBar" style="display:none;">
-   	<button class="tab-btn active" onclick="switchTab('dashboard', this)">🏠 TỔNG QUAN</button>
+    <button class="tab-btn active" onclick="switchTab('dashboard')">🏠 TỔNG QUAN</button>
         <button class="tab-btn" onclick="switchTab('data-tab', this)">📊 Bảng Dữ Liệu</button>
         <button class="tab-btn" onclick="switchTab('form-tab', this)">📑 Báo Cáo Mới</button>
         <button class="tab-btn" id="btnTabMeta" onclick="switchTab('meta-tab', this)">🧱 Thông Tin Khối</button>
@@ -183,22 +156,22 @@
         <button class="tab-btn" id="btnTabDoc" onclick="switchTab('doc-tab', this)">📂 Tài liệu</button>
     </div>
     
-<div id="dashboard" class="tab-content active">
-    <div class="dashboard-grid">
-        <div class="card" style="padding:15px; background: var(--card); border-radius: 12px; border: 1px solid var(--border);">
-            <h4 style="margin-top:0; color:var(--primary); font-size: 13px;">👥 Khách Hàng</h4>
+    <div id="dashboard" class="tab-content active">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+        <div class="card" style="padding:15px;">
+            <h4 style="margin-top:0; color:var(--primary);">👥 Khách Hàng</h4>
             <canvas id="chartCust"></canvas>
         </div>
-        <div class="card" style="padding:15px; background: var(--card); border-radius: 12px; border: 1px solid var(--border);">
-            <h4 style="margin-top:0; color:var(--primary); font-size: 13px;">⚙️ Loại Máy</h4>
+        <div class="card" style="padding:15px;">
+            <h4 style="margin-top:0; color:var(--primary);">⚙️ Loại Máy</h4>
             <canvas id="chartMachine"></canvas>
         </div>
-        <div class="card" style="padding:15px; background: var(--card); border-radius: 12px; border: 1px solid var(--border);">
-            <h4 style="margin-top:0; color:var(--primary); font-size: 13px;">👨‍🔧 Kỹ Thuật Viên</h4>
+        <div class="card" style="padding:15px;">
+            <h4 style="margin-top:0; color:var(--primary);">👨‍🔧 Kỹ Thuật Viên</h4>
             <canvas id="chartStaff"></canvas>
         </div>
-        <div class="card" style="padding:15px; background: var(--card); border-radius: 12px; border: 1px solid var(--border);">
-            <h4 style="margin-top:0; color:var(--primary); font-size: 13px;">🤝 Loại Hỗ Trợ</h4>
+        <div class="card" style="padding:15px;">
+            <h4 style="margin-top:0; color:var(--primary);">🤝 Loại Hỗ Trợ</h4>
             <canvas id="chartSupport"></canvas>
         </div>
     </div>
@@ -682,23 +655,11 @@ function deleteLog(id) {
         document.getElementById('content').value = '';
         document.getElementById('note').value = '';
     }
-let currentUserRole = "VIEWER"; // Giá trị này sẽ nhận từ Firebase sau khi login
-function applyPermissions(role) {
-        currentUserRole = role;
-        const dashTab = document.getElementById('tabDashBtn');
-        const addBtn = document.getElementById('addNewBtn');
-        const colAction = document.getElementById('colAction');
 
-        if (role === 'VIEWER') {
-            if (dashTab) dashTab.classList.add('hidden');
-            if (addBtn) addBtn.classList.add('hidden');
-            if (colAction) colAction.style.display = 'none';
-            showTab('logs'); // Viewer mặc định vào tab Dữ liệu
-        } else {
-            if (dashTab) dashTab.classList.remove('hidden');
-            if (addBtn) addBtn.classList.remove('hidden');
-            if (colAction) colAction.style.display = '';
-        }
+    function applyPermissions() {
+        const currentRole = AUTH ? AUTH.role : USER_ROLE;
+        document.getElementById('tabBar').style.display = currentRole === "VIEWER" ? "none" : "flex";
+        document.getElementById('btnTabMeta').style.display = currentRole === "ADMIN" ? "block" : "none";
     }
 
     function showApp() { document.getElementById('lock-screen').style.display = 'none'; document.getElementById('main-content').style.display = 'block'; document.getElementById('helloUser').innerText = "Chào, " + AUTH.user; }
@@ -1102,6 +1063,7 @@ function renderChart(canvasId, label, dataObj, type) {
     const ctx = document.getElementById(canvasId).getContext('2d');
     if (charts[canvasId]) charts[canvasId].destroy();
 
+    // Sắp xếp dữ liệu từ cao xuống thấp để biểu đồ đẹp hơn
     const sortedEntries = Object.entries(dataObj).sort((a, b) => b[1] - a[1]);
     const labels = sortedEntries.map(el => el[0]);
     const values = sortedEntries.map(el => el[1]);
@@ -1116,28 +1078,26 @@ function renderChart(canvasId, label, dataObj, type) {
                 backgroundColor: 'rgba(0, 210, 255, 0.7)',
                 borderColor: '#00d2ff',
                 borderWidth: 1,
-                borderRadius: 4,
-                // --- CHỈNH THANH NHỎ LẠI Ở ĐÂY ---
-                barThickness: 25, // Độ rộng cố định 15px, bạn có thể chỉnh xuống 10 tùy ý
-                maxBarThickness: 20 
+                borderRadius: 5
             }]
         },
-	options: {
-	    responsive: true,
-	    maintainAspectRatio: false, // Cho phép biểu đồ thay đổi chiều cao/rộng linh hoạt
-	    scales: {
-		y: { 
-		    beginAtZero: true, 
-		    ticks: { stepSize: 1, color: '#94a3b8', font: { size: 10 } }
-		},
-		x: { 
-		    ticks: { color: '#94a3b8', font: { size: 9 } }
-		}
-	    },
-	    plugins: {
-		legend: { display: false }
-	    }
-	}
+        options: {
+            responsive: true,
+            scales: {
+                y: { 
+                    beginAtZero: true, 
+                    ticks: { stepSize: 1, color: '#94a3b8' },
+                    grid: { color: 'rgba(255,255,255,0.05)' }
+                },
+                x: { 
+                    ticks: { color: '#94a3b8', font: { size: 10 } },
+                    grid: { display: false }
+                }
+            },
+            plugins: {
+                legend: { display: false } // Ẩn chú thích thừa vì đã có tiêu đề Card
+            }
+        }
     });
 }
 </script>
