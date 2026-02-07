@@ -252,6 +252,7 @@
             <button class="btn-save" onclick="resetUserForm()" style="background:#475569">🧹 LÀM MỚI</button>
         </div>
     
+    
     <div class="table-container">
         <table>
             <thead>
@@ -654,19 +655,13 @@ function loadUserToForm(id, name, role, pass, access) {
     document.getElementById('u_role').value = role;
     document.getElementById('u_pass').value = pass;
     
-    const checks = document.querySelectorAll('input[name=\"user_cust\"]');
-    checks.forEach(ch => ch.checked = false);
-
-    let allowedList = [];
-    if (Array.isArray(access)) {
-        allowedList = access;
-    } else if (typeof access === 'string' && access.trim() !== "") {
-        allowedList = access.split(",").map(s => s.trim());
-    }
-
+    // Xử lý Checkbox quyền truy cập
+    const allowedList = (access || "").split(",").map(s => s.trim());
+    const checks = document.querySelectorAll('input[name="user_cust"]');
     checks.forEach(ch => {
-        if (allowedList.includes(ch.value)) ch.checked = true;
+        ch.checked = allowedList.includes(ch.value);
     });
+    
     showToast("Đã chọn user: " + id, "info");
 }
 
@@ -791,61 +786,44 @@ function renderDocs(docs) {
 }
 
 function handleDocClick(id, name, link, custs) {
-    if (AUTH && AUTH.role === "VIEWER") return;
+    if (AUTH.role === "VIEWER") return; // Viewer chỉ được tải, không được sửa
     selectedDocId = id;
     document.getElementById('doc_name').value = name;
     document.getElementById('doc_link').value = link;
     
-    // Reset toàn bộ checkbox về trạng thái chưa chọn
-    const checks = document.querySelectorAll('input[name=\"doc_cust\"]');
-    checks.forEach(ch => ch.checked = false);
-
-    // Ép kiểu dữ liệu về mảng để xử lý
-    let allowedList = [];
-    if (Array.isArray(custs)) {
-        allowedList = custs;
-    } else if (typeof custs === 'string' && custs.trim() !== "") {
-        // Nếu là chuỗi (do lỗi cũ lưu sai), tự động cắt ra thành mảng
-        allowedList = custs.split(",").map(s => s.trim());
-    }
-
-    // Tích vào các checkbox có tên trong danh sách khách hàng
-    if (allowedList.length > 0) {
-        checks.forEach(ch => {
-            if (allowedList.includes(ch.value)) {
-                ch.checked = true;
-            }
-        });
-    }
+    // Check vào các ô khách hàng
+    const checks = document.querySelectorAll('input[name="doc_cust"]');
+    checks.forEach(ch => ch.checked = custs.includes(ch.value));
     
     document.getElementById('btnUpdateDoc').style.display = 'block';
     document.getElementById('btnDeleteDoc').style.display = 'block';
     showToast("Đã chọn: " + name, "info");
 }
 
-async function updateDoc() {
-    if (!selectedDocId) return;
+async function addDoc() {
     const name = document.getElementById('doc_name').value.trim();
     const link = document.getElementById('doc_link').value.trim();
+    if (!name || !link) return showToast("Vui lòng nhập tên và link!", "error");
+
+    const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked')).map(cb => cb.value);
     
-    // Lấy tất cả checkbox đang được tích và tạo thành một Mảng (Array)
-    const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked'))
-                               .map(cb => cb.value);
+    showLoading(true);
+    await db.collection("documents").add({
+        name, link, customers: selectedCusts, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    resetDocForm();
+    showLoading(false);
+}
 
-    if (!name || !link) return showToast("Thiếu thông tin!", "error");
-
-    showLoading(true, "ĐANG CẬP NHẬT...");
-    try {
-        await db.collection("documents").doc(selectedDocId).update({
-            name: name,
-            link: link,
-            customers: selectedCusts // Đảm bảo truyền vào biến mảng
-        });
-        showToast("Đã cập nhật tài liệu!", "success");
-        resetDocForm();
-    } catch (e) {
-        showToast("Lỗi: " + e.message, "error");
-    }
+async function updateDoc() {
+    const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked')).map(cb => cb.value);
+    showLoading(true);
+    await db.collection("documents").doc(selectedDocId).update({
+        name: document.getElementById('doc_name').value,
+        link: document.getElementById('doc_link').value,
+        customers: selectedCusts
+    });
+    resetDocForm();
     showLoading(false);
 }
 
