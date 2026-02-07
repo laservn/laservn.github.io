@@ -148,7 +148,7 @@
     </div>
 
     <div class="tab-navigation" id="tabBar" style="display:none;">
-    <button class="tab-btn active" onclick="showTab('dashboard')">🏠 TỔNG QUAN</button>
+    <button class="tab-btn active" onclick="switchTab('dashboard')">🏠 TỔNG QUAN</button>
         <button class="tab-btn" onclick="switchTab('data-tab', this)">📊 Bảng Dữ Liệu</button>
         <button class="tab-btn" onclick="switchTab('form-tab', this)">📑 Báo Cáo Mới</button>
         <button class="tab-btn" id="btnTabMeta" onclick="switchTab('meta-tab', this)">🧱 Thông Tin Khối</button>
@@ -156,22 +156,22 @@
         <button class="tab-btn" id="btnTabDoc" onclick="switchTab('doc-tab', this)">📂 Tài liệu</button>
     </div>
     
-    <div id="dashboard" class="tab-content active">
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
-        <div class="card" style="padding:15px;">
-            <h4 style="margin-top:0; color:var(--primary);">👥 Khách Hàng</h4>
+<div id="dashboard" class="tab-content active">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div class="card" style="padding:15px; background: var(--card); border-radius: 12px; border: 1px solid var(--border);">
+            <h4 style="margin-top:0; color:var(--primary); font-size: 13px;">👥 Khách Hàng</h4>
             <canvas id="chartCust"></canvas>
         </div>
-        <div class="card" style="padding:15px;">
-            <h4 style="margin-top:0; color:var(--primary);">⚙️ Loại Máy</h4>
+        <div class="card" style="padding:15px; background: var(--card); border-radius: 12px; border: 1px solid var(--border);">
+            <h4 style="margin-top:0; color:var(--primary); font-size: 13px;">⚙️ Loại Máy</h4>
             <canvas id="chartMachine"></canvas>
         </div>
-        <div class="card" style="padding:15px;">
-            <h4 style="margin-top:0; color:var(--primary);">👨‍🔧 Kỹ Thuật Viên</h4>
+        <div class="card" style="padding:15px; background: var(--card); border-radius: 12px; border: 1px solid var(--border);">
+            <h4 style="margin-top:0; color:var(--primary); font-size: 13px;">👨‍🔧 Kỹ Thuật Viên</h4>
             <canvas id="chartStaff"></canvas>
         </div>
-        <div class="card" style="padding:15px;">
-            <h4 style="margin-top:0; color:var(--primary);">🤝 Loại Hỗ Trợ</h4>
+        <div class="card" style="padding:15px; background: var(--card); border-radius: 12px; border: 1px solid var(--border);">
+            <h4 style="margin-top:0; color:var(--primary); font-size: 13px;">🤝 Loại Hỗ Trợ</h4>
             <canvas id="chartSupport"></canvas>
         </div>
     </div>
@@ -1063,7 +1063,6 @@ function renderChart(canvasId, label, dataObj, type) {
     const ctx = document.getElementById(canvasId).getContext('2d');
     if (charts[canvasId]) charts[canvasId].destroy();
 
-    // Sắp xếp dữ liệu từ cao xuống thấp để biểu đồ đẹp hơn
     const sortedEntries = Object.entries(dataObj).sort((a, b) => b[1] - a[1]);
     const labels = sortedEntries.map(el => el[0]);
     const values = sortedEntries.map(el => el[1]);
@@ -1078,24 +1077,28 @@ function renderChart(canvasId, label, dataObj, type) {
                 backgroundColor: 'rgba(0, 210, 255, 0.7)',
                 borderColor: '#00d2ff',
                 borderWidth: 1,
-                borderRadius: 5
+                borderRadius: 4,
+                // --- CHỈNH THANH NHỎ LẠI Ở ĐÂY ---
+                barThickness: 15, // Độ rộng cố định 15px, bạn có thể chỉnh xuống 10 tùy ý
+                maxBarThickness: 20 
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true, // Giúp biểu đồ không bị quá cao khi chia 2 cột
             scales: {
                 y: { 
                     beginAtZero: true, 
-                    ticks: { stepSize: 1, color: '#94a3b8' },
+                    ticks: { stepSize: 1, color: '#94a3b8', font: { size: 10 } },
                     grid: { color: 'rgba(255,255,255,0.05)' }
                 },
                 x: { 
-                    ticks: { color: '#94a3b8', font: { size: 10 } },
+                    ticks: { color: '#94a3b8', font: { size: 9 } },
                     grid: { display: false }
                 }
             },
             plugins: {
-                legend: { display: false } // Ẩn chú thích thừa vì đã có tiêu đề Card
+                legend: { display: false }
             }
         }
     });
