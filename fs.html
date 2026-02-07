@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BÁO CÁO KỸ THUẬT</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
     <style>
         :root { 
@@ -147,12 +148,34 @@
     </div>
 
     <div class="tab-navigation" id="tabBar" style="display:none;">
-        <button class="tab-btn active" onclick="switchTab('data-tab', this)">📊 Bảng Dữ Liệu</button>
+    <button class="tab-btn active" onclick="showTab('dashboard')">🏠 TỔNG QUAN</button>
+        <button class="tab-btn" onclick="switchTab('data-tab', this)">📊 Bảng Dữ Liệu</button>
         <button class="tab-btn" onclick="switchTab('form-tab', this)">📑 Báo Cáo Mới</button>
         <button class="tab-btn" id="btnTabMeta" onclick="switchTab('meta-tab', this)">🧱 Thông Tin Khối</button>
         <button class="tab-btn" id="btnTabUser" onclick="switchTab('user-tab', this)">👥 Tài Khoản</button>
         <button class="tab-btn" id="btnTabDoc" onclick="switchTab('doc-tab', this)">📂 Tài liệu</button>
     </div>
+    
+    <div id="dashboard" class="tab-content active">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+        <div class="card" style="padding:15px;">
+            <h4 style="margin-top:0; color:var(--primary);">👥 Khách Hàng</h4>
+            <canvas id="chartCust"></canvas>
+        </div>
+        <div class="card" style="padding:15px;">
+            <h4 style="margin-top:0; color:var(--primary);">⚙️ Loại Máy</h4>
+            <canvas id="chartMachine"></canvas>
+        </div>
+        <div class="card" style="padding:15px;">
+            <h4 style="margin-top:0; color:var(--primary);">👨‍🔧 Kỹ Thuật Viên</h4>
+            <canvas id="chartStaff"></canvas>
+        </div>
+        <div class="card" style="padding:15px;">
+            <h4 style="margin-top:0; color:var(--primary);">🤝 Loại Hỗ Trợ</h4>
+            <canvas id="chartSupport"></canvas>
+        </div>
+    </div>
+</div>
 
     <div id="data-tab" class="tab-content active">
         <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="🔍 Tìm kiếm nhanh (Máy, khách, nội dung...)">
@@ -445,6 +468,16 @@ function fetchData() {
             }
         });
     }
+    
+    
+    // Tìm trong hàm fetchLogs đoạn .onSnapshot
+db.collection("logs").orderBy("date", "desc").onSnapshot(snap => {
+    const logs = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
+    renderLogs(logs); // Render bảng cũ
+    updateDashboard(logs); // Cập nhật thêm biểu đồ mới này
+});
+
+
 }
     // --- UI RENDER (KHÔI PHỤC CẤU TRÚC GỐC CỦA BẠN) ---
     function renderData(data) {
@@ -998,6 +1031,71 @@ updateDropdowns = function(d) {
         loadUserAccessCheckboxes(d.customers); // Cho Tab 4
     }
 };
+
+
+let charts = {}; // Lưu trữ các đối tượng biểu đồ để reset khi dữ liệu đổi
+
+function updateDashboard(logs) {
+    const stats = {
+        cust: {},
+        machine: {},
+        staff: {},
+        support: {}
+    };
+
+    // 1. Phân tích dữ liệu từ logs
+    logs.forEach(log => {
+        stats.cust[log.cust] = (stats.cust[log.cust] || 0) + 1;
+        stats.machine[log.machine] = (stats.machine[log.machine] || 0) + 1;
+        stats.staff[log.staff] = (stats.staff[log.staff] || 0) + 1;
+        stats.support[log.type] = (stats.support[log.type] || 0) + 1;
+    });
+
+    // 2. Vẽ biểu đồ
+    renderChart("chartCust", "Khách hàng", stats.cust, 'pie'); // Biểu đồ tròn
+    renderChart("chartMachine", "Loại máy", stats.machine, 'bar'); // Biểu đồ cột
+    renderChart("chartStaff", "Kỹ thuật", stats.staff, 'bar'); // Biểu đồ cột ngang
+    renderChart("chartSupport", "Hỗ trợ", stats.support, 'doughnut'); // Biểu đồ vòng
+}
+
+function renderChart(canvasId, label, dataObj, type) {
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    
+    // Nếu biểu đồ đã tồn tại thì xóa để vẽ mới
+    if (charts[canvasId]) charts[canvasId].destroy();
+
+    const labels = Object.keys(dataObj);
+    const values = Object.values(dataObj);
+
+    charts[canvasId] = new Chart(ctx, {
+        type: type,
+        data: {
+            labels: labels,
+            datasets: [{
+                label: label,
+                data: values,
+                backgroundColor: [
+                    '#00d2ff', '#3a7bd5', '#60a5fa', '#34d399', '#facc15', '#f87171', '#a78bfa'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            indexAxis: type === 'bar' && canvasId === 'chartStaff' ? 'y' : 'x', // Quay ngang biểu đồ nhân viên
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: (type === 'pie' || type === 'doughnut'),
+                    labels: { color: '#94a3b8' }
+                }
+            },
+            scales: type === 'bar' ? {
+                y: { beginAtZero: true, ticks: { color: '#94a3b8' } },
+                x: { ticks: { color: '#94a3b8' } }
+            } : {}
+        }
+    });
+}
 </script>
 </body>
 </html>
