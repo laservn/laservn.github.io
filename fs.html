@@ -125,7 +125,16 @@
     grid-template-columns: 1fr 1fr; /* Chia 2 cột bằng nhau */
     gap: 15px;
 }
+.dashboard-grid .card {
+    height: 350px; /* Ép tất cả các khung biểu đồ cao bằng nhau */
+    display: flex;
+    flex-direction: column;
+}
 
+.dashboard-grid .card canvas {
+    flex-grow: 1; /* Để biểu đồ chiếm nốt không gian còn lại của card */
+    max-height: 100%; 
+}
 /* Khi chiều rộng màn hình nhỏ hơn 600px (Điện thoại) */
 @media (max-width: 600px) {
     .dashboard-grid {
@@ -674,10 +683,22 @@ function deleteLog(id) {
         document.getElementById('note').value = '';
     }
 
-    function applyPermissions() {
-        const currentRole = AUTH ? AUTH.role : USER_ROLE;
-        document.getElementById('tabBar').style.display = currentRole === "VIEWER" ? "none" : "flex";
-        document.getElementById('btnTabMeta').style.display = currentRole === "ADMIN" ? "block" : "none";
+function applyPermissions(role) {
+        currentUserRole = role;
+        const dashTab = document.getElementById('tabDashBtn');
+        const addBtn = document.getElementById('addNewBtn');
+        const colAction = document.getElementById('colAction');
+
+        if (role === 'VIEWER') {
+            if (dashTab) dashTab.classList.add('hidden');
+            if (addBtn) addBtn.classList.add('hidden');
+            if (colAction) colAction.style.display = 'none';
+            showTab('logs'); // Viewer mặc định vào tab Dữ liệu
+        } else {
+            if (dashTab) dashTab.classList.remove('hidden');
+            if (addBtn) addBtn.classList.remove('hidden');
+            if (colAction) colAction.style.display = '';
+        }
     }
 
     function showApp() { document.getElementById('lock-screen').style.display = 'none'; document.getElementById('main-content').style.display = 'block'; document.getElementById('helloUser').innerText = "Chào, " + AUTH.user; }
