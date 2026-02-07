@@ -150,6 +150,7 @@
         <button class="tab-btn" onclick="switchTab('form-tab', this)">📑 Báo Cáo Mới</button>
         <button class="tab-btn" id="btnTabMeta" onclick="switchTab('meta-tab', this)">🧱 Thông Tin Khối</button>
         <button class="tab-btn" id="btnTabUser" onclick="switchTab('user-tab', this)">👥 Tài Khoản</button>
+        <button class="tab-btn" id="btnTabDoc" onclick="switchTab('doc-tab', this)">📂 Tài liệu</button>
     </div>
 
     <div id="data-tab" class="tab-content active">
@@ -255,6 +256,31 @@
             <tbody id="userTableBody"></tbody>
         </table>
     </div>
+</div>
+
+    <div id="doc-tab" class="tab-content">
+    <div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
+        <div style="display:grid; grid-template-columns: 1fr 2fr; gap:10px;">
+            <input type="text" id="doc_name" placeholder="Tên tài liệu (VD: Hướng dẫn sử dụng...)">
+            <input type="text" id="doc_link" placeholder="Dán link tài liệu vào đây (Google Drive, Dropbox...)">
+        </div>
+        
+        <p style="font-size: 12px; color: var(--primary); margin: 5px 0;">Chọn khách hàng được phép xem (Để trống = Tất cả):</p>
+        <div id="doc_customer_checks" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 5px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; max-height: 120px; overflow-y: auto; border: 1px solid var(--border);">
+            </div>
+
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:15px;">
+            <button class="btn-save" onclick="addDoc()" style="background:#065f46">➕ THÊM</button>
+            <button class="btn-save" id="btnUpdateDoc" onclick="updateDoc()" style="background:#1e3a8a; display:none;">💾 CẬP NHẬT</button>
+            <button class="btn-save" id="btnDeleteDoc" onclick="deleteDoc()" style="background:#7f1d1d; display:none;">🗑️ XÓA</button>
+            <button class="btn-save" onclick="resetDocForm()" style="background:#475569">🧹 LÀM MỚI</button>
+        </div>
+    </div>
+
+    <input type="text" id="searchDoc" onkeyup="filterDocs()" placeholder="🔍 Tìm kiếm tài liệu..." style="border: 1px solid var(--primary); background: rgba(0,210,255,0.05);">
+    
+    <div id="doc_list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 10px;">
+        </div>
 </div>
 </div>
 
@@ -674,6 +700,136 @@ applyPermissions = function() {
     const currentRole = AUTH ? AUTH.role : USER_ROLE;
     document.getElementById('btnTabUser').style.display = currentRole === "ADMIN" ? "block" : "none";
     if(currentRole === "ADMIN") fetchUsers();
+};
+    let selectedDocId = null;
+
+// 1. Load danh sách khách hàng vào Checkbox (Chỉ gọi khi là Admin/Edit)
+function loadCustomerCheckboxes(customers) {
+    const container = document.getElementById('doc_customer_checks');
+    if (!container) return;
+    container.innerHTML = (customers || []).map(c => `
+        <label style="font-size:12px; display:flex; align-items:center; gap:5px; cursor:pointer;">
+            <input type="checkbox" name="doc_cust" value="${c}"> ${c}
+        </label>
+    `).join('');
+}
+
+// 2. Lấy dữ liệu tài liệu
+function fetchDocs() {
+    db.collection("documents").onSnapshot((snapshot) => {
+        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderDocs(docs);
+    });
+}
+
+// 3. Hiển thị tài liệu (Có lọc theo quyền Viewer)
+function renderDocs(docs) {
+    const container = document.getElementById('doc_list');
+    let filtered = docs;
+
+    // Phân quyền cho Viewer: Chỉ thấy tài liệu mà khách hàng của họ được phép
+    if (AUTH.role === "VIEWER") {
+        const allowedList = (AUTH.access || "").split(",").map(s => s.trim());
+        filtered = docs.filter(d => {
+            if (!d.customers || d.customers.length === 0) return true; // Trống = Công khai
+            return d.customers.some(c => allowedList.includes(c));
+        });
+    }
+
+    container.innerHTML = filtered.map(d => `
+        <div class="meta-col" style="cursor:pointer;" onclick="handleDocClick('${d.id}', '${d.name}', '${d.link}', ${JSON.stringify(d.customers || [])})">
+            <h4 style="border:none; margin:0; text-align:left;">📄 ${d.name}</h4>
+            <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Dành cho: ${(!d.customers || d.customers.length === 0) ? 'Tất cả' : d.customers.join(', ')}</div>
+            <a href="${d.link}" target="_blank" onclick="event.stopPropagation()" style="background:var(--primary); color:var(--dark); text-decoration:none; padding:8px; border-radius:6px; text-align:center; font-weight:600; font-size:12px;">TẢI TÀI LIỆU</a>
+        </div>
+    `).join('');
+}
+
+function handleDocClick(id, name, link, custs) {
+    if (AUTH.role === "VIEWER") return; // Viewer chỉ được tải, không được sửa
+    selectedDocId = id;
+    document.getElementById('doc_name').value = name;
+    document.getElementById('doc_link').value = link;
+    
+    // Check vào các ô khách hàng
+    const checks = document.querySelectorAll('input[name="doc_cust"]');
+    checks.forEach(ch => ch.checked = custs.includes(ch.value));
+    
+    document.getElementById('btnUpdateDoc').style.display = 'block';
+    document.getElementById('btnDeleteDoc').style.display = 'block';
+    showToast("Đã chọn: " + name, "info");
+}
+
+async function addDoc() {
+    const name = document.getElementById('doc_name').value.trim();
+    const link = document.getElementById('doc_link').value.trim();
+    if (!name || !link) return showToast("Vui lòng nhập tên và link!", "error");
+
+    const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked')).map(cb => cb.value);
+    
+    showLoading(true);
+    await db.collection("documents").add({
+        name, link, customers: selectedCusts, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    resetDocForm();
+    showLoading(false);
+}
+
+async function updateDoc() {
+    const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked')).map(cb => cb.value);
+    showLoading(true);
+    await db.collection("documents").doc(selectedDocId).update({
+        name: document.getElementById('doc_name').value,
+        link: document.getElementById('doc_link').value,
+        customers: selectedCusts
+    });
+    resetDocForm();
+    showLoading(false);
+}
+
+async function deleteDoc() {
+    if(!confirm("Xóa tài liệu này?")) return;
+    showLoading(true);
+    await db.collection("documents").doc(selectedDocId).delete();
+    resetDocForm();
+    showLoading(false);
+}
+
+function resetDocForm() {
+    selectedDocId = null;
+    document.getElementById('doc_name').value = "";
+    document.getElementById('doc_link').value = "";
+    document.querySelectorAll('input[name="doc_cust"]').forEach(ch => ch.checked = false);
+    document.getElementById('btnUpdateDoc').style.display = 'none';
+    document.getElementById('btnDeleteDoc').style.display = 'none';
+}
+
+function filterDocs() {
+    const val = document.getElementById('searchDoc').value.toUpperCase();
+    const cards = document.querySelectorAll('#doc_list .meta-col');
+    cards.forEach(c => c.style.display = c.innerText.toUpperCase().includes(val) ? "" : "none");
+}
+
+// Cập nhật hàm applyPermissions để hiển thị tab 5
+const finalApplyPermissions = applyPermissions;
+applyPermissions = function() {
+    finalApplyPermissions();
+    const currentRole = AUTH ? AUTH.role : USER_ROLE;
+    // Tab tài liệu hiện với tất cả mọi người, nhưng Form thêm xóa chỉ hiện với Admin/Edit
+    document.getElementById('btnTabDoc').style.display = "block"; 
+    fetchDocs();
+    
+    // Nếu là Viewer, ẩn form nhập tài liệu
+    const docForm = document.querySelector('#doc-tab > div:first-child');
+    if(currentRole === "VIEWER") docForm.style.display = 'none';
+    else docForm.style.display = 'block';
+};
+
+// Cập nhật hàm updateDropdowns để load checkbox khách hàng
+const originalUpdateDropdowns = updateDropdowns;
+updateDropdowns = function(d) {
+    originalUpdateDropdowns(d);
+    if(d.customers) loadCustomerCheckboxes(d.customers);
 };
 </script>
 </body>
