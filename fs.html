@@ -142,7 +142,7 @@
         <img src="https://lh3.googleusercontent.com/pw/AP1GczNyKJCNBen1I6WeBIOFBHnduEAc-raKjpQsiE-xMOPlkgBLUxSUPtPfnGUO-h_gVE4xbhoZyycDSfpCjJD_uk7EkCLQJEXeuBytxHxBTDS0NEIMKC7RqBA-GIxKhZed7ddwzYsTmKsh5fKxggPZvFM=w483-h154" class="header-logo" alt="Logo">
         <div style="text-align: right">
             <span id="helloUser" style="color:var(--primary); font-size:13px; font-weight:600">---</span>
-            <button onclick="logout()" style="color:#ef4444; background:none; border:none; cursor:pointer; margin-left:12px; font-size:12px; font-weight:bold">THOÁT</button>
+            <button onclick="signOut()" style="color:#ef4444; background:none; border:none; cursor:pointer; margin-left:12px; font-size:12px; font-weight:bold">THOÁT</button>
             <small id="syncStatus" style="font-size:10px; color:var(--text-muted); display:block; margin-top:4px">Đang đồng bộ...</small>
         </div>
     </div>
@@ -749,7 +749,7 @@ function showApp() {
         applyPermissions();
     }
 }
-    function logout() { localStorage.removeItem('tech_auth_v4'); location.reload(); }
+
     function setInitialDate() { const iso = new Date().toISOString().split('T')[0]; document.getElementById('hiddenDate').value = iso; document.getElementById('workDateDisplay').value = formatVN(iso); }
     function confirmDate(v) { document.getElementById('workDateDisplay').value = formatVN(v); document.getElementById('dateModal').style.display = 'none'; }
     function formatVN(s) { if(!s) return ''; const d = new Date(s); return d.getDate().toString().padStart(2,'0')+'/'+(d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getFullYear(); }
