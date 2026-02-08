@@ -1031,8 +1031,8 @@ async function addDoc() {
     
     showLoading(true, "ĐANG LƯU...");
     await db.collection("documents").add({
-        name, link, machineType: mType, customers: selectedCusts, createdBy: AUTH.user,
-            userPass: AUTH.pass, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        name, link, machineType: mType, customers: selectedCusts, createdBy: AUTH.user, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            
     });
     resetDocForm();
     showLoading(false);
