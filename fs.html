@@ -401,13 +401,18 @@ async function unlock() {
     const email = document.getElementById('userInput').value.trim();
     const pass = document.getElementById('passInput').value.trim();
     
+    if (!email || !pass) {
+        showToast("Vui lòng nhập Email và Mật khẩu", "error");
+        return;
+    }
+
     showLoading(true, "ĐANG XÁC THỰC...");
     try {
-        // 1. Đăng nhập vào Firebase Auth
+        // 1. Đăng nhập qua Firebase Authentication
         const userCredential = await firebase.auth().signInWithEmailAndPassword(email, pass);
         const user = userCredential.user;
 
-        // 2. Sau khi Auth thành công, lấy Role từ Firestore (Document ID là Email)
+        // 2. Lấy quyền (Role) từ Firestore dựa trên Email (Document ID)
         const userDoc = await db.collection("users").doc(email).get();
         
         if (userDoc.exists) {
@@ -426,15 +431,18 @@ async function unlock() {
             showApp(); 
             fetchData();
         } else { 
-            await firebase.auth().signOut(); // Thoát ra nếu không có trong bảng users
-            showToast("Tài khoản chưa được phân quyền!", "error"); 
+            // Nếu có trong Auth nhưng chưa được khai báo quyền trong bảng users
+            await firebase.auth().signOut();
+            showToast("Tài khoản chưa được phân quyền hệ thống!", "error"); 
         }
     } catch (e) { 
-        console.error(e);
-        showToast("Email hoặc mật khẩu không đúng!", "error"); 
+        console.error("Auth Error:", e);
+        // Firebase sẽ trả về lỗi nếu email/pass sai ở đây
+        showToast("Email hoặc mật khẩu Auth không đúng!", "error"); 
     }
     showLoading(false);
 }
+
 
 function fetchData() {
     if (!AUTH) return;
@@ -671,35 +679,28 @@ function deleteLog(id) {
 function applyPermissions() {
     const currentRole = AUTH ? AUTH.role : USER_ROLE;
     
-    // Nếu là Viewer, xóa hoàn toàn các tính năng cấm
     if (currentRole === "VIEWER") {
-        // 1. Xóa các nút trên thanh Tab (chỉ giữ lại Tổng quan, Dữ liệu, Tài liệu)
+        // Xóa các nút Tab cấm (Báo cáo mới, Meta, User)
         const buttons = document.querySelectorAll('.tab-btn');
-        buttons.forEach((btn, index) => {
-            // Giả sử index: 0-Tổng quan, 1-Dữ liệu, 5-Tài liệu
-            if (![0, 1, 5].includes(index)) {
-                btn.remove(); 
-            }
-        });
+        // Index: 2:Báo cáo, 3:Meta, 4:User
+        if(buttons[2]) buttons[2].remove();
+        if(buttons[3]) buttons[3].remove();
+        if(buttons[4]) buttons[4].remove();
 
-        // 2. Xóa nội dung các Tab nhạy cảm để không thể "vẽ" lại được
-        const forbiddenIds = ['form-tab', 'meta-tab', 'user-tab'];
-        forbiddenIds.forEach(id => {
+        // Xóa sạch nội dung HTML bên trong các tab đó
+        ['form-tab', 'meta-tab', 'user-tab'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.remove();
         });
 
-        // 3. Xóa Form thêm tài liệu trong Tab Tài liệu
-        const docForm = document.querySelector('#doc-tab > div:first-child');
+        // Tab Tài liệu: Xóa form thêm, chỉ để lại danh sách
+        const docForm = document.querySelector('#doc-tab .card');
         if (docForm) docForm.remove();
         
-        // 4. Chặn luôn hàm click mở form sửa trong Tài liệu
-        window.handleDocClick = function(id, name, link) {
-            window.open(link, '_blank'); // Chỉ cho xem link
-        };
+        // Chặn mở form sửa khi click vào dòng tài liệu
+        window.handleDocClick = (id, name, link) => window.open(link, '_blank');
     }
     
-    // Hiển thị thanh Tab còn lại sau khi đã lọc
     const tabBar = document.getElementById('tabBar');
     if (tabBar) tabBar.style.display = "flex";
 }
