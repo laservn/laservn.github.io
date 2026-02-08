@@ -657,11 +657,40 @@ function deleteLog(id) {
         document.getElementById('note').value = '';
     }
 
-    function applyPermissions() {
-        const currentRole = AUTH ? AUTH.role : USER_ROLE;
-        document.getElementById('tabBar').style.display = currentRole === "VIEWER" ? "none" : "flex";
-        document.getElementById('btnTabMeta').style.display = currentRole === "ADMIN" ? "block" : "none";
+function applyPermissions() {
+    const currentRole = AUTH ? AUTH.role : USER_ROLE;
+    
+    // Hiển thị thanh Tab điều hướng
+    document.getElementById('tabBar').style.display = "flex";
+
+    // --- KIỂM TRA QUYỀN HIỂN THỊ CÁC NÚT TAB ---
+    
+    // Tab Báo cáo mới: Chỉ hiện cho ADMIN và EDIT
+    const btnTabForm = document.querySelectorAll('.tab-btn')[2]; // Nút thứ 3 (📑 Báo Cáo Mới)
+    if (btnTabForm) btnTabForm.style.display = (currentRole === "ADMIN" || currentRole === "EDIT") ? "block" : "none";
+
+    // Tab Thông tin khối: Chỉ ADMIN
+    document.getElementById('btnTabMeta').style.display = (currentRole === "ADMIN") ? "block" : "none";
+
+    // Tab Tài khoản: Chỉ ADMIN
+    document.getElementById('btnTabUser').style.display = (currentRole === "ADMIN") ? "block" : "none";
+
+    // Tab Tài liệu: Hiện với tất cả mọi người
+    document.getElementById('btnTabDoc').style.display = "block";
+
+    // --- KIỂM TRA NỘI DUNG BÊN TRONG TAB TÀI LIỆU ---
+    // Ẩn Form thêm/sửa tài liệu nếu là VIEWER
+    const docForm = document.querySelector('#doc-tab > div:first-child');
+    if (docForm) {
+        docForm.style.display = (currentRole === "VIEWER") ? 'none' : 'block';
     }
+
+    // Tự động tải dữ liệu tài liệu
+    fetchDocs();
+    
+    // Nếu là ADMIN thì tải thêm danh sách user
+    if(currentRole === "ADMIN") fetchUsers();
+}
 
     function showApp() { document.getElementById('lock-screen').style.display = 'none'; document.getElementById('main-content').style.display = 'block'; document.getElementById('helloUser').innerText = "Chào, " + AUTH.user; }
     function logout() { localStorage.removeItem('tech_auth_v4'); location.reload(); }
