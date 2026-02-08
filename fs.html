@@ -157,7 +157,7 @@
     </div>
     
 	<div id="dashboard" class="tab-content active">
-	    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 15px;">
+	    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
 		<div class="card" style="padding:15px;">
 		    <h4 style="margin-top:0; color:var(--primary);">👥 Khách Hàng</h4>
 		    <canvas id="chartCust"></canvas>
@@ -398,20 +398,27 @@ try {
     }
 
 async function unlock() {
-    const u = document.getElementById('userInput').value.trim();
-    const p = document.getElementById('passInput').value.trim();
+    const email = document.getElementById('userInput').value.trim();
+    const pass = document.getElementById('passInput').value.trim();
+    
     showLoading(true, "ĐANG XÁC THỰC...");
     try {
-        const userDoc = await db.collection("users").doc(u).get();
-        if (userDoc.exists && userDoc.data().pass === p) {
-            const userData = userDoc.data(); // Lấy toàn bộ data của user
+        // 1. Đăng nhập vào Firebase Auth
+        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, pass);
+        const user = userCredential.user;
+
+        // 2. Sau khi Auth thành công, lấy Role từ Firestore (Document ID là Email)
+        const userDoc = await db.collection("users").doc(email).get();
+        
+        if (userDoc.exists) {
+            const userData = userDoc.data();
             USER_ROLE = userData.role;
             
-            // THÊM TRƯỜNG ACCESS VÀO ĐÂY
             AUTH = { 
-                user: u, 
+                user: email, 
+                uid: user.uid,
                 role: USER_ROLE, 
-                access: userData.access || "", // Lưu danh sách khách hàng được phép
+                access: userData.access || "", 
                 expire: new Date().getTime() + (24*60*60*1000) 
             };
             
@@ -419,10 +426,12 @@ async function unlock() {
             showApp(); 
             fetchData();
         } else { 
-            showToast("Sai tài khoản hoặc mật khẩu!", "error"); 
+            await firebase.auth().signOut(); // Thoát ra nếu không có trong bảng users
+            showToast("Tài khoản chưa được phân quyền!", "error"); 
         }
     } catch (e) { 
-        showToast("Lỗi kết nối Firestore!", "error"); 
+        console.error(e);
+        showToast("Email hoặc mật khẩu không đúng!", "error"); 
     }
     showLoading(false);
 }
@@ -587,6 +596,8 @@ function fetchData() {
                 machineType: document.getElementById('machineType').value,
                 support: document.getElementById('supportType').value,
                 content: n, note: document.getElementById('note').value.trim(),
+                createdBy: AUTH.user,
+            	userPass: AUTH.pass, // Gửi pass kèm theo để Server Rules kiểm tra
                 createdBy: AUTH.user, createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
             showToast("Đã lưu báo cáo!", "success");
@@ -660,36 +671,37 @@ function deleteLog(id) {
 function applyPermissions() {
     const currentRole = AUTH ? AUTH.role : USER_ROLE;
     
-    // Hiển thị thanh Tab điều hướng
-    document.getElementById('tabBar').style.display = "flex";
+    // Nếu là Viewer, xóa hoàn toàn các tính năng cấm
+    if (currentRole === "VIEWER") {
+        // 1. Xóa các nút trên thanh Tab (chỉ giữ lại Tổng quan, Dữ liệu, Tài liệu)
+        const buttons = document.querySelectorAll('.tab-btn');
+        buttons.forEach((btn, index) => {
+            // Giả sử index: 0-Tổng quan, 1-Dữ liệu, 5-Tài liệu
+            if (![0, 1, 5].includes(index)) {
+                btn.remove(); 
+            }
+        });
 
-    // --- KIỂM TRA QUYỀN HIỂN THỊ CÁC NÚT TAB ---
-    
-    // Tab Báo cáo mới: Chỉ hiện cho ADMIN và EDIT
-    const btnTabForm = document.querySelectorAll('.tab-btn')[2]; // Nút thứ 3 (📑 Báo Cáo Mới)
-    if (btnTabForm) btnTabForm.style.display = (currentRole === "ADMIN" || currentRole === "EDIT") ? "block" : "none";
+        // 2. Xóa nội dung các Tab nhạy cảm để không thể "vẽ" lại được
+        const forbiddenIds = ['form-tab', 'meta-tab', 'user-tab'];
+        forbiddenIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        });
 
-    // Tab Thông tin khối: Chỉ ADMIN
-    document.getElementById('btnTabMeta').style.display = (currentRole === "ADMIN") ? "block" : "none";
-
-    // Tab Tài khoản: Chỉ ADMIN
-    document.getElementById('btnTabUser').style.display = (currentRole === "ADMIN") ? "block" : "none";
-
-    // Tab Tài liệu: Hiện với tất cả mọi người
-    document.getElementById('btnTabDoc').style.display = "block";
-
-    // --- KIỂM TRA NỘI DUNG BÊN TRONG TAB TÀI LIỆU ---
-    // Ẩn Form thêm/sửa tài liệu nếu là VIEWER
-    const docForm = document.querySelector('#doc-tab > div:first-child');
-    if (docForm) {
-        docForm.style.display = (currentRole === "VIEWER") ? 'none' : 'block';
+        // 3. Xóa Form thêm tài liệu trong Tab Tài liệu
+        const docForm = document.querySelector('#doc-tab > div:first-child');
+        if (docForm) docForm.remove();
+        
+        // 4. Chặn luôn hàm click mở form sửa trong Tài liệu
+        window.handleDocClick = function(id, name, link) {
+            window.open(link, '_blank'); // Chỉ cho xem link
+        };
     }
-
-    // Tự động tải dữ liệu tài liệu
-    fetchDocs();
     
-    // Nếu là ADMIN thì tải thêm danh sách user
-    if(currentRole === "ADMIN") fetchUsers();
+    // Hiển thị thanh Tab còn lại sau khi đã lọc
+    const tabBar = document.getElementById('tabBar');
+    if (tabBar) tabBar.style.display = "flex";
 }
 
     function showApp() { document.getElementById('lock-screen').style.display = 'none'; document.getElementById('main-content').style.display = 'block'; document.getElementById('helloUser').innerText = "Chào, " + AUTH.user; }
@@ -967,7 +979,8 @@ async function addDoc() {
     
     showLoading(true, "ĐANG LƯU...");
     await db.collection("documents").add({
-        name, link, machineType: mType, customers: selectedCusts, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        name, link, machineType: mType, customers: selectedCusts, createdBy: AUTH.user,
+            userPass: AUTH.pass, createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     resetDocForm();
     showLoading(false);
