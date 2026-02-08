@@ -294,14 +294,24 @@
 
 <div id="doc-tab" class="tab-content">
     <div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
-        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-            <input type="text" id="doc_name" placeholder="Tên tài liệu...">
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1.5fr; gap:10px;">
+            <input type="text" id="doc_name" placeholder="Tên tài liệu (VD: HDSD Biến tần...)">
             <select id="doc_machine_type">
-                <option value="">-- Chọn Loại máy --</option>
+                <option value="">-- Loại máy --</option>
             </select>
-            <input type="text" id="doc_link" placeholder="Dán link tài liệu...">
+            <input type="text" id="doc_link" placeholder="Link tài liệu (Drive, Dropbox...)">
         </div>
         
+        <p style="font-size: 12px; color: var(--primary); margin: 10px 0 5px 0;">Phân quyền xem tài liệu (Chọn khách hàng được phép xem - Trống = Tất cả):</p>
+        <div style="background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--border); overflow: hidden;">
+            <div style="display: grid; grid-template-columns: 1fr 80px; background: rgba(255,255,255,0.05); padding: 8px 15px; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; color: var(--text-muted);">
+                <div>TÊN KHÁCH HÀNG</div>
+                <div style="text-align: center;">CHỌN</div>
+            </div>
+            <div id="doc_customer_checks" style="max-height: 180px; overflow-y: auto; padding: 5px 0;">
+                </div>
+        </div>
+
         <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:15px;">
             <button class="btn-save" onclick="addDoc()" style="background:#065f46">➕ THÊM</button>
             <button class="btn-save" id="btnUpdateDoc" onclick="updateDoc()" style="background:#1e3a8a; display:none;">💾 CẬP NHẬT</button>
@@ -312,7 +322,7 @@
 
     <input type="text" id="searchDoc" onkeyup="filterDocs()" placeholder="🔍 Tìm kiếm tài liệu..." style="border: 1px solid var(--primary); background: rgba(0,210,255,0.05);">
     
-    <div id="doc_groups_container" style="margin-top: 10px;"></div>
+    <div id="doc_groups_container" style="margin-top: 15px;"></div>
 </div>
 
 
@@ -853,6 +863,7 @@ function renderDocs(docs) {
     const container = document.getElementById('doc_groups_container');
     let filtered = docs;
 
+    // Lọc quyền Viewer (Giữ nguyên logic của bạn)
     if (AUTH.role === "VIEWER") {
         const allowedList = (AUTH.access || "").split(",").map(s => s.trim());
         filtered = docs.filter(d => {
@@ -861,7 +872,7 @@ function renderDocs(docs) {
         });
     }
 
-    // Nhóm tài liệu theo loại máy
+    // Nhóm tài liệu theo Loại máy
     const groups = {};
     filtered.forEach(d => {
         const type = d.machineType || "KHÁC / CHƯA PHÂN LOẠI";
@@ -869,21 +880,24 @@ function renderDocs(docs) {
         groups[type].push(d);
     });
 
+    // Vẽ giao diện theo từng nhóm
     container.innerHTML = Object.keys(groups).sort().map(groupName => `
-        <div class="doc-group-section" style="margin-bottom: 25px;">
-            <h3 style="color: var(--primary); border-left: 4px solid var(--primary); padding-left: 10px; font-size: 16px; margin-bottom: 10px;">📦 ${groupName}</h3>
+        <div class="doc-group-section" style="margin-bottom: 20px;">
+            <div style="background: rgba(0, 210, 255, 0.1); padding: 8px 15px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid var(--primary);">
+                <span style="color: var(--primary); font-weight: 600; font-size: 14px;">📦 NHÓM: ${groupName}</span>
+            </div>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
                 ${groups[groupName].map(d => {
                     const custsAttr = encodeURIComponent(JSON.stringify(d.customers || []));
                     return `
                         <div class="meta-col" style="cursor:pointer;" onclick="handleDocClick('${d.id}', '${d.name}', '${d.link}', '${custsAttr}', '${d.machineType || ""}')">
-                            <h4 style="border:none; margin:0; text-align:left;">📄 ${d.name}</h4>
-                            <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">
-                                Khách: ${(!d.customers || d.customers.length === 0) ? 'Tất cả' : d.customers.join(', ')}
+                            <h4 style="border:none; margin:0; text-align:left; font-size:14px;">📄 ${d.name}</h4>
+                            <div style="font-size:11px; color:var(--text-muted); margin: 5px 0 10px 0;">
+                                <span style="color:var(--primary)">👤 Quyền xem:</span> ${(!d.customers || d.customers.length === 0) ? 'Tất cả' : d.customers.join(', ')}
                             </div>
                             <a href="${d.link}" target="_blank" onclick="event.stopPropagation()" 
-                               style="background:var(--primary); color:var(--dark); text-decoration:none; padding:8px; border-radius:6px; text-align:center; font-weight:600; font-size:12px;">
-                                TẢI TÀI LIỆU
+                               style="background:var(--primary); color:var(--dark); text-decoration:none; padding:8px; border-radius:6px; text-align:center; font-weight:600; font-size:11px; text-transform:uppercase;">
+                               XEM TÀI LIỆU
                             </a>
                         </div>
                     `;
@@ -899,26 +913,30 @@ function handleDocClick(id, name, link, encodedCusts, mType) {
     selectedDocId = id;
     document.getElementById('doc_name').value = name;
     document.getElementById('doc_link').value = link;
-    document.getElementById('doc_machine_type').value = mType; // Load loại máy lên
+    document.getElementById('doc_machine_type').value = mType; // Load loại máy
     
+    // Load checkbox phân quyền (Giữ nguyên logic của bạn)
     const custs = JSON.parse(decodeURIComponent(encodedCusts));
-    document.querySelectorAll('input[name="doc_cust"]').forEach(ch => {
+    const checks = document.querySelectorAll('input[name="doc_cust"]');
+    checks.forEach(ch => {
         ch.checked = custs.includes(ch.value);
     });
     
     document.getElementById('btnUpdateDoc').style.display = 'block';
     document.getElementById('btnDeleteDoc').style.display = 'block';
+    showToast("Đang sửa: " + name, "info");
 }
 
+// 4. Lưu tài liệu mới (Bao gồm cả Loại máy và Danh sách khách hàng)
 async function addDoc() {
     const name = document.getElementById('doc_name').value.trim();
     const link = document.getElementById('doc_link').value.trim();
-    const mType = document.getElementById('doc_machine_type').value; // Lấy loại máy
-    if (!name || !link) return showToast("Vui lòng nhập tên và link!", "error");
+    const mType = document.getElementById('doc_machine_type').value;
+    if (!name || !link) return showToast("Thiếu tên hoặc link!", "error");
 
     const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked')).map(cb => cb.value);
     
-    showLoading(true);
+    showLoading(true, "ĐANG LƯU...");
     await db.collection("documents").add({
         name, link, machineType: mType, customers: selectedCusts, createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
@@ -926,20 +944,19 @@ async function addDoc() {
     showLoading(false);
 }
 
-// Tương tự cho updateDoc...
+// 5. Cập nhật (Update) tương tự
 async function updateDoc() {
     const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked')).map(cb => cb.value);
-    showLoading(true);
+    showLoading(true, "ĐANG CẬP NHẬT...");
     await db.collection("documents").doc(selectedDocId).update({
         name: document.getElementById('doc_name').value,
         link: document.getElementById('doc_link').value,
-        machineType: document.getElementById('doc_machine_type').value, // Cập nhật loại máy
+        machineType: document.getElementById('doc_machine_type').value,
         customers: selectedCusts
     });
     resetDocForm();
     showLoading(false);
 }
-
 function resetDocForm() {
     selectedDocId = null;
     document.getElementById('doc_name').value = "";
@@ -1009,13 +1026,13 @@ updateDropdowns = function(d) {
     originalUpdateDropdowns(d);
     if(d.customers) loadCustomerCheckboxes(d.customers);
     // THÊM DÒNG NÀY:
-    if(d.machineTypes) {
-        const docMachineSelect = document.getElementById('doc_machine_type');
-        const currentVal = docMachineSelect.value;
-        docMachineSelect.innerHTML = '<option value="">-- Chọn Loại máy --</option>' + 
-            d.machineTypes.map(m => `<option value="${m}">${m}</option>`).join('');
-        docMachineSelect.value = currentVal;
-    }
+	if(d.machineTypes) {
+		const docMachineSelect = document.getElementById('doc_machine_type');
+		const currentVal = docMachineSelect.value;
+		docMachineSelect.innerHTML = '<option value="">-- Loại máy --</option>' + 
+		    d.machineTypes.map(m => `<option value="${m}">${m}</option>`).join('');
+		docMachineSelect.value = currentVal;
+	}
 };
 
 function loadUserAccessCheckboxes(customers) {
