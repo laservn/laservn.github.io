@@ -408,17 +408,16 @@ async function unlock() {
 
     showLoading(true, "ĐANG XÁC THỰC...");
     try {
-        // 1. Xác thực với Firebase Authentication (Sử dụng mật khẩu bạn đã tạo trong tab Auth)
+        // BƯỚC 1: Xác thực với Firebase Auth (Nơi quản lý đăng nhập)
         const userCredential = await firebase.auth().signInWithEmailAndPassword(email, pass);
         const userAuth = userCredential.user;
 
-        // 2. Lấy dữ liệu quyền từ Firestore dựa trên DOCUMENT ID (là email)
-        // Vì bạn đặt Document ID là "admin@laser.info.vn", nên lệnh .doc(email) là chuẩn xác nhất
+        // BƯỚC 2: Lấy Role từ Firestore dựa trên Document ID (chính là email)
         const userDoc = await db.collection("users").doc(email).get();
         
         if (userDoc.exists) {
             const userData = userDoc.data();
-            USER_ROLE = userData.role; // Sẽ lấy được "ADMIN" hoặc "VIEWER"
+            USER_ROLE = userData.role; // Lấy ra "ADMIN" hoặc "VIEWER"
             
             AUTH = { 
                 user: email, 
@@ -433,17 +432,18 @@ async function unlock() {
             fetchData();
             showToast("Đăng nhập thành công!", "success");
         } else { 
-            // Nếu Auth thành công nhưng email này chưa được tạo Document ID trong bảng users
+            // Nếu đăng nhập Auth thành công nhưng Firestore không có ID này
             await firebase.auth().signOut();
-            showToast("Email này chưa được tạo trong bảng Users của Firestore!", "error"); 
+            showToast("Tài khoản chưa có dữ liệu trong bảng Users!", "error"); 
         }
     } catch (e) { 
-        console.error("Lỗi Auth:", e);
-        // Lỗi này xảy ra khi sai pass trong tab Authentication hoặc Email không tồn tại trong Auth
-        showToast("Sai Email hoặc Mật khẩu (Auth)!", "error"); 
+        console.error("Lỗi chi tiết:", e.code, e.message);
+        // Nếu e.code là "auth/user-not-found" hoặc "auth/wrong-password"
+        showToast("Email hoặc Mật khẩu không chính xác!", "error"); 
     }
     showLoading(false);
 }
+
 
 function fetchData() {
     if (!AUTH) return;
