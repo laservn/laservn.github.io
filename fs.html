@@ -617,27 +617,37 @@ function fetchData() {
     }
 
     // --- OTHER LOGIC (GIỮ NGUYÊN GỐC) ---
-    async function saveData() {
-        const d = document.getElementById('hiddenDate').value;
-        const c = document.getElementById('customer').value;
-        const n = document.getElementById('content').value.trim();
-        if(!c || !n) return showToast("Vui lòng điền đủ thông tin!", "error");
-        showLoading(true, "ĐANG LƯU...");
-        try {
-            await db.collection("logs").add({
-                workDate: d, customer: c, tech: document.getElementById('techName').value,
-                machineType: document.getElementById('machineType').value,
-                support: document.getElementById('supportType').value,
-                content: n, note: document.getElementById('note').value.trim(),
-                createdBy: AUTH.user,
-            	userPass: AUTH.pass, // Gửi pass kèm theo để Server Rules kiểm tra
-                createdBy: AUTH.user, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            showToast("Đã lưu báo cáo!", "success");
-            resetSaveButton(); switchTab('data-tab', document.querySelector('.tab-btn'));
-        } catch (e) { showToast("Lỗi khi lưu!", "error"); }
-        showLoading(false);
+async function saveData() {
+    const d = document.getElementById('hiddenDate').value;
+    const c = document.getElementById('customer').value;
+    const n = document.getElementById('content').value.trim();
+    
+    if(!c || !n) return showToast("Vui lòng điền đủ thông tin!", "error");
+    
+    showLoading(true, "ĐANG LƯU...");
+    try {
+        await db.collection("logs").add({
+            workDate: d, 
+            customer: c, 
+            tech: document.getElementById('techName').value,
+            machineType: document.getElementById('machineType').value,
+            support: document.getElementById('supportType').value,
+            content: n, 
+            note: document.getElementById('note').value.trim(),
+            createdBy: AUTH.user, // Email người tạo
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        showToast("Đã lưu báo cáo!", "success");
+        resetSaveButton(); 
+        fetchData(); // Tải lại dữ liệu mới sau khi lưu thành công
+        switchTab('data-tab', document.querySelector('.tab-btn'));
+    } catch (e) { 
+        console.error("Lỗi chi tiết:", e); // Để bạn xem lỗi ở F12
+        showToast("Lỗi khi lưu! " + e.message, "error"); 
     }
+    showLoading(false);
+}
 
 function deleteLog(id) {
     const confirmHtml = `
