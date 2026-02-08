@@ -709,19 +709,23 @@ function applyPermissions() {
     if (tabBar) tabBar.style.display = "flex";
 }
 
-	function showApp() {
-	    // Ẩn màn hình đăng nhập, hiện màn hình chính
-	    document.getElementById('loginPage').classList.remove('active');
-	    document.getElementById('mainPage').classList.add('active');
-	    
-	    // Hiển thị tên người dùng (lấy từ biến AUTH đã lưu)
-	    if (AUTH && AUTH.user) {
-		document.getElementById('helloUser').innerText = "Chào, " + AUTH.user;
-	    }
-	    
-	    // Quan trọng: Gọi hàm phân quyền để xóa các tab nếu là VIEWER
-	    applyPermissions();
-	}
+function showApp() {
+    const lockScreen = document.getElementById('lock-screen');
+    const mainContent = document.getElementById('main-content');
+    
+    if (lockScreen && mainContent) {
+        lockScreen.style.display = 'none'; // Ẩn màn hình khóa
+        mainContent.style.display = 'block'; // Hiện màn hình chính
+        
+        // Cập nhật tên người dùng
+        if (AUTH && AUTH.user) {
+            const helloEl = document.getElementById('helloUser');
+            if (helloEl) helloEl.innerText = "Chào, " + AUTH.user;
+        }
+        
+        applyPermissions();
+    }
+}
     function logout() { localStorage.removeItem('tech_auth_v4'); location.reload(); }
     function setInitialDate() { const iso = new Date().toISOString().split('T')[0]; document.getElementById('hiddenDate').value = iso; document.getElementById('workDateDisplay').value = formatVN(iso); }
     function confirmDate(v) { document.getElementById('workDateDisplay').value = formatVN(v); document.getElementById('dateModal').style.display = 'none'; }
@@ -1193,14 +1197,11 @@ function renderChart(canvasId, label, dataObj, type) {
 // Tự động chạy mỗi khi trang web được load hoặc F5
 firebase.auth().onAuthStateChanged(async (user) => {
     if (user) {
-        // Nếu Firebase nhận diện đã có người dùng đăng nhập trước đó
         const email = user.email;
         try {
-            // Lấy lại Role từ Firestore
             const userDoc = await db.collection("users").doc(email).get();
             if (userDoc.exists) {
                 const userData = userDoc.data();
-                // Khôi phục biến AUTH toàn cục
                 AUTH = { 
                     user: email, 
                     uid: user.uid,
@@ -1208,18 +1209,19 @@ firebase.auth().onAuthStateChanged(async (user) => {
                     access: userData.access || "ALL"
                 };
                 
-                // Hiển thị App và Tải dữ liệu
                 showApp();
-                fetchData(); // Hàm tải dữ liệu logs của bạn
-                if(typeof fetchDocs === 'function') fetchDocs(); // Tải tài liệu nếu có
+                fetchData();
+                if(typeof fetchDocs === 'function') fetchDocs();
             }
         } catch (e) {
-            console.error("Lỗi đồng bộ dữ liệu:", e);
+            console.error("Lỗi đồng bộ dữ liệu khi F5:", e);
         }
     } else {
-        // Nếu chưa đăng nhập hoặc đã Logout, quay về màn hình Login
-        document.getElementById('loginPage').classList.add('active');
-        document.getElementById('mainPage').classList.remove('active');
+        // Nếu chưa đăng nhập, đảm bảo hiện màn hình khóa
+        const lockScreen = document.getElementById('lock-screen');
+        const mainContent = document.getElementById('main-content');
+        if (lockScreen) lockScreen.style.display = 'flex';
+        if (mainContent) mainContent.style.display = 'none';
     }
 });
 
