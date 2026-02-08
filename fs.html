@@ -447,6 +447,29 @@ async function unlock() {
     showLoading(false);
 }
 
+async function signOut() {
+    try {
+        // 1. Gọi lệnh đăng xuất chính thức của Firebase
+        await firebase.auth().signOut();
+        
+        // 2. Xóa dữ liệu xác thực cục bộ
+        AUTH = null;
+        localStorage.removeItem('tech_auth_v4');
+        
+        // 3. Chuyển về màn hình đăng nhập
+        document.getElementById('main-content').style.display = 'none';
+        document.getElementById('lock-screen').style.display = 'flex';
+        
+        // 4. Reset các ô nhập liệu cho sạch sẽ
+        document.getElementById('userInput').value = '';
+        document.getElementById('passInput').value = '';
+        
+        showToast("Đã đăng xuất thành công", "success");
+    } catch (e) {
+        console.error("Lỗi đăng xuất:", e);
+        showToast("Không thể đăng xuất, vui lòng thử lại", "error");
+    }
+}
 
 function fetchData() {
     if (!AUTH) return;
