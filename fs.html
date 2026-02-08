@@ -709,7 +709,19 @@ function applyPermissions() {
     if (tabBar) tabBar.style.display = "flex";
 }
 
-    function showApp() { document.getElementById('lock-screen').style.display = 'none'; document.getElementById('main-content').style.display = 'block'; document.getElementById('helloUser').innerText = "Chào, " + AUTH.user; }
+	function showApp() {
+	    // Ẩn màn hình đăng nhập, hiện màn hình chính
+	    document.getElementById('loginPage').classList.remove('active');
+	    document.getElementById('mainPage').classList.add('active');
+	    
+	    // Hiển thị tên người dùng (lấy từ biến AUTH đã lưu)
+	    if (AUTH && AUTH.user) {
+		document.getElementById('helloUser').innerText = "Chào, " + AUTH.user;
+	    }
+	    
+	    // Quan trọng: Gọi hàm phân quyền để xóa các tab nếu là VIEWER
+	    applyPermissions();
+	}
     function logout() { localStorage.removeItem('tech_auth_v4'); location.reload(); }
     function setInitialDate() { const iso = new Date().toISOString().split('T')[0]; document.getElementById('hiddenDate').value = iso; document.getElementById('workDateDisplay').value = formatVN(iso); }
     function confirmDate(v) { document.getElementById('workDateDisplay').value = formatVN(v); document.getElementById('dateModal').style.display = 'none'; }
@@ -1177,6 +1189,40 @@ function renderChart(canvasId, label, dataObj, type) {
         }
     });
 }
+
+// Tự động chạy mỗi khi trang web được load hoặc F5
+firebase.auth().onAuthStateChanged(async (user) => {
+    if (user) {
+        // Nếu Firebase nhận diện đã có người dùng đăng nhập trước đó
+        const email = user.email;
+        try {
+            // Lấy lại Role từ Firestore
+            const userDoc = await db.collection("users").doc(email).get();
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+                // Khôi phục biến AUTH toàn cục
+                AUTH = { 
+                    user: email, 
+                    uid: user.uid,
+                    role: userData.role, 
+                    access: userData.access || "ALL"
+                };
+                
+                // Hiển thị App và Tải dữ liệu
+                showApp();
+                fetchData(); // Hàm tải dữ liệu logs của bạn
+                if(typeof fetchDocs === 'function') fetchDocs(); // Tải tài liệu nếu có
+            }
+        } catch (e) {
+            console.error("Lỗi đồng bộ dữ liệu:", e);
+        }
+    } else {
+        // Nếu chưa đăng nhập hoặc đã Logout, quay về màn hình Login
+        document.getElementById('loginPage').classList.add('active');
+        document.getElementById('mainPage').classList.remove('active');
+    }
+});
+
 </script>
 </body>
 </html>
