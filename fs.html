@@ -408,41 +408,42 @@ async function unlock() {
 
     showLoading(true, "ĐANG XÁC THỰC...");
     try {
-        // 1. Đăng nhập qua Firebase Authentication
+        // 1. Xác thực với Firebase Authentication (Sử dụng mật khẩu bạn đã tạo trong tab Auth)
         const userCredential = await firebase.auth().signInWithEmailAndPassword(email, pass);
-        const user = userCredential.user;
+        const userAuth = userCredential.user;
 
-        // 2. Lấy quyền (Role) từ Firestore dựa trên Email (Document ID)
+        // 2. Lấy dữ liệu quyền từ Firestore dựa trên DOCUMENT ID (là email)
+        // Vì bạn đặt Document ID là "admin@laser.info.vn", nên lệnh .doc(email) là chuẩn xác nhất
         const userDoc = await db.collection("users").doc(email).get();
         
         if (userDoc.exists) {
             const userData = userDoc.data();
-            USER_ROLE = userData.role;
+            USER_ROLE = userData.role; // Sẽ lấy được "ADMIN" hoặc "VIEWER"
             
             AUTH = { 
                 user: email, 
-                uid: user.uid,
+                uid: userAuth.uid,
                 role: USER_ROLE, 
-                access: userData.access || "", 
+                access: userData.access || "ALL", 
                 expire: new Date().getTime() + (24*60*60*1000) 
             };
             
             localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
             showApp(); 
             fetchData();
+            showToast("Đăng nhập thành công!", "success");
         } else { 
-            // Nếu có trong Auth nhưng chưa được khai báo quyền trong bảng users
+            // Nếu Auth thành công nhưng email này chưa được tạo Document ID trong bảng users
             await firebase.auth().signOut();
-            showToast("Tài khoản chưa được phân quyền hệ thống!", "error"); 
+            showToast("Email này chưa được tạo trong bảng Users của Firestore!", "error"); 
         }
     } catch (e) { 
-        console.error("Auth Error:", e);
-        // Firebase sẽ trả về lỗi nếu email/pass sai ở đây
-        showToast("Email hoặc mật khẩu Auth không đúng!", "error"); 
+        console.error("Lỗi Auth:", e);
+        // Lỗi này xảy ra khi sai pass trong tab Authentication hoặc Email không tồn tại trong Auth
+        showToast("Sai Email hoặc Mật khẩu (Auth)!", "error"); 
     }
     showLoading(false);
 }
-
 
 function fetchData() {
     if (!AUTH) return;
