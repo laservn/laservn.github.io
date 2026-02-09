@@ -1039,23 +1039,54 @@ function loadUserToForm(id, name, role, pass, access) {
 
 // 3. Thêm User mới
 async function addUser() {
-    const id = document.getElementById('u_id').value.trim();
-    if(!id) return showToast("Vui lòng nhập User ID", "error");
+    const id = document.getElementById('u_id').value.trim(); // Đây chính là Email
+    const pass = document.getElementById('u_pass').value.trim();
+    
+    if(!id) return showToast("Vui lòng nhập Email làm User ID", "error");
+    if(pass.length < 6) return showToast("Mật khẩu phải từ 6 ký tự trở lên", "error");
+
     const selectedAccess = Array.from(document.querySelectorAll('input[name="user_cust"]:checked'))
                             .map(cb => cb.value)
                             .join(', ');
-    showLoading(true, "ĐANG TẠO...");
+
+    showLoading(true, "ĐANG TẠO TÀI KHOẢN...");
+
     try {
+        // --- BƯỚC 1: TẠO TÀI KHOẢN TRÊN GOOGLE AUTHENTICATION ---
+        // Sử dụng một instance phụ để tránh bị logout tài khoản Admin hiện tại
+        const secondaryApp = firebase.initializeApp(firebaseConfig, "SecondaryContext");
+        
+        try {
+            await secondaryApp.auth().createUserWithEmailAndPassword(id, pass);
+        } catch (authError) {
+            // Nếu email đã tồn tại trong Auth, ta vẫn tiếp tục cập nhật Firestore 
+            // hoặc báo lỗi tùy bạn. Ở đây tôi sẽ báo lỗi nếu trùng.
+            if (authError.code === 'auth/email-already-in-use') {
+                throw new Error("Email này đã được tạo tài khoản đăng nhập rồi!");
+            }
+            throw authError;
+        }
+
+        // --- BƯỚC 2: LƯU THÔNG TIN QUYỀN VÀO FIRESTORE (HÀM GỐC CỦA BẠN) ---
         await db.collection("users").doc(id).set({
             name: document.getElementById('u_name').value,
             role: document.getElementById('u_role').value,
-            pass: document.getElementById('u_pass').value,
-            access: selectedAccess // Sử dụng danh sách đã chọn
+            pass: pass, // Lưu pass vào đây chỉ để Admin tiện theo dõi (tùy chọn)
+            access: selectedAccess
         });
-        showToast("Thêm thành công!", "success");
+
+        // Xóa instance phụ sau khi xong
+        await secondaryApp.delete();
+
+        showToast("Đã tạo Auth và Firestore thành công!", "success");
         resetUserForm();
-    } catch (e) { showToast("Lỗi: " + e.message, "error"); }
-    showLoading(false);
+        if(typeof fetchUsers === 'function') fetchUsers(); // Load lại danh sách
+
+    } catch (e) { 
+        showToast("Lỗi: " + e.message, "error"); 
+    } finally {
+        showLoading(false);
+    }
 }
 
 // 4. Cập nhật User
