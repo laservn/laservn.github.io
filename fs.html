@@ -522,10 +522,7 @@ async function signOut() {
         // 2. Xóa dữ liệu xác thực cục bộ
         AUTH = null;
         localStorage.removeItem('tech_auth_v4');
-        
-        // Ép trình duyệt tải lại trang để xóa sạch dấu vết của Viewer/Admin cũ
-        window.location.reload();
-        
+               
         // 3. Chuyển về màn hình đăng nhập
         document.getElementById('main-content').style.display = 'none';
         document.getElementById('lock-screen').style.display = 'flex';
@@ -535,6 +532,9 @@ async function signOut() {
         document.getElementById('passInput').value = '';
         
         showToast("Đã đăng xuất thành công", "success");
+        
+        // Ép trình duyệt tải lại trang để xóa sạch dấu vết của Viewer/Admin cũ
+        window.location.reload();
         
     } catch (e) {
         console.error("Lỗi đăng xuất:", e);
