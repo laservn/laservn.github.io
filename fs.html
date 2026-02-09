@@ -128,6 +128,10 @@
     margin-bottom: 20px;
 }
 
+/* Mặc định ẩn nút lưu khi chưa nhấn sửa */
+.btn-save-mode {
+    display: none;
+}
     </style>
 </head>
 <body>
@@ -734,24 +738,48 @@ function fetchData() {
         renderCol('supports', data.supports);
     }
 
-    function enableMetaEdit(id) {
-        document.querySelectorAll(`#list-${id} .meta-item`).forEach(item => {
-            item.classList.add('editing');
-            item.querySelector('input').readOnly = false;
-        });
-        showToast("Đã mở chế độ sửa", "info");
-    }
+	// Hàm khi nhấn nút SỬA
+	function enableMetaEdit(type) {
+	    // Tìm đến cột (meta-col) chứa nút vừa bấm
+	    const col = document.querySelector(`[onclick*="enableMetaEdit('${type}')"]`).closest('.meta-col');
+	    
+	    // Ẩn nút SỬA, hiện nút LƯU
+	    col.querySelector('.btn-edit-mode').style.display = 'none';
+	    col.querySelector('.btn-save-mode').style.display = 'inline-block';
 
-    async function saveMetaData(id) {
-        const inputs = document.querySelectorAll(`#list-${id} input`);
-        const newList = [...new Set(Array.from(inputs).map(i => i.value.trim()).filter(v => v !== ""))];
-        showLoading(true, "ĐANG CẬP NHẬT...");
-        try {
-            await db.collection("metadata").doc("dropdowns").update({ [id]: newList });
-            showToast("Cập nhật thành công!", "success");
-        } catch (e) { showToast("Lỗi khi lưu dữ liệu!", "error"); }
-        showLoading(false);
-    }
+	    // Logic gốc của bạn: Chuyển các text thành input để sửa
+	    const listDiv = document.getElementById(`list-${type}`);
+	    const currentValues = listDiv.innerText.split(',').map(s => s.trim());
+	    listDiv.innerHTML = `<input type="text" id="input-${type}" value="${currentValues.join(', ')}" 
+		style="width:100%; background:var(--dark); color:white; border:1px solid var(--primary); padding:5px; border-radius:4px;">`;
+	}
+
+	// Hàm khi nhấn nút LƯU
+	async function saveMetaData(type) {
+	    const newVal = document.getElementById(`input-${type}`).value;
+	    const col = document.querySelector(`[onclick*="saveMetaData('${type}')"]`).closest('.meta-col');
+
+	    showLoading(true, "ĐANG LƯU...");
+	    try {
+		// Lưu vào Firestore (Giữ nguyên logic db của bạn)
+		await db.collection("settings").doc("metadata").update({
+		    [type]: newVal.split(',').map(s => s.trim()).filter(s => s !== "")
+		});
+
+		showToast("Đã lưu thành công!", "success");
+
+		// Sau khi lưu thành công: Ẩn nút LƯU, hiện lại nút SỬA
+		col.querySelector('.btn-save-mode').style.display = 'none';
+		col.querySelector('.btn-edit-mode').style.display = 'inline-block';
+
+		// Tải lại dữ liệu để hiển thị dạng text bình thường
+		if(typeof fetchMeta === 'function') fetchMeta(); 
+
+	    } catch (e) {
+		showToast("Lỗi: " + e.message, "error");
+	    }
+	    showLoading(false);
+	}
 
     // --- OTHER LOGIC (GIỮ NGUYÊN GỐC) ---
 async function saveData() {
