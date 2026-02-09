@@ -641,7 +641,7 @@ async function saveData() {
         showToast("Đã lưu báo cáo!", "success");
         resetSaveButton(); 
         fetchData(); // Tải lại dữ liệu mới sau khi lưu thành công
-        switchTab('data-tab', document.querySelector('.tab-btn'));
+        switchTab('dashboard', document.querySelector('.tab-btn'));
     } catch (e) { 
         console.error("Lỗi chi tiết:", e); // Để bạn xem lỗi ở F12
         showToast("Lỗi khi lưu! " + e.message, "error"); 
@@ -699,7 +699,7 @@ function deleteLog(id) {
                 machineType: document.getElementById('machineType').value,
                 support: document.getElementById('supportType').value
             });
-            showLoading(false); resetSaveButton(); switchTab('data-tab', document.querySelector('.tab-btn'));
+            showLoading(false); resetSaveButton(); switchTab('dashboard', document.querySelector('.tab-btn'));
         };
     }
 
