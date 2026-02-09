@@ -236,6 +236,18 @@
         text-align: center;
     }
 }
+
+/* Trạng thái khi Offline */
+.status-indicator.offline {
+    color: #ef4444; /* Màu đỏ */
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.status-indicator.offline .dot {
+    background: #ef4444;
+    box-shadow: none; /* Tắt hiệu ứng sáng */
+    animation: none;  /* Tắt nháy */
+}
     </style>
 </head>
 <body>
@@ -1685,6 +1697,32 @@ firebase.auth().onAuthStateChanged(async (user) => {
     }
 });
 
+function updateOnlineStatus() {
+    const dot = document.getElementById('status-dot');
+    const text = document.getElementById('status-text');
+    const container = document.getElementById('network-status-container');
+
+    if (navigator.onLine) {
+        // Trạng thái Online
+        container.classList.remove('offline');
+        dot.style.display = 'block'; // Hiện lại chấm nếu trước đó bị ẩn
+        text.innerText = "Hệ thống đang trực tuyến";
+        showToast("Đã khôi phục kết nối internet", "success");
+    } else {
+        // Trạng thái Offline
+        container.classList.add('offline');
+        text.innerText = "Hệ thống đang ngoại tuyến";
+        showToast("Mất kết nối internet!", "error");
+    }
+}
+
+// Lắng nghe sự kiện thay đổi mạng
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+
+// Kiểm tra ngay khi vừa tải trang
+document.addEventListener('DOMContentLoaded', updateOnlineStatus);
+
 </script>
 <footer class="main-footer">
     <div class="footer-content">
@@ -1709,9 +1747,10 @@ firebase.auth().onAuthStateChanged(async (user) => {
     
     <div class="footer-bottom">
         <p>&copy; 2026 Laser</p>
-        <div class="status-indicator">
-            <span class="dot"></span> Hệ thống đang trực tuyến
-        </div>
+	<div class="status-indicator" id="network-status-container">
+	    <span class="dot" id="status-dot"></span> 
+	    <span id="status-text">Hệ thống đang trực tuyến</span>
+	</div>
     </div>
 </footer>
 
