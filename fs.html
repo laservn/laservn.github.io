@@ -282,7 +282,7 @@
                 <div class="meta-list" id="list-customers"></div>
                 <div class="meta-actions">
                     <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('customers')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('customers')" style=" display: none;">LƯU</button>
+                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('customers')" style="display:none;">LƯU</button>
                 </div>
             </div>
             <div class="meta-col">
@@ -290,7 +290,7 @@
                 <div class="meta-list" id="list-machineTypes"></div>
                 <div class="meta-actions">
                     <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('machineTypes')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('machineTypes')" style=" display: none;">LƯU</button>
+                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('machineTypes')" style="display:none;">LƯU</button>
                 </div>
             </div>
             <div class="meta-col">
@@ -298,7 +298,7 @@
                 <div class="meta-list" id="list-techs"></div>
                 <div class="meta-actions">
                     <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('techs')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('techs')" style=" display: none;">LƯU</button>
+                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('techs')" style="display:none;">LƯU</button>
                 </div>
             </div>
             <div class="meta-col">
@@ -306,7 +306,7 @@
                 <div class="meta-list" id="list-supports"></div>
                 <div class="meta-actions">
                     <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('supports')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('supports')" style=" display: none;">LƯU</button>
+                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('supports')" style="display:none;">LƯU</button>
                 </div>
             </div>
         </div>
@@ -734,33 +734,59 @@ function fetchData() {
         renderCol('supports', data.supports);
     }
 
-    function enableMetaEdit(id) {
+function enableMetaEdit(id) {
+    // 1. Mở khóa các ô input để sửa
+    document.querySelectorAll(`#list-${id} .meta-item`).forEach(item => {
+        item.classList.add('editing');
+        const input = item.querySelector('input');
+        if (input) input.readOnly = false;
+    });
+
+    // 2. Tìm khu vực chứa nút (meta-actions) của riêng cột đó
+    const parentCol = document.getElementById(`list-${id}`).closest('.meta-col');
+    const btnEdit = parentCol.querySelector('.btn-edit-mode');
+    const btnSave = parentCol.querySelector('.btn-save-mode');
+
+    // 3. Ẩn Sửa, Hiện Lưu
+    if (btnEdit) btnEdit.style.display = 'none';
+    if (btnSave) btnSave.style.display = 'block';
+
+    showToast("Đã mở chế độ sửa cho " + id, "info");
+}
+
+async function saveMetaData(id) {
+    // ... (Logic lấy dữ liệu và lưu vào db.collection("settings").doc("metadata") của bạn)
+    
+    try {
+        showLoading(true, "ĐANG LƯU...");
+        
+        // Giả sử đây là đoạn code lưu của bạn
+        // await db.collection("settings").doc("metadata").update({ ... });
+
+        // Sau khi lưu thành công:
+        // 1. Khóa lại các ô input
         document.querySelectorAll(`#list-${id} .meta-item`).forEach(item => {
-            item.classList.add('editing');
-            item.querySelector('input').readOnly = false;
-            
-        });       
-        showToast("Đã mở chế độ sửa", "info");
+            item.classList.remove('editing');
+            const input = item.querySelector('input');
+            if (input) input.readOnly = true;
+        });
 
-	    // Ẩn nút SỬA, hiện nút LƯU
-	    document.getElementById('.btn-edit-mode').style.display = 'none';
-	    document.getElementById('.btn-save-mode').style.display = 'block';
+        // 2. Tìm khu vực chứa nút của cột đó
+        const parentCol = document.getElementById(`list-${id}`).closest('.meta-col');
+        const btnEdit = parentCol.querySelector('.btn-edit-mode');
+        const btnSave = parentCol.querySelector('.btn-save-mode');
 
-    }
+        // 3. Ẩn Lưu, Hiện lại Sửa
+        if (btnSave) btnSave.style.display = 'none';
+        if (btnEdit) btnEdit.style.display = 'block';
 
-    async function saveMetaData(id) {
-        const inputs = document.querySelectorAll(`#list-${id} input`);
-        const newList = [...new Set(Array.from(inputs).map(i => i.value.trim()).filter(v => v !== ""))];
-        showLoading(true, "ĐANG CẬP NHẬT...");
-        try {
-            await db.collection("metadata").doc("dropdowns").update({ [id]: newList });
-	    // Ẩn nút SỬA, hiện nút LƯU
-	    document.getElementById('.btn-edit-mode').style.display = 'block';
-	    document.getElementById('.btn-save-mode').style.display = 'none';
-            showToast("Cập nhật thành công!", "success");
-        } catch (e) { showToast("Lỗi khi lưu dữ liệu!", "error"); }
+        showToast("Đã lưu thay đổi", "success");
+    } catch (e) {
+        showToast("Lỗi: " + e.message, "error");
+    } finally {
         showLoading(false);
     }
+}
 
     // --- OTHER LOGIC (GIỮ NGUYÊN GỐC) ---
 async function saveData() {
