@@ -1092,7 +1092,7 @@ function applyPermissions() {
         // --- CHẾ ĐỘ ADMIN/EDIT: HIỆN LẠI TẤT CẢ ---
         
 	// Trong phần xử lý sau khi lấy được thông tin User từ Firestore
-	if (userData.role === 'ADMIN') {
+	if (AUTH.role === "ADMIN") {
 	    document.getElementById('admin-backup-zone').style.display = 'block';
 	} else {
 	    document.getElementById('admin-backup-zone').style.display = 'none';
