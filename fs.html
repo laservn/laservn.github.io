@@ -1078,7 +1078,7 @@ async function addUser() {
         // Xóa instance phụ sau khi xong
         await secondaryApp.delete();
 
-        showToast("Đã tạo Auth và Firestore thành công!", "success");
+        showToast("Đã tạo tài khoản thành công!", "success");
         resetUserForm();
         if(typeof fetchUsers === 'function') fetchUsers(); // Load lại danh sách
 
