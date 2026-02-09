@@ -532,9 +532,7 @@ async function signOut() {
         document.getElementById('passInput').value = '';
         
         showToast("Đã đăng xuất thành công", "success");
-        
-        // Ép trình duyệt tải lại trang để xóa sạch dấu vết của Viewer/Admin cũ
-        window.location.reload();
+
         
     } catch (e) {
         console.error("Lỗi đăng xuất:", e);
