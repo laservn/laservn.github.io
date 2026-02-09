@@ -166,6 +166,29 @@
     </div>
     
 	<div id="dashboard" class="tab-content active">
+		<div class="filter-bar" style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; background: var(--card); padding: 10px; border-radius: 8px;">
+		    <select id="timeFilter" class="input-field" style="width: auto; margin: 0;" onchange="fetchData()">
+			<option value="all">Tất cả thời gian</option>
+			<option value="today">Hôm nay</option>
+			<option value="7days">7 ngày qua</option>
+			<option value="thisMonth">Tháng này</option>
+			<option value="custom">Tùy chọn...</option>
+		    </select>
+
+		    <div id="customRange" style="display: none; gap: 5px; align-items: center;">
+			<input type="date" id="startDate" class="input-field" style="width: auto; margin: 0;" onchange="fetchData()">
+			<span>đến</span>
+			<input type="date" id="endDate" class="input-field" style="width: auto; margin: 0;" onchange="fetchData()">
+		    </div>
+		</div>
+
+		<script>
+		    // Logic ẩn hiện ô nhập ngày tùy chỉnh
+		    document.getElementById('timeFilter').addEventListener('change', function() {
+			document.getElementById('customRange').style.display = (this.value === 'custom') ? 'flex' : 'none';
+		    });
+		</script>
+		
 		<div class="card" style="position: relative; padding:15px; height: 400px; width: 100%;">
 		    <h4 style="margin-top:0; color:var(--primary); ">👥 Khách Hàng</h4>
 		    <canvas id="chartCust"></canvas>
@@ -187,6 +210,29 @@
 	</div>
 
     <div id="data-tab" class="tab-content">
+	<div class="filter-bar" style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; background: var(--card); padding: 10px; border-radius: 8px;">
+	    <select id="timeFilter" class="input-field" style="width: auto; margin: 0;" onchange="fetchData()">
+		<option value="all">Tất cả thời gian</option>
+		<option value="today">Hôm nay</option>
+		<option value="7days">7 ngày qua</option>
+		<option value="thisMonth">Tháng này</option>
+		<option value="custom">Tùy chọn...</option>
+	    </select>
+
+	    <div id="customRange" style="display: none; gap: 5px; align-items: center;">
+		<input type="date" id="startDate" class="input-field" style="width: auto; margin: 0;" onchange="fetchData()">
+		<span>đến</span>
+		<input type="date" id="endDate" class="input-field" style="width: auto; margin: 0;" onchange="fetchData()">
+	    </div>
+	</div>
+
+	<script>
+	    // Logic ẩn hiện ô nhập ngày tùy chỉnh
+	    document.getElementById('timeFilter').addEventListener('change', function() {
+		document.getElementById('customRange').style.display = (this.value === 'custom') ? 'flex' : 'none';
+	    });
+	</script>
+	
         <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="🔍 Tìm kiếm nhanh (Máy, khách, nội dung...)">
         <div class="table-container">
             <table>
@@ -478,29 +524,57 @@ async function signOut() {
     }
 }
 
-function fetchData() {
+async function fetchData() {
     if (!AUTH) return;
 
     let query = db.collection("logs");
 
-    // Lọc cho VIEWER
+    // --- PHẦN 1: LỌC THEO QUYỀN TRUY CẬP (Giữ nguyên logic của bạn) ---
     if (AUTH.role === "VIEWER") {
-        // Kiểm tra biến AUTH.access vừa được thêm ở hàm unlock
         if (AUTH.access && AUTH.access.trim() !== "") {
             const allowedList = AUTH.access.split(",").map(s => s.trim()).filter(s => s !== "");
             if (allowedList.length > 0) {
                 query = query.where("customer", "in", allowedList);
             }
         } else {
-            // Nếu là VIEWER mà không có danh sách access thì không cho xem gì cả (an toàn hơn)
             renderData({ logs: [["Header"]], role: AUTH.role });
-            updateDashboard(logs); // Cập nhật thêm biểu đồ mới này
+            updateDashboard([]); 
             return;
         }
     }
 
-    // Sắp xếp (Nhớ check Console F12 để tạo Index nếu có lỗi link đỏ)
-    query = query.orderBy("createdAt", "desc").limit(500);
+    // --- PHẦN 2: LỌC THEO THỜI GIAN (Thêm mới) ---
+    const filterType = document.getElementById('timeFilter')?.value || 'all';
+    const now = new Date();
+    
+    if (filterType !== 'all') {
+        let startDate;
+        if (filterType === 'today') {
+            // Lấy từ 00:00 ngày hôm nay
+            startDate = new Date(now.setHours(0, 0, 0, 0)).toISOString().split('T')[0];
+            query = query.where("workDate", "==", startDate);
+        } 
+        else if (filterType === '7days') {
+            const date = new Date();
+            date.setDate(date.getDate() - 7);
+            startDate = date.toISOString().split('T')[0];
+            query = query.where("workDate", ">=", startDate);
+        }
+        else if (filterType === 'thisMonth') {
+            startDate = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, '0') + "-01";
+            query = query.where("workDate", ">=", startDate);
+        }
+        else if (filterType === 'custom') {
+            const s = document.getElementById('startDate').value;
+            const e = document.getElementById('endDate').value;
+            if (s) query = query.where("workDate", ">=", s);
+            if (e) query = query.where("workDate", "<=", e);
+        }
+    }
+
+    // --- PHẦN 3: SẮP XẾP VÀ LẤY DỮ LIỆU ---
+    // Lưu ý: Dùng orderBy trên workDate sẽ tốt hơn khi lọc thời gian
+    query = query.orderBy("workDate", "desc").limit(500);
 
     query.onSnapshot((snapshot) => {
         const logs = snapshot.docs.map(doc => {
@@ -508,24 +582,22 @@ function fetchData() {
             return [doc.id, d.workDate, d.customer, d.machineType, d.support, d.content, d.tech, d.createdBy || "", d.note || ""];
         });
         renderData({ logs: [["Header"], ...logs], role: AUTH.role });
-        updateDashboard(logs); // Cập nhật thêm biểu đồ mới này
+        updateDashboard(logs);
         applyPermissions();
     });
 
-    // --- TẢI METADATA CHO TAB 3 (CHỈ ADMIN/EDIT CẦN) ---
+    // --- TẢI METADATA (Giữ nguyên) ---
     if (AUTH.role === "ADMIN" || AUTH.role === "EDIT") {
         db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
             if (doc.exists) {
                 const d = doc.data();
-                updateDropdowns(d); // Cập nhật danh sách chọn ở Tab 2
-                if (AUTH.role === "ADMIN") renderMetaBlock(d); // Hiển thị khối sửa ở Tab 3
+                updateDropdowns(d);
+                if (AUTH.role === "ADMIN") renderMetaBlock(d);
             }
         });
     }
-    
-    
-    
 }
+
     // --- UI RENDER (KHÔI PHỤC CẤU TRÚC GỐC CỦA BẠN) ---
     function renderData(data) {
         window.currentLogs = data.logs.slice(1);
