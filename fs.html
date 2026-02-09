@@ -187,13 +187,18 @@
 .footer-bottom {
     max-width: 1200px;
     margin: 40px auto 0 auto;
-    padding-top: 20px;
+    padding-top: 10px;
     border-top: 1px solid rgba(255,255,255,0.05);
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 15px;
+    
+    justify-content: center; /* Đưa nội dung vào giữa */
+    align-items: center;
+    text-align: center;      /* Căn giữa chữ bên trong */
+    flex-direction: column;  /* Xếp chồng nếu có nhiều dòng */
 }
 
 .footer-bottom p {
@@ -285,6 +290,10 @@
             <span id="helloUser" style="color:var(--primary); font-size:13px; font-weight:600">---</span>
             <button onclick="signOut()" style="color:#ef4444; background:none; border:none; cursor:pointer; margin-left:12px; font-size:12px; font-weight:bold">THOÁT</button>
             <small id="syncStatus" style="font-size:10px; color:var(--text-muted); display:block; margin-top:4px">Đang đồng bộ...</small>
+            	<div class="status-indicator" id="network-status-container">
+		    <span class="dot" id="status-dot"></span> 
+		    <span id="status-text">Hệ thống đang trực tuyến</span>
+		</div>
         </div>
     </div>
 
@@ -1795,12 +1804,12 @@ function handleLogin(event) {
 
 // 1. Hàm Sao lưu dữ liệu
 async function backupData() {
-    if (!confirm("Bạn muốn tải bản sao lưu toàn bộ dữ liệu về máy?")) return;
+    showToast("Đang chuẩn bị bản sao lưu...", "info");
     
     showLoading(true, "ĐANG GOM DỮ LIỆU...");
     try {
         // Danh sách các bảng bạn muốn backup
-        const collections = ['logs', 'metadata', 'users']; 
+        const collections = ['logs', 'metadata', 'users', 'documents']; 
         let backup = {};
 
         for (const colName of collections) {
@@ -1840,10 +1849,7 @@ async function restoreData(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    if (!confirm("CẢNH BÁO: Hành động này sẽ ghi đè dữ liệu hiện tại bằng dữ liệu từ file backup. Bạn có chắc chắn không?")) {
-        event.target.value = ''; // Reset input
-        return;
-    }
+	showToast("Đang đọc file và chuẩn bị khôi phục...", "info");
 
     const reader = new FileReader();
     reader.onload = async (e) => {
@@ -1897,10 +1903,6 @@ async function restoreData(event) {
     
     <div class="footer-bottom">
         <p>&copy; 2026 Laser</p>
-	<div class="status-indicator" id="network-status-container">
-	    <span class="dot" id="status-dot"></span> 
-	    <span id="status-text">Hệ thống đang trực tuyến</span>
-	</div>
     </div>
 </footer>
 
