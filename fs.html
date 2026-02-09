@@ -756,26 +756,24 @@ function enableMetaEdit(id) {
 
 async function saveMetaData(id) {
     const inputs = document.querySelectorAll(`#list-${id} input`);
-    // Lấy danh sách mới từ các ô input, xóa trùng và lọc bỏ ô trống
     const newList = [...new Set(Array.from(inputs).map(i => i.value.trim()).filter(v => v !== ""))];
     
     showLoading(true, "ĐANG LƯU...");
     
     try {
-        // --- ĐOẠN QUAN TRỌNG: GỬI DỮ LIỆU LÊN FIREBASE ---
-        // id ở đây là 'customers', 'machineTypes', 'techs', hoặc 'supports'
-        await db.collection("settings").doc("metadata").update({
+        // SỬA TẠI ĐÂY: Đường dẫn đúng là Collection "metadata" -> Document "dropdowns"
+        // Sử dụng .set với { merge: true } để an toàn nếu document chưa tồn tại
+        await db.collection("metadata").doc("dropdowns").set({
             [id]: newList 
-        });
+        }, { merge: true });
 
-        // 1. Khóa lại các ô input sau khi lưu thành công
+        // --- Logic xử lý giao diện (Giữ nguyên) ---
         document.querySelectorAll(`#list-${id} .meta-item`).forEach(item => {
             item.classList.remove('editing');
             const input = item.querySelector('input');
             if (input) input.readOnly = true;
         });
 
-        // 2. Hoán đổi lại nút (Ẩn Lưu, Hiện Sửa)
         const parentCol = document.getElementById(`list-${id}`).closest('.meta-col');
         const btnEdit = parentCol.querySelector('.btn-edit-mode');
         const btnSave = parentCol.querySelector('.btn-save-mode');
@@ -783,13 +781,13 @@ async function saveMetaData(id) {
         if (btnSave) btnSave.style.display = 'none';
         if (btnEdit) btnEdit.style.display = 'block';
 
-        showToast("Đã lưu thay đổi vào hệ thống!", "success");
+        showToast("Đã lưu thành công vào dropdowns!", "success");
         
-        // 3. (Tùy chọn) Gọi lại hàm fetchMeta để cập nhật giao diện mới nhất
+        // Cập nhật lại giao diện
         if(typeof fetchMeta === 'function') fetchMeta();
 
     } catch (e) {
-        console.error("Lỗi lưu metadata:", e);
+        console.error("Lỗi cập nhật Firestore:", e);
         showToast("Lỗi: " + e.message, "error");
     } finally {
         showLoading(false);
