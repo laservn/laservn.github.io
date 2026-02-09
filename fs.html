@@ -523,6 +523,9 @@ async function signOut() {
         AUTH = null;
         localStorage.removeItem('tech_auth_v4');
         
+        // Ép trình duyệt tải lại trang để xóa sạch dấu vết của Viewer/Admin cũ
+        window.location.reload();
+        
         // 3. Chuyển về màn hình đăng nhập
         document.getElementById('main-content').style.display = 'none';
         document.getElementById('lock-screen').style.display = 'flex';
@@ -532,6 +535,7 @@ async function signOut() {
         document.getElementById('passInput').value = '';
         
         showToast("Đã đăng xuất thành công", "success");
+        
     } catch (e) {
         console.error("Lỗi đăng xuất:", e);
         showToast("Không thể đăng xuất, vui lòng thử lại", "error");
@@ -846,47 +850,104 @@ function deleteLog(id) {
         document.getElementById('note').value = '';
     }
 
+
+// Biến lưu trữ hàm click gốc để khôi phục khi là Admin
+let originalHandleDocClick = null;
+
 function applyPermissions() {
-    const currentRole = AUTH ? AUTH.role : USER_ROLE;
+    const currentRole = AUTH ? AUTH.role : "VIEWER";
     
-    if (currentRole === "VIEWER") {
-        // Chỉ xóa các tab cấm, GIỮ LẠI tab 📂 Tài liệu (btnTabDoc)
-        const forbiddenTabs = ['btnTabMeta', 'btnTabUser', 'form-tab', 'meta-tab', 'user-tab'];
-        
-        forbiddenTabs.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.remove();
-        });
-        
-	// 1. Xóa bỏ form nhập tài liệu
-        const docForm1 = document.getElementById('doc-form-container');
-        if (docForm1) {
-            docForm1.remove(); // Xóa hoàn toàn khỏi giao diện
-        }
-        
-        // Ẩn nút "Báo cáo mới" (nút thứ 3 trong navigation)
-        const navButtons = document.querySelectorAll('.tab-btn');
-        navButtons.forEach(btn => {
-            if(btn.onclick.toString().includes('form-tab')) btn.remove();
-        });
-        
-                // Xóa sạch nội dung HTML bên trong các tab đó
-        ['form-tab', 'meta-tab', 'user-tab'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.remove();
-        });
-
-        // Tab Tài liệu: Xóa form thêm, chỉ để lại danh sách
-        const docForm = document.querySelector('#doc-tab .card');
-        if (docForm) docForm.remove();
-
-        // Chặn mở form sửa khi viewer click vào tài liệu
-        window.handleDocClick = (id, name, link) => window.open(link, '_blank');
+    // Lưu lại hàm click gốc nếu chưa lưu (để khôi phục cho Admin)
+    if (!originalHandleDocClick && typeof handleDocClick === 'function') {
+        originalHandleDocClick = handleDocClick;
     }
-    
+
+    // 1. Lấy tất cả các tab nội dung và nút bấm
+    const allTabs = ['form-tab', 'meta-tab', 'user-tab'];
+    const allButtons = ['btnTabMeta', 'btnTabUser'];
+    const docFormContainer = document.getElementById('doc-form-container');
+    const navButtons = document.querySelectorAll('.tab-btn');
+
+    if (currentRole === "VIEWER") {
+        // --- CHẾ ĐỘ VIEWER: ẨN ĐI ---
+        
+        // Ẩn các tab quản trị
+        allTabs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+
+        // Ẩn các nút trên thanh điều hướng
+        allButtons.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+
+        // Ẩn nút "Báo cáo mới"
+        navButtons.forEach(btn => {
+            if(btn.onclick && btn.onclick.toString().includes('form-tab')) {
+                btn.style.display = 'none';
+            }
+        });
+
+        // ẨN Form nhập tài liệu (Dùng display none thay vì remove)
+        if (docFormContainer) {
+            docFormContainer.style.display = 'none';
+        }
+
+        // Chặn mở form sửa khi viewer click (chỉ mở link)
+        window.handleDocClick = (id, name, link) => window.open(link, '_blank');
+
+    } else {
+        // --- CHẾ ĐỘ ADMIN/EDIT: HIỆN LẠI TẤT CẢ ---
+        
+        // Hiện lại các tab (Trừ tab User chỉ cho Admin)
+        allTabs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                // Tab User chỉ hiện nếu là Admin thực thụ
+                if (id === 'user-tab') {
+                    el.style.display = (currentRole === "ADMIN") ? '' : 'none';
+                } else {
+                    el.style.display = ''; 
+                }
+            }
+        });
+
+        // Hiện lại các nút điều hướng
+        allButtons.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                if (id === 'btnTabUser') {
+                    el.style.display = (currentRole === "ADMIN") ? 'inline-flex' : 'none';
+                } else {
+                    el.style.display = 'inline-flex';
+                }
+            }
+        });
+
+        // Hiện lại nút "Báo cáo mới"
+        navButtons.forEach(btn => {
+            if(btn.onclick && btn.onclick.toString().includes('form-tab')) {
+                btn.style.display = 'inline-flex';
+            }
+        });
+
+        // HIỆN LẠI Form nhập tài liệu
+        if (docFormContainer) {
+            docFormContainer.style.display = 'block';
+        }
+
+        // Khôi phục lại hàm click gốc để Admin có thể sửa tài liệu
+        if (originalHandleDocClick) {
+            window.handleDocClick = originalHandleDocClick;
+        }
+    }
+
     const tabBar = document.getElementById('tabBar');
     if (tabBar) tabBar.style.display = "flex";
 }
+
 
 function showApp() {
     document.getElementById('lock-screen').style.display = 'none';
