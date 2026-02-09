@@ -166,6 +166,36 @@
     </div>
     
 	<div id="dashboard" class="tab-content active">
+	
+		<div class="inner-filter-box" style="background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
+		    <div style="flex: 1; min-width: 150px;">
+			<label style="font-size: 11px; color: var(--primary); font-weight: bold; display: block; margin-bottom: 5px;">THỜI GIAN</label>
+			<select class="timePreset" onchange="handlePresetChange(this)" style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:white; border:1px solid var(--border);">
+			    <option value="all">Tất cả thời gian</option>
+			    <option value="today">Hôm nay</option>
+			    <option value="7days">7 ngày qua</option>
+			    <option value="thisMonth">Tháng này</option>
+			    <option value="custom">Tùy chọn...</option>
+			</select>
+		    </div>
+
+		    <div class="customDateGroup" style="display: none; gap: 10px; flex: 2; min-width: 250px;">
+			<div style="flex:1">
+			    <input type="date" class="filterFrom" onchange="syncAndFilter(this)" style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:white; border:1px solid var(--border);">
+			</div>
+			<div style="flex:1">
+			    <input type="date" class="filterTo" onchange="syncAndFilter(this)" style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:white; border:1px solid var(--border);">
+			</div>
+		    </div>
+
+		    <div style="flex: 1; min-width: 150px;">
+			<label style="font-size: 11px; color: var(--primary); font-weight: bold; display: block; margin-bottom: 5px;">KHÁCH HÀNG</label>
+			<select class="filterCust" onchange="syncAndFilter(this)" style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:white; border:1px solid var(--border);">
+			    <option value="ALL">Tất cả khách hàng</option>
+			</select>
+		    </div>
+		</div>
+
 		<div class="card" style="position: relative; padding:15px; height: 400px; width: 100%;">
 		    <h4 style="margin-top:0; color:var(--primary); ">👥 Khách Hàng</h4>
 		    <canvas id="chartCust"></canvas>
@@ -187,6 +217,36 @@
 	</div>
 
     <div id="data-tab" class="tab-content">
+    
+	<div class="inner-filter-box" style="background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
+	    <div style="flex: 1; min-width: 150px;">
+		<label style="font-size: 11px; color: var(--primary); font-weight: bold; display: block; margin-bottom: 5px;">THỜI GIAN</label>
+		<select class="timePreset" onchange="handlePresetChange(this)" style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:white; border:1px solid var(--border);">
+		    <option value="all">Tất cả thời gian</option>
+		    <option value="today">Hôm nay</option>
+		    <option value="7days">7 ngày qua</option>
+		    <option value="thisMonth">Tháng này</option>
+		    <option value="custom">Tùy chọn...</option>
+		</select>
+	    </div>
+
+	    <div class="customDateGroup" style="display: none; gap: 10px; flex: 2; min-width: 250px;">
+		<div style="flex:1">
+		    <input type="date" class="filterFrom" onchange="syncAndFilter(this)" style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:white; border:1px solid var(--border);">
+		</div>
+		<div style="flex:1">
+		    <input type="date" class="filterTo" onchange="syncAndFilter(this)" style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:white; border:1px solid var(--border);">
+		</div>
+	    </div>
+
+	    <div style="flex: 1; min-width: 150px;">
+		<label style="font-size: 11px; color: var(--primary); font-weight: bold; display: block; margin-bottom: 5px;">KHÁCH HÀNG</label>
+		<select class="filterCust" onchange="syncAndFilter(this)" style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:white; border:1px solid var(--border);">
+		    <option value="ALL">Tất cả khách hàng</option>
+		</select>
+	    </div>
+	</div>
+
         <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="🔍 Tìm kiếm nhanh (Máy, khách, nội dung...)">
         <div class="table-container">
             <table>
@@ -478,54 +538,114 @@ async function signOut() {
     }
 }
 
+
+function handlePresetChange(el) {
+    const preset = el.value;
+    const parent = el.closest('.inner-filter-box');
+    const customGroup = parent.querySelectorAll('.customDateGroup'); // Lấy tất cả group ở các tab
+    const now = new Date();
+    
+    let from = '', to = '';
+
+    if (preset === 'today') {
+        from = to = now.toISOString().split('T')[0];
+    } else if (preset === '7days') {
+        const d = new Date();
+        d.setDate(d.getDate() - 7);
+        from = d.toISOString().split('T')[0];
+    } else if (preset === 'thisMonth') {
+        from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+    }
+
+    // Đồng bộ trạng thái hiển thị và giá trị cho TẤT CẢ các bộ lọc ở các tab
+    document.querySelectorAll('.timePreset').forEach(s => s.value = preset);
+    document.querySelectorAll('.customDateGroup').forEach(g => g.style.display = (preset === 'custom' ? 'flex' : 'none'));
+    document.querySelectorAll('.filterFrom').forEach(i => i.value = from);
+    document.querySelectorAll('.filterTo').forEach(i => i.value = to);
+
+    syncAndFilter();
+}
+
+function syncAndFilter(el) {
+    // Nếu gọi từ sự kiện thay đổi, đồng bộ giá trị đó sang tab kia
+    if(el) {
+        if(el.classList.contains('filterFrom')) document.querySelectorAll('.filterFrom').forEach(i => i.value = el.value);
+        if(el.classList.contains('filterTo')) document.querySelectorAll('.filterTo').forEach(i => i.value = el.value);
+        if(el.classList.contains('filterCust')) document.querySelectorAll('.filterCust').forEach(i => i.value = el.value);
+    }
+
+    // Lấy giá trị hiện tại (từ bất kỳ bộ lọc nào vì chúng đã đồng bộ)
+    const from = document.querySelector('.filterFrom').value;
+    const to = document.querySelector('.filterTo').value;
+    const cust = document.querySelector('.filterCust').value;
+
+    const filtered = window.rawLogs.filter(row => {
+        const date = row[1]; // workDate
+        const customer = row[2];
+        const mFrom = from ? date >= from : true;
+        const mTo = to ? date <= to : true;
+        const mCust = cust === "ALL" ? true : customer === cust;
+        return mFrom && mTo && mCust;
+    });
+
+    // Cập nhật giao diện
+    renderData({ logs: [["Header"], ...filtered], role: AUTH.role });
+    updateDashboard(filtered);
+}
+
+
+window.rawLogs = []; // Biến lưu dữ liệu gốc
+
 function fetchData() {
     if (!AUTH) return;
-
     let query = db.collection("logs");
 
-    // Lọc cho VIEWER
     if (AUTH.role === "VIEWER") {
-        // Kiểm tra biến AUTH.access vừa được thêm ở hàm unlock
         if (AUTH.access && AUTH.access.trim() !== "") {
             const allowedList = AUTH.access.split(",").map(s => s.trim()).filter(s => s !== "");
             if (allowedList.length > 0) {
                 query = query.where("customer", "in", allowedList);
             }
         } else {
-            // Nếu là VIEWER mà không có danh sách access thì không cho xem gì cả (an toàn hơn)
             renderData({ logs: [["Header"]], role: AUTH.role });
-            updateDashboard(logs); // Cập nhật thêm biểu đồ mới này
+            updateDashboard([]); 
             return;
         }
     }
 
-    // Sắp xếp (Nhớ check Console F12 để tạo Index nếu có lỗi link đỏ)
-    query = query.orderBy("createdAt", "desc").limit(500);
-
-    query.onSnapshot((snapshot) => {
-        const logs = snapshot.docs.map(doc => {
+    query.orderBy("createdAt", "desc").limit(1000).onSnapshot((snapshot) => {
+        // Lưu dữ liệu vào biến global
+        window.rawLogs = snapshot.docs.map(doc => {
             const d = doc.data();
             return [doc.id, d.workDate, d.customer, d.machineType, d.support, d.content, d.tech, d.createdBy || "", d.note || ""];
         });
-        renderData({ logs: [["Header"], ...logs], role: AUTH.role });
-        updateDashboard(logs); // Cập nhật thêm biểu đồ mới này
+
+        // Cập nhật danh sách khách hàng vào tất cả các dropdown lọc ở các tab
+        const custs = [...new Set(window.rawLogs.map(l => l[2]))].sort();
+        document.querySelectorAll('.filterCust').forEach(select => {
+            const currentVal = select.value;
+            select.innerHTML = '<option value="ALL">Tất cả khách hàng</option>' + 
+                               custs.map(c => `<option value="${c}">${c}</option>`).join('');
+            select.value = currentVal;
+        });
+
+        // Chạy hàm lọc để hiển thị dữ liệu lần đầu
+        syncAndFilter(); 
         applyPermissions();
     });
 
-    // --- TẢI METADATA CHO TAB 3 (CHỈ ADMIN/EDIT CẦN) ---
     if (AUTH.role === "ADMIN" || AUTH.role === "EDIT") {
         db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
             if (doc.exists) {
                 const d = doc.data();
-                updateDropdowns(d); // Cập nhật danh sách chọn ở Tab 2
-                if (AUTH.role === "ADMIN") renderMetaBlock(d); // Hiển thị khối sửa ở Tab 3
+                updateDropdowns(d);
+                if (AUTH.role === "ADMIN") renderMetaBlock(d);
             }
         });
     }
-    
-    
-    
 }
+
+
     // --- UI RENDER (KHÔI PHỤC CẤU TRÚC GỐC CỦA BẠN) ---
     function renderData(data) {
         window.currentLogs = data.logs.slice(1);
