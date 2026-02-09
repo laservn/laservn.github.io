@@ -879,10 +879,16 @@ function showApp() {
     document.getElementById('lock-screen').style.display = 'none';
     document.getElementById('main-content').style.display = 'block';
     
+        // Cập nhật tên người dùng
+        if (AUTH && AUTH.user) {
+            const helloEl = document.getElementById('helloUser');
+            if (helloEl) helloEl.innerText = "Chào, " + AUTH.user;
+        }
+        
     const nav = document.querySelector('.tab-navigation');
     // Hiện tab Tài liệu cho mọi Role nếu họ có quyền truy cập (access)
     if (AUTH.access && AUTH.access !== "") {
-        const docBtn = nav.querySelector('button[onclick*="docs-tab"]');
+        const docBtn = nav.querySelector('button[onclick*="doc-tab"]');
         if (docBtn) docBtn.style.display = 'inline-flex';
     }
     
