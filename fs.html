@@ -600,13 +600,16 @@ function fetchData() {
     if (!AUTH) return;
     let query = db.collection("logs");
 
+    // Xử lý phân quyền cho VIEWER
     if (AUTH.role === "VIEWER") {
-        if (AUTH.access && AUTH.access.trim() !== "") {
+        if (AUTH.access && AUTH.access.trim() !== "" && AUTH.access !== "ALL") {
             const allowedList = AUTH.access.split(",").map(s => s.trim()).filter(s => s !== "");
             if (allowedList.length > 0) {
                 query = query.where("customer", "in", allowedList);
             }
-        } else {
+        } else if (!AUTH.access || AUTH.access.trim() === "") {
+            // Nếu VIEWER không có quyền truy cập khách hàng nào
+            window.rawLogs = []; // Đảm bảo mảng rỗng thay vì undefined
             renderData({ logs: [["Header"]], role: AUTH.role });
             updateDashboard([]); 
             return;
@@ -614,13 +617,13 @@ function fetchData() {
     }
 
     query.orderBy("createdAt", "desc").limit(1000).onSnapshot((snapshot) => {
-        // Lưu dữ liệu vào biến global
+        // LƯU DỮ LIỆU VÀO BIẾN GLOBAL
         window.rawLogs = snapshot.docs.map(doc => {
             const d = doc.data();
             return [doc.id, d.workDate, d.customer, d.machineType, d.support, d.content, d.tech, d.createdBy || "", d.note || ""];
         });
 
-        // Cập nhật danh sách khách hàng vào tất cả các dropdown lọc ở các tab
+        // Cập nhật danh sách khách hàng vào các bộ lọc class
         const custs = [...new Set(window.rawLogs.map(l => l[2]))].sort();
         document.querySelectorAll('.filterCust').forEach(select => {
             const currentVal = select.value;
@@ -629,11 +632,14 @@ function fetchData() {
             select.value = currentVal;
         });
 
-        // Chạy hàm lọc để hiển thị dữ liệu lần đầu
+        // Gọi hàm lọc để hiển thị lên Tab 1 và Tab 2
         syncAndFilter(); 
         applyPermissions();
+    }, (error) => {
+        console.error("Lỗi Firestore:", error);
     });
 
+    // Load metadata cho dropdown
     if (AUTH.role === "ADMIN" || AUTH.role === "EDIT") {
         db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
             if (doc.exists) {
@@ -870,21 +876,19 @@ function applyPermissions() {
 }
 
 function showApp() {
-    const lockScreen = document.getElementById('lock-screen');
-    const mainContent = document.getElementById('main-content');
+    document.getElementById('lock-screen').style.display = 'none';
+    document.getElementById('main-content').style.display = 'block';
     
-    if (lockScreen && mainContent) {
-        lockScreen.style.display = 'none'; // Ẩn màn hình khóa
-        mainContent.style.display = 'block'; // Hiện màn hình chính
-        
-        // Cập nhật tên người dùng
-        if (AUTH && AUTH.user) {
-            const helloEl = document.getElementById('helloUser');
-            if (helloEl) helloEl.innerText = "Chào, " + AUTH.user;
-        }
-        
-        applyPermissions();
+    const nav = document.querySelector('.tab-navigation');
+    // Hiện tab Tài liệu cho mọi Role nếu họ có quyền truy cập (access)
+    if (AUTH.access && AUTH.access !== "") {
+        const docBtn = nav.querySelector('button[onclick*="docs-tab"]');
+        if (docBtn) docBtn.style.display = 'inline-flex';
     }
+    
+    // Hiện tab Quản trị chỉ cho ADMIN/EDIT
+    const adminBtn = nav.querySelector('button[onclick*="admin-tab"]');
+    if (adminBtn) adminBtn.style.display = (AUTH.role === "ADMIN" || AUTH.role === "EDIT") ? 'inline-flex' : 'none';
 }
 
     function setInitialDate() { const iso = new Date().toISOString().split('T')[0]; document.getElementById('hiddenDate').value = iso; document.getElementById('workDateDisplay').value = formatVN(iso); }
