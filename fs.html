@@ -1689,16 +1689,15 @@ firebase.auth().onAuthStateChanged(async (user) => {
 <footer class="main-footer">
     <div class="footer-content">
         <div class="footer-section">
-            <h3 class="footer-logo">🛠️ BÁO CÁO KỸ THUẬT<span>LOG</span></h3>
+            <h3 class="footer-logo">🛠️ TECH<span>LOG</span></h3>
             <p>Hệ thống quản lý báo cáo kỹ thuật & thư viện tài liệu.</p>
         </div>
         
         <div class="footer-section">
             <h4>LIÊN KẾT</h4>
             <div class="footer-links">
-                <a href="#" onclick="showTab('dashboard-tab')">Tổng quan</a>
-                <a href="#" onclick="showTab('doc-tab')">Thư viện</a>
-                <a href="#" onclick="window.location.reload()">Làm mới trang</a>
+                <a href="#" onclick="switchTab('dashboard-tab', this)">Tổng quan</a>
+                <a href="#" onclick="switchTab('doc-tab', this)">Thư viện</a>
             </div>
         </div>
 
@@ -1709,7 +1708,7 @@ firebase.auth().onAuthStateChanged(async (user) => {
     </div>
     
     <div class="footer-bottom">
-        <p>&copy; 2026 Laser.</p>
+        <p>&copy; 2026 Laser</p>
         <div class="status-indicator">
             <span class="dot"></span> Hệ thống đang trực tuyến
         </div>
