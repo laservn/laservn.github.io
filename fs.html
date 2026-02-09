@@ -863,6 +863,16 @@ function applyPermissions() {
         navButtons.forEach(btn => {
             if(btn.onclick.toString().includes('form-tab')) btn.remove();
         });
+        
+                // Xóa sạch nội dung HTML bên trong các tab đó
+        ['form-tab', 'meta-tab', 'user-tab'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        });
+
+        // Tab Tài liệu: Xóa form thêm, chỉ để lại danh sách
+        const docForm = document.querySelector('#doc-tab .card');
+        if (docForm) docForm.remove();
 
         // Chặn mở form sửa khi viewer click vào tài liệu
         window.handleDocClick = (id, name, link) => window.open(link, '_blank');
