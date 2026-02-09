@@ -1162,28 +1162,24 @@ function fetchDocs() {
     });
 }
 
-// 3. Hiển thị tài liệu (Có lọc theo quyền Viewer)
+// 3. Hiển thị tài liệu (Đã ẩn dòng "Quyền xem" đối với Viewer)
 function renderDocs(docs) {
     const container = document.getElementById('doc_groups_container');
     let filtered = docs;
 
     if (AUTH.role === "VIEWER") {
-        // Làm sạch danh sách khách hàng được phép của User (xóa khoảng trắng dư thừa)
+        // Làm sạch danh sách khách hàng được phép của User
         const allowedList = (AUTH.access || "")
             .split(",")
             .map(s => s.trim())
             .filter(s => s !== "");
 
         filtered = docs.filter(d => {
-            // Nếu tài liệu để trống mục "Quyền xem" (customers) -> Cho phép tất cả xem
             if (!d.customers || d.customers.length === 0) return true;
-            
-            // Kiểm tra xem có khách hàng nào của tài liệu nằm trong danh sách User được phép không
             return d.customers.some(c => allowedList.includes(c.trim()));
         });
     }
 
-    // --- Giữ nguyên phần logic Nhóm tài liệu (groups) bên dưới của bạn ---
     const groups = {};
     if (filtered.length === 0) {
         container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">Bạn không có quyền xem tài liệu nào hoặc chưa có tài liệu.</div>`;
@@ -1204,12 +1200,20 @@ function renderDocs(docs) {
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
                 ${groups[groupName].map(d => {
                     const custsAttr = encodeURIComponent(JSON.stringify(d.customers || []));
+                    
+                    // --- LOGIC MỚI: Chỉ hiển thị dòng Quyền xem nếu KHÔNG PHẢI viewer ---
+                    const accessInfoHtml = (AUTH.role !== "VIEWER") 
+                        ? `<div style="font-size:11px; color:var(--text-muted); margin: 5px 0 10px 0;">
+                               <span style="color:var(--primary)">👤 Quyền xem:</span> ${(!d.customers || d.customers.length === 0) ? 'Tất cả' : d.customers.join(', ')}
+                           </div>`
+                        : `<div style="margin-top: 15px;"></div>`; // Viewer sẽ thấy khoảng trống sạch sẽ
+
                     return `
                         <div class="meta-col" style="cursor:pointer;" onclick="handleDocClick('${d.id}', '${d.name}', '${d.link}', '${custsAttr}', '${d.machineType || ""}')">
                             <h4 style="border:none; margin:0; text-align:left; font-size:14px;">📄 ${d.name}</h4>
-                            <div style="font-size:11px; color:var(--text-muted); margin: 5px 0 10px 0;">
-                                <span style="color:var(--primary)">👤 Quyền xem:</span> ${(!d.customers || d.customers.length === 0) ? 'Tất cả' : d.customers.join(', ')}
-                            </div>
+                            
+                            ${accessInfoHtml}
+
                             <a href="${d.link}" target="_blank" onclick="event.stopPropagation()" 
                                style="background:var(--primary); color:var(--dark); text-decoration:none; padding:8px; border-radius:6px; text-align:center; font-weight:600; font-size:11px; text-transform:uppercase;">
                                XEM TÀI LIỆU
