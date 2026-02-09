@@ -246,6 +246,17 @@
     box-shadow: none; /* Tắt hiệu ứng sáng */
     animation: none;  /* Tắt nháy */
 }
+.footer-links a::after {
+    content: " ↗"; /* Hiển thị icon mũi tên nhỏ sau link */
+    font-size: 10px;
+    opacity: 0.5;
+    transition: 0.3s;
+}
+
+.footer-links a:hover::after {
+    opacity: 1;
+    margin-left: 5px;
+}
     </style>
 </head>
 <body>
@@ -1729,13 +1740,13 @@ document.addEventListener('DOMContentLoaded', updateOnlineStatus);
             <p>Hệ thống quản lý báo cáo kỹ thuật & thư viện tài liệu.</p>
         </div>
         
-        <div class="footer-section">
-            <h4>LIÊN KẾT</h4>
-            <div class="footer-links">
-                <a href="httpss://laser.info.vn">Laser.info.vn</a>
-                <a href="httpss://minhphatcij.com.vn">Laser.info.vn</a>
-            </div>
-        </div>
+	<div class="footer-section">
+	    <h4>LIÊN KẾT</h4>
+	    <div class="footer-links">
+		<a href="https://laser.info.vn" target="_blank" rel="noopener noreferrer">Laser.info.vn</a>
+		<a href="https://minhphatcij.com.vn" target="_blank" rel="noopener noreferrer">Minhphatcij.com.vn</a>
+	    </div>
+	</div>
 
         <div class="footer-section">
             <h4>HỖ TRỢ</h4>
