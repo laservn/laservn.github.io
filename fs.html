@@ -491,6 +491,25 @@
             <tbody id="userTableBody"></tbody>
         </table>
     </div>
+	<div id="admin-backup-zone">    
+	    <div class="meta-col" style="margin-top: 20px; border: 1px dashed var(--primary); padding: 20px; border-radius: 12px;">
+	    <h3 style="color: var(--primary); margin-top: 0;"><i class="fas fa-database"></i> QUẢN TRỊ DỮ LIỆU (BACKUP)</h3>
+	    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">
+		* Lưu ý: Tải bản sao lưu định kỳ để đề phòng mất mát dữ liệu. File khôi phục phải có định dạng .json được xuất từ hệ thống.
+	    </p>
+	    
+	    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+		<button onclick="backupData()" class="btn-edit-mode" style="background: #10b981; color: white; border: none; display: block;">
+		    📥 XUẤT DỮ LIỆU (BACKUP JSON)
+		</button>
+
+		<label for="restore-input" class="btn-edit-mode" style="background: #f59e0b; color: white; cursor: pointer; display: inline-block;">
+		    📤 PHỤC HỒI DỮ LIỆU (RESTORE)
+		</label>
+		<input type="file" id="restore-input" accept=".json" style="display: none;" onchange="restoreData(event)">
+	    </div>
+	</div>
+	</div>
 </div>
 
 <div id="doc-tab" class="tab-content">
@@ -1071,6 +1090,11 @@ function applyPermissions() {
 
     } else {
         // --- CHẾ ĐỘ ADMIN/EDIT: HIỆN LẠI TẤT CẢ ---
+        
+        // Hiện lại vùng Backup CHỈ NẾU là ADMIN
+        if (adminBackupZone) {
+            adminBackupZone.style.display = (currentRole === "ADMIN") ? 'block' : 'none';
+        }
         
         // Hiện lại các tab (Trừ tab User chỉ cho Admin)
         allTabs.forEach(id => {
@@ -1765,6 +1789,87 @@ function handleLogin(event) {
     
     // Gọi hàm unlock hiện tại của bạn
     unlock();
+}
+
+// 1. Hàm Sao lưu dữ liệu
+async function backupData() {
+    if (!confirm("Bạn muốn tải bản sao lưu toàn bộ dữ liệu về máy?")) return;
+    
+    showLoading(true, "ĐANG GOM DỮ LIỆU...");
+    try {
+        // Danh sách các bảng bạn muốn backup
+        const collections = ['logs', 'metadata', 'users']; 
+        let backup = {};
+
+        for (const colName of collections) {
+            const snapshot = await db.collection(colName).get();
+            backup[colName] = snapshot.docs.map(doc => ({ 
+                id: doc.id, 
+                ...doc.data() 
+            }));
+        }
+
+        // Tạo file JSON
+        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        
+        // Đặt tên file kèm ngày tháng
+        const date = new Date().toISOString().split('T')[0];
+        a.href = url;
+        a.download = `Backup_TechLog_${date}.json`;
+        
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showToast("Sao lưu thành công!", "success");
+    } catch (e) {
+        console.error(e);
+        showToast("Lỗi sao lưu: " + e.message, "error");
+    } finally {
+        showLoading(false);
+    }
+}
+
+// 2. Hàm Khôi phục dữ liệu từ file JSON
+async function restoreData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!confirm("CẢNH BÁO: Hành động này sẽ ghi đè dữ liệu hiện tại bằng dữ liệu từ file backup. Bạn có chắc chắn không?")) {
+        event.target.value = ''; // Reset input
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            showLoading(true, "ĐANG KHÔI PHỤC...");
+
+            // Lặp qua từng collection trong file JSON
+            for (const colName in data) {
+                const items = data[colName];
+                for (const item of items) {
+                    const { id, ...details } = item;
+                    // Ghi đè hoặc tạo mới từng document dựa trên ID cũ
+                    await db.collection(colName).doc(id).set(details);
+                }
+            }
+            
+            showToast("Khôi phục hoàn tất! Trang sẽ tải lại.", "success");
+            setTimeout(() => location.reload(), 2000);
+        } catch (err) {
+            console.error(err);
+            showToast("Lỗi: File không đúng định dạng!", "error");
+        } finally {
+            showLoading(false);
+            event.target.value = ''; // Reset input
+        }
+    };
+    reader.readAsText(file);
 }
 </script>
 <footer class="main-footer">
