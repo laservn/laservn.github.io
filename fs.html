@@ -362,7 +362,7 @@
 </div>
 
 <div id="doc-tab" class="tab-content">
-    <div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
+    <div id="doc-form-container" style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
         <div style="display:grid; grid-template-columns: 1fr 1fr 1.5fr; gap:10px;">
             <input type="text" id="doc_name" placeholder="Tên tài liệu (VD: HDSD Biến tần...)">
             <select id="doc_machine_type">
@@ -857,7 +857,13 @@ function applyPermissions() {
             const el = document.getElementById(id);
             if (el) el.remove();
         });
-
+        
+	// 1. Xóa bỏ form nhập tài liệu
+        const docForm = document.getElementById('doc-form-container');
+        if (docForm) {
+            docForm.remove(); // Xóa hoàn toàn khỏi giao diện
+        }
+        
         // Ẩn nút "Báo cáo mới" (nút thứ 3 trong navigation)
         const navButtons = document.querySelectorAll('.tab-btn');
         navButtons.forEach(btn => {
