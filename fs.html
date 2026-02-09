@@ -166,22 +166,6 @@
     </div>
     
 	<div id="dashboard" class="tab-content active">
-		<div class="filter-bar" style="display: flex; gap: 10px; margin: 15px; flex-wrap: wrap; background: var(--card); padding: 10px; border-radius: 8px;">
-		    <select id="timeFilter" class="input-field" style="width: auto; margin: 0;" onchange="fetchData()">
-			<option value="all">Tất cả thời gian</option>
-			<option value="today">Hôm nay</option>
-			<option value="7days">7 ngày qua</option>
-			<option value="thisMonth">Tháng này</option>
-			<option value="custom">Tùy chọn...</option>
-		    </select>
-
-		    <div id="customRange" style="display: none; gap: 5px; align-items: center;">
-			<input type="date" id="startDate" class="input-field" style="width: auto; margin: 0;" onchange="fetchData()">
-			<span>đến</span>
-			<input type="date" id="endDate" class="input-field" style="width: auto; margin: 0;" onchange="fetchData()">
-		    </div>
-		</div>
-		
 		<div class="card" style="position: relative; padding:15px; height: 400px; width: 100%;">
 		    <h4 style="margin-top:0; color:var(--primary); ">👥 Khách Hàng</h4>
 		    <canvas id="chartCust"></canvas>
@@ -203,22 +187,6 @@
 	</div>
 
     <div id="data-tab" class="tab-content">
-	<div class="filter-bar" style="display: flex; gap: 10px; margin: 15px; flex-wrap: wrap; background: var(--card); padding: 10px; border-radius: 8px;">
-	    <select id="timeFilter" class="input-field" style="width: auto; margin: 0;" onchange="fetchData()">
-		<option value="all">Tất cả thời gian</option>
-		<option value="today">Hôm nay</option>
-		<option value="7days">7 ngày qua</option>
-		<option value="thisMonth">Tháng này</option>
-		<option value="custom">Tùy chọn...</option>
-	    </select>
-
-	    <div id="customRange" style="display: none; gap: 5px; align-items: center;">
-		<input type="date" id="startDate" class="input-field" style="width: auto; margin: 0;" onchange="fetchData()">
-		<span>đến</span>
-		<input type="date" id="endDate" class="input-field" style="width: auto; margin: 0;" onchange="fetchData()">
-	    </div>
-	</div>
-	
         <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="🔍 Tìm kiếm nhanh (Máy, khách, nội dung...)">
         <div class="table-container">
             <table>
@@ -510,75 +478,54 @@ async function signOut() {
     }
 }
 
-async function fetchData() {
+function fetchData() {
     if (!AUTH) return;
-
-    const fType = document.getElementById('timeFilter').value;
-    const cRange = document.getElementById('customRange');
-
-    // Luôn xử lý ẩn hiện trước
-    if (cRange) {
-        cRange.style.display = (fType === 'custom') ? 'flex' : 'none';
-    }
 
     let query = db.collection("logs");
 
-    // 1. Lọc theo quyền VIEWER
+    // Lọc cho VIEWER
     if (AUTH.role === "VIEWER") {
+        // Kiểm tra biến AUTH.access vừa được thêm ở hàm unlock
         if (AUTH.access && AUTH.access.trim() !== "") {
             const allowedList = AUTH.access.split(",").map(s => s.trim()).filter(s => s !== "");
             if (allowedList.length > 0) {
                 query = query.where("customer", "in", allowedList);
             }
         } else {
+            // Nếu là VIEWER mà không có danh sách access thì không cho xem gì cả (an toàn hơn)
             renderData({ logs: [["Header"]], role: AUTH.role });
-            updateDashboard([]); // Xóa biểu đồ nếu không có quyền
+            updateDashboard(logs); // Cập nhật thêm biểu đồ mới này
             return;
         }
     }
 
-    // 2. Lọc theo thời gian
-    const now = new Date();
-    if (fType !== 'all') {
-        if (fType === 'today') {
-            const todayStr = now.toISOString().split('T')[0];
-            query = query.where("workDate", "==", todayStr);
-        } 
-        else if (fType === '7days') {
-            const d = new Date();
-            d.setDate(d.getDate() - 7);
-            query = query.where("workDate", ">=", d.toISOString().split('T')[0]);
-        }
-        else if (fType === 'thisMonth') {
-            const mStr = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, '0') + "-01";
-            query = query.where("workDate", ">=", mStr);
-        }
-        else if (fType === 'custom') {
-            const s = document.getElementById('startDate').value;
-            const e = document.getElementById('endDate').value;
-            if (s) query = query.where("workDate", ">=", s);
-            if (e) query = query.where("workDate", "<=", e);
-        }
-    }
-
-    // 3. Sắp xếp và Lắng nghe thay đổi
-    // Cần tạo Index nếu Console báo lỗi link đỏ!
-    query = query.orderBy("workDate", "desc").limit(500);
+    // Sắp xếp (Nhớ check Console F12 để tạo Index nếu có lỗi link đỏ)
+    query = query.orderBy("createdAt", "desc").limit(500);
 
     query.onSnapshot((snapshot) => {
         const logs = snapshot.docs.map(doc => {
             const d = doc.data();
             return [doc.id, d.workDate, d.customer, d.machineType, d.support, d.content, d.tech, d.createdBy || "", d.note || ""];
         });
-
-        // Cập nhật cả bảng và Dashboard cùng lúc
         renderData({ logs: [["Header"], ...logs], role: AUTH.role });
-        updateDashboard(logs); // Đây là nơi các biểu đồ được vẽ lại theo dữ liệu đã lọc
+        updateDashboard(logs); // Cập nhật thêm biểu đồ mới này
         applyPermissions();
     });
+
+    // --- TẢI METADATA CHO TAB 3 (CHỈ ADMIN/EDIT CẦN) ---
+    if (AUTH.role === "ADMIN" || AUTH.role === "EDIT") {
+        db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
+            if (doc.exists) {
+                const d = doc.data();
+                updateDropdowns(d); // Cập nhật danh sách chọn ở Tab 2
+                if (AUTH.role === "ADMIN") renderMetaBlock(d); // Hiển thị khối sửa ở Tab 3
+            }
+        });
+    }
+    
+    
+    
 }
-
-
     // --- UI RENDER (KHÔI PHỤC CẤU TRÚC GỐC CỦA BẠN) ---
     function renderData(data) {
         window.currentLogs = data.logs.slice(1);
