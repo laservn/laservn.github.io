@@ -1193,7 +1193,6 @@ function renderChart(canvasId, label, dataObj, type) {
     const labels = sortedEntries.map(el => el[0]);
     const values = sortedEntries.map(el => el[1]);
 
-    // Kiểm tra xem đây có phải là biểu đồ Khách hàng không
     const isCustomerChart = (canvasId === "chartCust");
 
     charts[canvasId] = new Chart(ctx, {
@@ -1206,29 +1205,31 @@ function renderChart(canvasId, label, dataObj, type) {
                 backgroundColor: 'rgba(0, 210, 255, 0.7)',
                 borderColor: '#00d2ff',
                 borderWidth: 1,
-                borderRadius: 5
+                borderRadius: 5,
+                // --- ĐIỀU CHỈNH ĐỘ RỘNG CỘT TẠI ĐÂY ---
+                barPercentage: isCustomerChart ? 0.6 : 0.8, // Giá trị càng nhỏ cột càng mảnh (0.1 -> 1.0)
+                categoryPercentage: isCustomerChart ? 0.7 : 0.8 // Khoảng cách giữa các nhóm cột
             }]
         },
         options: {
-            // Chỉ xoay ngang nếu là biểu đồ Khách hàng
             indexAxis: isCustomerChart ? 'y' : 'x', 
             responsive: true,
+            maintainAspectRatio: false, // Cho phép biểu đồ co giãn theo chiều cao container
             scales: {
                 y: { 
                     beginAtZero: true, 
                     ticks: { 
                         stepSize: 1, 
                         color: '#94a3b8',
-                        // Nếu xoay ngang (isCustomerChart), dùng font nhỏ cho tên khách hàng
                         font: { size: isCustomerChart ? 10 : 12 } 
                     },
                     grid: { 
                         color: 'rgba(255,255,255,0.05)',
-                        display: isCustomerChart ? false : true // Ẩn vạch kẻ dọc khi nằm ngang
+                        display: isCustomerChart ? false : true 
                     }
                 },
                 x: { 
-                    ticks: { color: '#94a3b8', font: { size: 10 } },
+                    ticks: { color: '#94a3b8' },
                     grid: { 
                         display: isCustomerChart ? true : false,
                         color: 'rgba(255,255,255,0.05)'
