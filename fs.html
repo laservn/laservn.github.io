@@ -128,10 +128,6 @@
     margin-bottom: 20px;
 }
 
-/* Mặc định ẩn nút lưu khi chưa nhấn sửa */
-.btn-save-mode {
-    display: none;
-}
     </style>
 </head>
 <body>
@@ -286,7 +282,7 @@
                 <div class="meta-list" id="list-customers"></div>
                 <div class="meta-actions">
                     <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('customers')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('customers')">LƯU</button>
+                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('customers')" style=" display: none;">LƯU</button>
                 </div>
             </div>
             <div class="meta-col">
@@ -294,7 +290,7 @@
                 <div class="meta-list" id="list-machineTypes"></div>
                 <div class="meta-actions">
                     <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('machineTypes')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('machineTypes')">LƯU</button>
+                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('machineTypes')" style=" display: none;">LƯU</button>
                 </div>
             </div>
             <div class="meta-col">
@@ -302,7 +298,7 @@
                 <div class="meta-list" id="list-techs"></div>
                 <div class="meta-actions">
                     <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('techs')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('techs')">LƯU</button>
+                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('techs')" style=" display: none;">LƯU</button>
                 </div>
             </div>
             <div class="meta-col">
@@ -310,7 +306,7 @@
                 <div class="meta-list" id="list-supports"></div>
                 <div class="meta-actions">
                     <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('supports')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('supports')">LƯU</button>
+                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('supports')" style=" display: none;">LƯU</button>
                 </div>
             </div>
         </div>
