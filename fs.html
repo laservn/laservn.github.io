@@ -1095,24 +1095,35 @@ function renderDocs(docs) {
     const container = document.getElementById('doc_groups_container');
     let filtered = docs;
 
-    // Lọc quyền Viewer (Giữ nguyên logic của bạn)
     if (AUTH.role === "VIEWER") {
-        const allowedList = (AUTH.access || "").split(",").map(s => s.trim());
+        // Làm sạch danh sách khách hàng được phép của User (xóa khoảng trắng dư thừa)
+        const allowedList = (AUTH.access || "")
+            .split(",")
+            .map(s => s.trim())
+            .filter(s => s !== "");
+
         filtered = docs.filter(d => {
+            // Nếu tài liệu để trống mục "Quyền xem" (customers) -> Cho phép tất cả xem
             if (!d.customers || d.customers.length === 0) return true;
-            return d.customers.some(c => allowedList.includes(c));
+            
+            // Kiểm tra xem có khách hàng nào của tài liệu nằm trong danh sách User được phép không
+            return d.customers.some(c => allowedList.includes(c.trim()));
         });
     }
 
-    // Nhóm tài liệu theo Loại máy
+    // --- Giữ nguyên phần logic Nhóm tài liệu (groups) bên dưới của bạn ---
     const groups = {};
+    if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">Bạn không có quyền xem tài liệu nào hoặc chưa có tài liệu.</div>`;
+        return;
+    }
+    
     filtered.forEach(d => {
         const type = d.machineType || "KHÁC / CHƯA PHÂN LOẠI";
         if (!groups[type]) groups[type] = [];
         groups[type].push(d);
     });
 
-    // Vẽ giao diện theo từng nhóm
     container.innerHTML = Object.keys(groups).sort().map(groupName => `
         <div class="doc-group-section" style="margin-bottom: 20px;">
             <div style="background: rgba(0, 210, 255, 0.1); padding: 8px 15px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid var(--primary);">
