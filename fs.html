@@ -769,7 +769,7 @@ function fetchData() {
         }
     }
 
-    query.orderBy("createdAt", "desc").limit(1000).onSnapshot((snapshot) => {
+    query.orderBy("workDate", "desc").limit(1000).onSnapshot((snapshot) => {
         // LƯU DỮ LIỆU VÀO BIẾN GLOBAL
         window.rawLogs = snapshot.docs.map(doc => {
             const d = doc.data();
@@ -789,7 +789,7 @@ function fetchData() {
         syncAndFilter(); 
         applyPermissions();
     }, (error) => {
-        console.error("Lỗi Firestore:", error);
+        console.error("Lỗi máy chủ:", error);
     });
 
     // Load metadata cho dropdown
