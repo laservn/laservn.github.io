@@ -1193,7 +1193,7 @@ function renderChart(canvasId, label, dataObj, type) {
     const labels = sortedEntries.map(el => el[0]);
     const values = sortedEntries.map(el => el[1]);
 
-    const isCustomerChart = (canvasId === "chartCust");
+    const isCust = (canvasId === "chartCust");
 
     charts[canvasId] = new Chart(ctx, {
         type: type,
@@ -1206,34 +1206,27 @@ function renderChart(canvasId, label, dataObj, type) {
                 borderColor: '#00d2ff',
                 borderWidth: 1,
                 borderRadius: 5,
-                // --- ĐIỀU CHỈNH ĐỘ RỘNG CỘT TẠI ĐÂY ---
-                barPercentage: isCustomerChart ? 0.6 : 0.8, // Giá trị càng nhỏ cột càng mảnh (0.1 -> 1.0)
-                categoryPercentage: isCustomerChart ? 0.7 : 0.8 // Khoảng cách giữa các nhóm cột
+                // Khống chế độ rộng cột
+                barPercentage: isCust ? 0.5 : 0.8, 
+                categoryPercentage: isCust ? 0.6 : 0.8,
+                maxBarThickness: isCust ? 25 : 40 // Giới hạn cột không được to quá 25px
             }]
         },
         options: {
-            indexAxis: isCustomerChart ? 'y' : 'x', 
+            indexAxis: isCust ? 'y' : 'x',
             responsive: true,
-            maintainAspectRatio: false, // Cho phép biểu đồ co giãn theo chiều cao container
+            maintainAspectRatio: false, // QUAN TRỌNG: Để không bị nhảy kích thước
+            animation: { duration: 500 }, // Thêm animation ngắn để mượt hơn
             scales: {
-                y: { 
-                    beginAtZero: true, 
-                    ticks: { 
-                        stepSize: 1, 
-                        color: '#94a3b8',
-                        font: { size: isCustomerChart ? 10 : 12 } 
-                    },
-                    grid: { 
-                        color: 'rgba(255,255,255,0.05)',
-                        display: isCustomerChart ? false : true 
-                    }
+                y: {
+                    beginAtZero: true,
+                    grid: { display: !isCust, color: 'rgba(255,255,255,0.05)' },
+                    ticks: { color: '#94a3b8', font: { size: 10 } }
                 },
-                x: { 
-                    ticks: { color: '#94a3b8' },
-                    grid: { 
-                        display: isCustomerChart ? true : false,
-                        color: 'rgba(255,255,255,0.05)'
-                    }
+                x: {
+                    beginAtZero: true,
+                    grid: { display: isCust, color: 'rgba(255,255,255,0.05)' },
+                    ticks: { color: '#94a3b8', stepSize: 1 }
                 }
             },
             plugins: {
@@ -1242,6 +1235,7 @@ function renderChart(canvasId, label, dataObj, type) {
         }
     });
 }
+
 
 // Tự động chạy mỗi khi trang web được load hoặc F5
 firebase.auth().onAuthStateChanged(async (user) => {
