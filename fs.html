@@ -281,32 +281,32 @@
                 <h4>KHÁCH HÀNG</h4>
                 <div class="meta-list" id="list-customers"></div>
                 <div class="meta-actions">
-                    <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('Khách hàng')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('Khách Hàng')" style="display:none;">LƯU</button>
+                    <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('customers')">SỬA</button>
+                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('customers')" style="display:none;">LƯU</button>
                 </div>
             </div>
             <div class="meta-col">
                 <h4>LOẠI MÁY</h4>
                 <div class="meta-list" id="list-machineTypes"></div>
                 <div class="meta-actions">
-                    <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('Loại máy')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('Loại máy')" style="display:none;">LƯU</button>
+                    <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('machineTypes')">SỬA</button>
+                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('machineTypes')" style="display:none;">LƯU</button>
                 </div>
             </div>
             <div class="meta-col">
                 <h4>KỸ THUẬT</h4>
                 <div class="meta-list" id="list-techs"></div>
                 <div class="meta-actions">
-                    <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('Kỹ thuật')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('Kỹ thuật')" style="display:none;">LƯU</button>
+                    <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('techs')">SỬA</button>
+                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('techs')" style="display:none;">LƯU</button>
                 </div>
             </div>
             <div class="meta-col">
                 <h4>HỖ TRỢ</h4>
                 <div class="meta-list" id="list-supports"></div>
                 <div class="meta-actions">
-                    <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('Hỗ trợ')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('Hỗ trợ')" style="display:none;">LƯU</button>
+                    <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('supports')">SỬA</button>
+                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('supports')" style="display:none;">LƯU</button>
                 </div>
             </div>
         </div>
@@ -751,7 +751,7 @@ function enableMetaEdit(id) {
     if (btnEdit) btnEdit.style.display = 'none';
     if (btnSave) btnSave.style.display = 'block';
 
-    showToast("Đã mở chế độ sửa cho " + id, "info");
+    showToast("Đã mở chế độ sửa!", "info");
 }
 
 async function saveMetaData(id) {
@@ -781,7 +781,7 @@ async function saveMetaData(id) {
         if (btnSave) btnSave.style.display = 'none';
         if (btnEdit) btnEdit.style.display = 'block';
 
-        showToast("Đã lưu thành công vào dropdowns!", "success");
+        showToast("Đã lưu thành công!", "success");
         
         // Cập nhật lại giao diện
         if(typeof fetchMeta === 'function') fetchMeta();
@@ -1087,8 +1087,8 @@ async function addUser() {
     if(pass.length < 6) return showToast("Mật khẩu phải từ 6 ký tự trở lên", "error");
 
     const selectedAccess = Array.from(document.querySelectorAll('input[name="user_cust"]:checked'))
-                            .map(cb => cb.value)
-                            .join(', ');
+                        .map(cb => cb.value)
+                        .join(', ') || "ALL"; // Nếu vế trái rỗng, lấy "ALL"
 
     showLoading(true, "ĐANG TẠO TÀI KHOẢN...");
 
@@ -1134,8 +1134,8 @@ async function addUser() {
 async function updateUser() {
     const id = document.getElementById('u_id').value.trim();
     const selectedAccess = Array.from(document.querySelectorAll('input[name="user_cust"]:checked'))
-                                .map(cb => cb.value)
-                                .join(', ');
+                        .map(cb => cb.value)
+                        .join(', ') || "ALL"; // Nếu vế trái rỗng, lấy "ALL"
     showLoading(true, "ĐANG CẬP NHẬT...");
     try {
         await db.collection("users").doc(id).update({
