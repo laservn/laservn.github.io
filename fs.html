@@ -1200,7 +1200,7 @@ function renderChart(canvasId, label, dataObj, type) {
     const labels = sortedEntries.map(el => el[0]);
     const values = sortedEntries.map(el => el[1]);
 
-    const isCust = (canvasId === "chartCust");
+    const isCust = (canvasId === "chartCust" || canvasId === "chartMachine");
 
     charts[canvasId] = new Chart(ctx, {
         type: type,
