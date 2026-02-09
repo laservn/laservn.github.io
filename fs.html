@@ -741,12 +741,11 @@ function fetchData() {
             
         });       
         showToast("Đã mở chế độ sửa", "info");
-                    // Tìm đến cột (meta-col) chứa nút vừa bấm
-	    const col = document.querySelector(`[onclick*="enableMetaEdit('${type}')"]`).closest('.meta-col');
-	    
+
 	    // Ẩn nút SỬA, hiện nút LƯU
-	    col.querySelector('.btn-edit-mode').style.display = 'none';
-	    col.querySelector('.btn-save-mode').style.display = 'inline-block'; 
+	    document.getElementById('.btn-edit-mode').style.display = 'none';
+	    document.getElementById('.btn-save-mode').style.display = 'block';
+
     }
 
     async function saveMetaData(id) {
@@ -755,9 +754,9 @@ function fetchData() {
         showLoading(true, "ĐANG CẬP NHẬT...");
         try {
             await db.collection("metadata").doc("dropdowns").update({ [id]: newList });
-            // Sau khi lưu thành công: Ẩn nút LƯU, hiện lại nút SỬA
-		col.querySelector('.btn-save-mode').style.display = 'none';
-		col.querySelector('.btn-edit-mode').style.display = 'inline-block';
+	    // Ẩn nút SỬA, hiện nút LƯU
+	    document.getElementById('.btn-edit-mode').style.display = 'block';
+	    document.getElementById('.btn-save-mode').style.display = 'none';
             showToast("Cập nhật thành công!", "success");
         } catch (e) { showToast("Lỗi khi lưu dữ liệu!", "error"); }
         showLoading(false);
