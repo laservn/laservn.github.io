@@ -850,24 +850,21 @@ function applyPermissions() {
     const currentRole = AUTH ? AUTH.role : USER_ROLE;
     
     if (currentRole === "VIEWER") {
-        // Xóa các nút Tab cấm (Báo cáo mới, Meta, User)
-        const buttons = document.querySelectorAll('.tab-btn');
-        // Index: 2:Báo cáo, 3:Meta, 4:User
-        if(buttons[2]) buttons[2].remove();
-        if(buttons[3]) buttons[3].remove();
-        if(buttons[4]) buttons[4].remove();
-
-        // Xóa sạch nội dung HTML bên trong các tab đó
-        ['form-tab', 'meta-tab', 'user-tab'].forEach(id => {
+        // Chỉ xóa các tab cấm, GIỮ LẠI tab 📂 Tài liệu (btnTabDoc)
+        const forbiddenTabs = ['btnTabMeta', 'btnTabUser', 'form-tab', 'meta-tab', 'user-tab'];
+        
+        forbiddenTabs.forEach(id => {
             const el = document.getElementById(id);
             if (el) el.remove();
         });
 
-        // Tab Tài liệu: Xóa form thêm, chỉ để lại danh sách
-        const docForm = document.querySelector('#doc-tab .card');
-        if (docForm) docForm.remove();
-        
-        // Chặn mở form sửa khi click vào dòng tài liệu
+        // Ẩn nút "Báo cáo mới" (nút thứ 3 trong navigation)
+        const navButtons = document.querySelectorAll('.tab-btn');
+        navButtons.forEach(btn => {
+            if(btn.onclick.toString().includes('form-tab')) btn.remove();
+        });
+
+        // Chặn mở form sửa khi viewer click vào tài liệu
         window.handleDocClick = (id, name, link) => window.open(link, '_blank');
     }
     
