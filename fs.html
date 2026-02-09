@@ -754,39 +754,40 @@ function enableMetaEdit(id) {
     showToast("Đã mở chế độ sửa cho " + id, "info");
 }
 
-async function saveMetaData(id) {
-    // ... (Logic lấy dữ liệu và lưu vào db.collection("settings").doc("metadata") của bạn)
-    
-    try {
-        showLoading(true, "ĐANG LƯU...");
-        
-        // Giả sử đây là đoạn code lưu của bạn
-        // await db.collection("settings").doc("metadata").update({ ... });
+    async function saveMetaData(id) {
+        const inputs = document.querySelectorAll(`#list-${id} input`);
+        const newList = [...new Set(Array.from(inputs).map(i => i.value.trim()).filter(v => v !== ""))];
+        showLoading(true, "ĐANG CẬP NHẬT...");
+	try {
+		showLoading(true, "ĐANG LƯU...");
+		
+		// Giả sử đây là đoạn code lưu của bạn
+		// await db.collection("settings").doc("metadata").update({ ... });
 
-        // Sau khi lưu thành công:
-        // 1. Khóa lại các ô input
-        document.querySelectorAll(`#list-${id} .meta-item`).forEach(item => {
-            item.classList.remove('editing');
-            const input = item.querySelector('input');
-            if (input) input.readOnly = true;
-        });
+		// Sau khi lưu thành công:
+		// 1. Khóa lại các ô input
+		document.querySelectorAll(`#list-${id} .meta-item`).forEach(item => {
+		    item.classList.remove('editing');
+		    const input = item.querySelector('input');
+		    if (input) input.readOnly = true;
+		});
 
-        // 2. Tìm khu vực chứa nút của cột đó
-        const parentCol = document.getElementById(`list-${id}`).closest('.meta-col');
-        const btnEdit = parentCol.querySelector('.btn-edit-mode');
-        const btnSave = parentCol.querySelector('.btn-save-mode');
+		// 2. Tìm khu vực chứa nút của cột đó
+		const parentCol = document.getElementById(`list-${id}`).closest('.meta-col');
+		const btnEdit = parentCol.querySelector('.btn-edit-mode');
+		const btnSave = parentCol.querySelector('.btn-save-mode');
 
-        // 3. Ẩn Lưu, Hiện lại Sửa
-        if (btnSave) btnSave.style.display = 'none';
-        if (btnEdit) btnEdit.style.display = 'block';
+		// 3. Ẩn Lưu, Hiện lại Sửa
+		if (btnSave) btnSave.style.display = 'none';
+		if (btnEdit) btnEdit.style.display = 'block';
 
-        showToast("Đã lưu thay đổi", "success");
-    } catch (e) {
-        showToast("Lỗi: " + e.message, "error");
-    } finally {
-        showLoading(false);
+		showToast("Đã lưu thay đổi", "success");
+	    } catch (e) {
+		showToast("Lỗi: " + e.message, "error");
+	    } finally {
+		showLoading(false);
+	    }
     }
-}
 
     // --- OTHER LOGIC (GIỮ NGUYÊN GỐC) ---
 async function saveData() {
