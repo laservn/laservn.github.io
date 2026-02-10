@@ -265,31 +265,34 @@
     margin-left: 5px;
 }
 /* Chỉ thêm phần này để điều hướng */
+/* Tìm đoạn CSS cho màn hình máy tính (min-width: 769px) */
 @media (min-width: 769px) {
     .tab-navigation { 
         width: 100px; 
         position: fixed; 
-        left: 0; top: 0; height: 100vh; 
+        left: 0; 
+        top: 0; 
+        height: 100vh;           /* Chiều cao bằng toàn bộ màn hình */
         flex-direction: column; 
-        padding: 20px 10px;
+        padding: 10px;           /* Giảm padding để tiết kiệm diện tích */
         z-index: 1000;
         background: #0f172a;
         border-right: 1px solid var(--border);
-        overflow-y: auto;          /* Cho phép cuộn dọc nếu tab quá nhiều */
-        overflow-x: hidden;        /* Ẩn cuộn ngang */
-        display: flex;             /* Đảm bảo vẫn là flex dọc */
-        justify-content: flex-start; /* Xếp các tab từ trên xuống */
+        
+        /* --- THÊM DÒNG NÀY --- */
+        display: flex;           /* Kích hoạt flexbox */
+        box-sizing: border-box;
     }
-    /* Tùy chỉnh kích thước icon tab để nhỏ lại khi màn hình thấp */
+
     .tab-btn {
-        flex-shrink: 0;            /* Không cho phép nút bị bóp méo */
-        margin-bottom: 10px;
-        font-size: 40px !important;
-    }
-    /* ĐÂY LÀ DÒNG QUAN TRỌNG: Đẩy nội dung cũ sang phải */
-    .container { 
-        margin-left: 120px !important; 
-        max-width: calc(100% - 140px) !important; 
+        flex: 1;                 /* TỰ ĐỘNG CO DÃN: Chia đều chiều cao còn lại */
+        max-height: 15vh;        /* Khống chế chiều cao tối đa của 1 tab (ví dụ 15% màn hình) */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3vw !important; /* Font size co dãn theo chiều rộng màn hình (thay vì 40px cố định) */
+        padding: 5px !important;
+        margin: 2px 0;
     }
 }
 
