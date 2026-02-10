@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -266,7 +267,7 @@
 /* Chỉ thêm phần này để điều hướng */
 @media (min-width: 769px) {
     .tab-navigation { 
-        width: 230px; 
+        width: 100px; 
         position: fixed; 
         left: 0; top: 0; height: 100vh; 
         flex-direction: column; 
@@ -274,11 +275,21 @@
         z-index: 1000;
         background: #0f172a;
         border-right: 1px solid var(--border);
+        overflow-y: auto;          /* Cho phép cuộn dọc nếu tab quá nhiều */
+        overflow-x: hidden;        /* Ẩn cuộn ngang */
+        display: flex;             /* Đảm bảo vẫn là flex dọc */
+        justify-content: flex-start; /* Xếp các tab từ trên xuống */
+    }
+    /* Tùy chỉnh kích thước icon tab để nhỏ lại khi màn hình thấp */
+    .tab-btn {
+        flex-shrink: 0;            /* Không cho phép nút bị bóp méo */
+        margin-bottom: 10px;
+        font-size: 40px !important;
     }
     /* ĐÂY LÀ DÒNG QUAN TRỌNG: Đẩy nội dung cũ sang phải */
     .container { 
-        margin-left: 240px !important; 
-        max-width: calc(100% - 260px) !important; 
+        margin-left: 120px !important; 
+        max-width: calc(100% - 140px) !important; 
     }
 }
 
@@ -330,12 +341,12 @@
     </div>
 
     <div class="tab-navigation" id="tabBar" style="display:none;">
-    <button class="tab-btn active" onclick="switchTab('dashboard', this)">🏠 TỔNG QUAN</button>
-        <button class="tab-btn" onclick="switchTab('data-tab', this)">📊 Bảng Dữ Liệu</button>
-        <button class="tab-btn" onclick="switchTab('form-tab', this)">📑 Báo Cáo Mới</button>
-        <button class="tab-btn" id="btnTabMeta" onclick="switchTab('meta-tab', this)">🧱 Thông Tin Khối</button>
-        <button class="tab-btn" id="btnTabUser" onclick="switchTab('user-tab', this)">👥 Tài Khoản</button>
-        <button class="tab-btn" id="btnTabDoc" onclick="switchTab('doc-tab', this)">📂 Tài liệu</button>
+    <button class="tab-btn active" onclick="switchTab('dashboard', this)" style="font-size: 40px;">🏠</button>
+        <button class="tab-btn" onclick="switchTab('data-tab', this)" style="font-size: 40px;">📊</button>
+        <button class="tab-btn" onclick="switchTab('form-tab', this)" style="font-size: 40px;">📑</button>
+        <button class="tab-btn" id="btnTabMeta" onclick="switchTab('meta-tab', this)" style="font-size: 40px;">⚙️</button>
+        <button class="tab-btn" id="btnTabUser" onclick="switchTab('user-tab', this)" style="font-size: 40px;">👨‍🔧 </button>
+        <button class="tab-btn" id="btnTabDoc" onclick="switchTab('doc-tab', this)" style="font-size: 40px;">📂</button>
     </div>
     
 	<div id="dashboard" class="tab-content active">
@@ -1157,9 +1168,9 @@ function applyPermissions() {
             const el = document.getElementById(id);
             if (el) {
                 if (id === 'btnTabUser') {
-                    el.style.display = (currentRole === "ADMIN") ? 'inline-flex' : 'none';
+                    el.style.display = (currentRole === "ADMIN") ? 'block' : 'none';
                 } else {
-                    el.style.display = 'inline-flex';
+                    el.style.display = 'block';
                 }
             }
         });
@@ -1167,7 +1178,7 @@ function applyPermissions() {
         // Hiện lại nút "Báo cáo mới"
         navButtons.forEach(btn => {
             if(btn.onclick && btn.onclick.toString().includes('form-tab')) {
-                btn.style.display = 'inline-flex';
+                btn.style.display = 'block';
             }
         });
 
@@ -1201,12 +1212,12 @@ function showApp() {
     // Hiện tab Tài liệu cho mọi Role nếu họ có quyền truy cập (access)
     if (AUTH.access && AUTH.access !== "") {
         const docBtn = nav.querySelector('button[onclick*="doc-tab"]');
-        if (docBtn) docBtn.style.display = 'inline-flex';
+        if (docBtn) docBtn.style.display = 'block';
     }
     
     // Hiện tab Quản trị chỉ cho ADMIN/EDIT
     const adminBtn = nav.querySelector('button[onclick*="admin-tab"]');
-    if (adminBtn) adminBtn.style.display = (AUTH.role === "ADMIN" || AUTH.role === "EDIT") ? 'inline-flex' : 'none';
+    if (adminBtn) adminBtn.style.display = (AUTH.role === "ADMIN" || AUTH.role === "EDIT") ? 'block' : 'none';
 }
 
     function setInitialDate() { const iso = new Date().toISOString().split('T')[0]; document.getElementById('hiddenDate').value = iso; document.getElementById('workDateDisplay').value = formatVN(iso); }
