@@ -876,7 +876,7 @@ function fetchData() {
             if (doc.exists) {
                 const d = doc.data();
                 updateDropdowns(d);
-                if (AUTH.role === "ADMIN") renderMetaBlock(d);
+                if (AUTH.role === "ADMIN" || AUTH.role === "EDIT") renderMetaBlock(d);
             }
         });
     }
