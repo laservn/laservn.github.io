@@ -787,9 +787,9 @@
                     GIAN</label>
                 <select class="timePreset" onchange="handlePresetChange(this)"
                         style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:white; border:1px solid var(--border);">
+                    <option value="7days" selected>7 ngày qua</option>
                     <option value="all">Tất cả thời gian</option>
                     <option value="today">Hôm nay</option>
-                    <option value="7days">7 ngày qua</option>
                     <option value="thisMonth">Tháng này</option>
                     <option value="custom">Tùy chọn...</option>
                 </select>
@@ -845,9 +845,9 @@
                     GIAN</label>
                 <select class="timePreset" onchange="handlePresetChange(this)"
                         style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:white; border:1px solid var(--border);">
+                    <option value="7days" selected>7 ngày qua</option>
                     <option value="all">Tất cả thời gian</option>
                     <option value="today">Hôm nay</option>
-                    <option value="7days">7 ngày qua</option>
                     <option value="thisMonth">Tháng này</option>
                     <option value="custom">Tùy chọn...</option>
                 </select>
@@ -982,11 +982,16 @@
 
 
         </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px; margin-top:10px;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap:10px; margin-top:10px;">
             <button class="btn-save" onclick="addUser()" style="background:#065f46">➕ THÊM</button>
             <button class="btn-save" id="btnUpdateUser" onclick="updateUser()"
                     style="background:#1e3a8a; display:none;">💾 CẬP NHẬT
             </button>
+            
+            <button class="btn-save" id="btnResetPass" onclick="resetUserPassword()"
+                    style="background:#ca8a04; display:none;">🔐 RESET PASS
+            </button>
+
             <button class="btn-save" id="btnDeleteUser" onclick="deleteUser()"
                     style="background:#7f1d1d; display:none;">🗑️ XÓA
             </button>
@@ -1094,6 +1099,33 @@
             </button>
         </div>
     </div>
+    
+	  <footer class="main-footer">
+	    <div class="footer-content">
+		<div class="footer-section">
+		    <h3 class="footer-logo">🛠️ BÁO CÁO KỸ THUẬT</h3>
+		    <p>Hệ thống quản lý báo cáo kỹ thuật & thư viện tài liệu.</p>
+		</div>
+
+		<div class="footer-section">
+		    <h4>LIÊN KẾT</h4>
+		    <div class="footer-links">
+		        <a href="https://laser.info.vn" target="_blank" rel="noopener noreferrer">Laser.info.vn</a>
+		        <a href="https://minhphatcij.com.vn" target="_blank" rel="noopener noreferrer">Minhphatcij.com.vn</a>
+		    </div>
+		</div>
+
+		<div class="footer-section">
+		    <h4>HỖ TRỢ</h4>
+		    <p>📞 0971.64.64.03</p>
+		</div>
+	    </div>
+
+	    <div class="footer-bottom">
+		<p>© 2026 Bản quyền thuộc bộ phận Kỹ thuật</p>
+	    </div>
+	</footer>  
+    
 </div>
 
 
@@ -1301,13 +1333,12 @@
                 select.value = currentVal;
             });
 
-            syncAndFilter();
+            // GỌI HÀM NÀY ĐỂ KÍCH HOẠT BỘ LỌC MẶC ĐỊNH
+            initDefaultFilters(); 
         }, (error) => {
             console.error("Lỗi máy chủ:", error);
         });
 
-        // QUAN TRỌNG: EDIT VÀ ADMIN ĐƯỢC LOAD DROPDOWN (METADATA) ĐỂ NHẬP LIỆU
-        // VIEWER TUYỆT ĐỐI KHÔNG
         if (AUTH.role === "ADMIN" || AUTH.role === "EDIT") {
             db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
                 if (doc.exists) {
@@ -1317,6 +1348,23 @@
                 }
             });
         }
+    }
+
+    // --- HÀM THIẾT LẬP MẶC ĐỊNH 7 NGÀY ---
+    function initDefaultFilters() {
+        // Chỉ chạy 1 lần nếu input date chưa có giá trị
+        const fromInput = document.querySelector('.filterFrom');
+        if(!fromInput.value) {
+             const d = new Date();
+             d.setDate(d.getDate() - 7);
+             const sevenDaysAgo = d.toISOString().split('T')[0];
+             
+             // Gán giá trị
+             document.querySelectorAll('.timePreset').forEach(s => s.value = '7days');
+             document.querySelectorAll('.filterFrom').forEach(i => i.value = sevenDaysAgo);
+             document.querySelectorAll('.filterTo').forEach(i => i.value = new Date().toISOString().split('T')[0]);
+        }
+        syncAndFilter();
     }
 
 
@@ -1373,7 +1421,6 @@
     // --- POPUP CHI TIẾT ---
     function openInfoModal(index) {
         const row = window.currentLogs[index];
-        // CHỈ ADMIN MỚI ĐƯỢC XÓA/SỬA
         const isAdmin = (AUTH && AUTH.role === "ADMIN"); 
         
         let modalHtml = `
@@ -1704,7 +1751,7 @@
             const html = snapshot.docs.map(doc => {
                 const u = doc.data();
                 return `
-                <tr onclick="loadUserToForm('${doc.id}', '${u.name}', '${u.role}', '${u.pass}', '${u.access || ""}')">
+                <tr onclick="loadUserToForm('${doc.id}', '${u.name}', '${u.role}', '${u.access || ""}')">
                     <td><b style="color:var(--primary)">${doc.id}</b></td>
                     <td>${u.name}</td>
                     <td><span class="badge-tech">${u.role}</span></td>
@@ -1719,12 +1766,17 @@
     }
 
     // 2. Load dữ liệu từ bảng lên form khi kích vào dòng
-    function loadUserToForm(id, name, role, pass, access) {
+    // Đã bỏ load pass, pass luôn là rỗng hoặc ******
+    function loadUserToForm(id, name, role, access) {
         document.getElementById('u_id').value = id;
         document.getElementById('u_id').readOnly = true;
         document.getElementById('u_name').value = name;
         document.getElementById('u_role').value = role;
-        document.getElementById('u_pass').value = pass;
+        
+        // Mật khẩu không hiển thị, và để readOnly
+        const passInput = document.getElementById('u_pass');
+        passInput.value = "******";
+        passInput.readOnly = true;
 
         // Xử lý Checkbox quyền truy cập
         const allowedList = (access || "").split(",").map(s => s.trim());
@@ -1734,6 +1786,7 @@
         });
         document.getElementById('btnUpdateUser').style.display = 'block';
         document.getElementById('btnDeleteUser').style.display = 'block';
+        document.getElementById('btnResetPass').style.display = 'block';
         showToast("Đã chọn user: " + id, "info");
     }
 
@@ -1765,8 +1818,8 @@
             await db.collection("users").doc(id).set({
                 name: document.getElementById('u_name').value,
                 role: document.getElementById('u_role').value,
-                pass: pass, 
                 access: selectedAccess
+                // KHÔNG LƯU PASS VÀO FIRESTORE NỮA
             });
 
             await secondaryApp.delete();
@@ -1781,7 +1834,7 @@
         }
     }
 
-    // 4. Cập nhật User
+    // 4. Cập nhật User (Chỉ cập nhật info, không pass)
     async function updateUser() {
         const id = document.getElementById('u_id').value.trim();
         const selectedAccess = Array.from(document.querySelectorAll('input[name="user_cust"]:checked'))
@@ -1792,14 +1845,46 @@
             await db.collection("users").doc(id).update({
                 name: document.getElementById('u_name').value,
                 role: document.getElementById('u_role').value,
-                pass: document.getElementById('u_pass').value,
                 access: selectedAccess 
             });
-            showToast("Đã cập nhật!", "success");
+            showToast("Đã cập nhật thông tin!", "success");
         } catch (e) {
             showToast("Lỗi khi cập nhật!", "error");
         }
         showLoading(false);
+    }
+    
+    // 6. Reset Password (Gửi email)
+    async function resetUserPassword() {
+        const email = document.getElementById('u_id').value.trim();
+        if(!email) return showToast("Không xác định được email user!", "error");
+        
+        const confirmHtml = `
+        <div style="min-width: 250px;">
+            <p style="margin: 0 0 10px 0; font-weight: 600; color: #fbbf24;">🔐 ĐẶT LẠI MẬT KHẨU?</p>
+            <p style="font-size:12px; margin-bottom:15px">Hệ thống sẽ gửi email yêu cầu đặt lại mật khẩu đến: <br><b style="color:white">${email}</b></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <button id="resetNo" style="background: #475569; color: white; border: none; padding: 8px; border-radius: 6px; font-weight: bold;">HỦY</button>
+                <button id="resetYes" style="background: #ca8a04; color: white; border: none; padding: 8px; border-radius: 6px; font-weight: bold;">GỬI EMAIL</button>
+            </div>
+        </div>
+        `;
+        
+        const t = showToast("", "info", confirmHtml);
+        
+        t.querySelector('#resetNo').onclick = () => t.remove();
+        
+        t.querySelector('#resetYes').onclick = async () => {
+            t.remove();
+            showLoading(true, "ĐANG GỬI YÊU CẦU...");
+            try {
+                await firebase.auth().sendPasswordResetEmail(email);
+                showToast("Đã gửi email khôi phục thành công!", "success");
+            } catch (e) {
+                showToast("Lỗi: " + e.message, "error");
+            }
+            showLoading(false);
+        };
     }
 
     // 5. Xóa User
@@ -1836,12 +1921,18 @@
 
     function resetUserForm() {
         document.getElementById('u_id').value = "";
-        document.getElementById('u_id').readOnly = false;
+        document.getElementById('u_id').readOnly = false; // Khi thêm mới thì cho nhập
         document.getElementById('u_name').value = "";
-        document.getElementById('u_pass').value = "";
+        
+        // Reset ô pass về trạng thái nhập được cho user mới
+        const passInput = document.getElementById('u_pass');
+        passInput.value = "";
+        passInput.readOnly = false;
+        
         document.querySelectorAll('input[name="user_cust"]').forEach(ch => ch.checked = false);
         document.getElementById('btnUpdateUser').style.display = 'none';
         document.getElementById('btnDeleteUser').style.display = 'none';
+        document.getElementById('btnResetPass').style.display = 'none';
     }
 
     let selectedDocId = null;
@@ -1913,8 +2004,8 @@
                 ${groups[groupName].map(d => {
             const custsAttr = encodeURIComponent(JSON.stringify(d.customers || []));
 
-            // Chỉ hiển thị dòng Quyền xem nếu KHÔNG PHẢI viewer
-            const accessInfoHtml = (AUTH.role !== "VIEWER")
+            // Chỉ hiển thị dòng Quyền xem nếu là ADMIN (Edit và Viewer ẩn)
+            const accessInfoHtml = (AUTH.role === "ADMIN")
                 ? `<div style="font-size:11px; color:var(--text-muted); margin: 5px 0 10px 0;">
                                <span style="color:var(--primary)">👤 Quyền xem:</span> ${(!d.customers || d.customers.length === 0) ? 'Tất cả' : d.customers.join(', ')}
                            </div>`
@@ -2284,35 +2375,6 @@
         reader.readAsText(file);
     }
 </script>
-<footer class="main-footer">
-    <div class="footer-content">
-        <div class="footer-section">
-            <h3 class="footer-logo">🛠️ BÁO CÁO KỸ THUẬT</h3>
-            <p>Hệ thống quản lý báo cáo kỹ thuật & thư viện tài liệu.</p>
-        </div>
 
-        <div class="footer-section">
-            <h4>LIÊN KẾT</h4>
-            <div class="footer-links">
-                <a href="https://laser.info.vn" target="_blank" rel="noopener noreferrer">Laser.info.vn</a>
-                <a href="https://minhphatcij.com.vn" target="_blank" rel="noopener noreferrer">Minhphatcij.com.vn</a>
-            </div>
-        </div>
-
-        <div class="footer-section">
-            <h4>HỖ TRỢ</h4>
-            <p>📞 0971.64.64.03</p>
-        </div>
-    </div>
-
-    <div class="footer-bottom">
-        <p>© 2026 Bản quyền thuộc bộ phận Kỹ thuật</p>
-    </div>
-</footer>
-
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015"
-        integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ=="
-        data-cf-beacon='{"version":"2024.11.0","token":"7e787de4181e462592281f92694ee37f","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}'
-        crossorigin="anonymous"></script>
 </body>
 </html>
