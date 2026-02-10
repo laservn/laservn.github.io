@@ -314,6 +314,12 @@
     
     .tab-btn { font-size: 22px !important; }
 }
+        .input-group { position: relative; margin-bottom: 15px; text-align: left; }
+        .input-group i { position: absolute; left: 15px; top: 14px; color: var(--primary); }
+        .input-group input { 
+            padding: 12px 15px 12px 45px !important; margin-bottom: 0;
+            background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border);
+        }
     </style>
 </head>
 <body>
@@ -327,11 +333,22 @@
         <img src="https://lh3.googleusercontent.com/pw/AP1GczNyKJCNBen1I6WeBIOFBHnduEAc-raKjpQsiE-xMOPlkgBLUxSUPtPfnGUO-h_gVE4xbhoZyycDSfpCjJD_uk7EkCLQJEXeuBytxHxBTDS0NEIMKC7RqBA-GIxKhZed7ddwzYsTmKsh5fKxggPZvFM=w483-h154" alt="Logo" style="width: 250px; margin-bottom: 20px;">
         <h2 style="color:var(--primary); margin:0 0 20px 0;">BÁO CÁO KỸ THUẬT</h2>
         
-        <input type="text" id="userInput" placeholder="Tên đăng nhập" required autocomplete="username">
+        <div class="input-group">
+            <i class="fas fa-user"></i>
+            <input type="text" id="userInput" placeholder="Tên đăng nhập" required autocomplete="username">
+        </div>
+        <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="passInput" placeholder="Mật khẩu" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn-save" style="margin-top:10px">
+            <span>ĐĂNG NHẬP</span>
+            <i class="fas fa-sign-in-alt" style="margin-left:8px"></i>
+        </button>
+        <div style="margin-top: 25px; font-size: 0.75rem; color: var(--text-muted);">
+            © 2026 Bản quyền thuộc bộ phận Kỹ thuật
+        </div>
         
-        <input type="password" id="passInput" placeholder="Mật khẩu" required autocomplete="current-password">
-        
-        <button type="submit" class="btn-save">ĐĂNG NHẬP</button>
     </div>
 </form>
 
