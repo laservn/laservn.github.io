@@ -265,7 +265,6 @@
     margin-left: 5px;
 }
 /* Chỉ thêm phần này để điều hướng */
-/* Tìm đoạn CSS cho màn hình máy tính (min-width: 769px) */
 @media (min-width: 769px) {
     .tab-navigation { 
         width: 100px; 
@@ -293,6 +292,11 @@
         font-size: 3vw !important; /* Font size co dãn theo chiều rộng màn hình (thay vì 40px cố định) */
         padding: 5px !important;
         margin: 2px 0;
+    }
+    /* ĐÂY LÀ DÒNG QUAN TRỌNG: Đẩy nội dung cũ sang phải */
+    .container { 
+        margin-left: 120px !important; 
+        max-width: calc(100% - 140px) !important; 
     }
 }
 
