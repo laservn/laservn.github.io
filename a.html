@@ -1968,7 +1968,9 @@
                     <div class="detail-item"><span class="detail-label">🚀 Tiến trình:</span><span class="detail-value">${p.name}</span></div>
                     <div class="detail-item"><span class="detail-label">👷‍♂️ Kỹ thuật:</span><span class="detail-value">${p.tech || '---'}</span></div>
                     <div class="detail-item"><span class="detail-label">📊 Trạng thái:</span><span class="detail-value" style="color:${statusColor}">${statusText}</span></div>
+                    <div class="detail-item"><span class="detail-label">⏱ Dự kiến:</span><span class="detail-value">${p.endDateP ? formatVN(p.endDateP) : '---'}</span></div>
                     <div class="detail-item"><span class="detail-label">🏁 Hoàn thành:</span><span class="detail-value">${p.endDate ? formatVN(p.endDate) : '---'}</span></div>
+                    <div class="detail-item"><span class="detail-label">🪪 User:</span><span class="detail-value">${p.createdBy ? formatVN(p.createdBy) : '---'}</span></div>
                 </div>
                 <div style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px">
                     <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">📝 NỘI DUNG:</p>
@@ -2019,6 +2021,7 @@
         document.getElementById('proc_note').value = p.note || "";
         document.getElementById('proc_end_date_p').value = p.endDate || "";
         document.getElementById('proc_end_date').value = p.endDate || "";
+        // document.getElementById('created_by').value = p.createdBy || "";
 
         document.getElementById('btnUpdateProc').style.display = 'block';
         document.getElementById('btnDeleteProc').style.display = 'block';
@@ -2040,6 +2043,7 @@
             note: document.getElementById('proc_note').value.trim(),
             endDateP: document.getElementById('proc_end_date_p').value, // Rỗng nghĩa là chưa xong
             endDate: document.getElementById('proc_end_date').value, // Rỗng nghĩa là chưa xong
+            createdBy: AUTH.user, 
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };
 
