@@ -961,7 +961,7 @@
                 <select id="machineType"><option value="">-- Loại máy --</option></select>
                 <select id="supportType"><option value="">-- Hỗ trợ --</option></select>
             </div>
-            <textarea id="content" placeholder="Mô tả công việc thực hiện (Bắt buộc)..."
+            <textarea id="content" spellcheck="false" placeholder="Mô tả công việc thực hiện (Bắt buộc)..."
                       style="height:100px"></textarea>
             <input type="text" id="note" placeholder="Ghi chú thêm (Không bắt buộc)...">
             <button class="btn-save" id="btnSave" onclick="saveData()">LƯU BÁO CÁO</button>
@@ -1160,7 +1160,29 @@
             </table>
         </div>
         <div id="admin-backup-zone">
-  
+            <div class="meta-col"
+                 style="margin-top: 20px; border: 1px dashed var(--primary); padding: 20px; border-radius: 12px;">
+                <h3 style="color: var(--primary); margin-top: 0;"><i class="fas fa-database"></i> QUẢN TRỊ DỮ LIỆU
+                    (BACKUP)</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">
+                    * Lưu ý: Tải bản sao lưu định kỳ để đề phòng mất mát dữ liệu. File khôi phục phải có định dạng .json
+                    được xuất từ hệ thống.
+                </p>
+
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button onclick="backupData()" class="btn-edit-mode"
+                            style="background: #10b981; color: white; border: none; display: block;">
+                        📥 XUẤT DỮ LIỆU (BACKUP JSON)
+                    </button>
+
+                    <label for="restore-input" class="btn-edit-mode"
+                           style="background: #f59e0b; color: white; cursor: pointer; display: inline-block;">
+                        📤 PHỤC HỒI DỮ LIỆU (RESTORE)
+                    </label>
+                    <input type="file" id="restore-input" accept=".json" style="display: none;"
+                           onchange="restoreData(event)">
+                </div>
+            </div>
         </div>
     </div>
 
@@ -2705,6 +2727,75 @@
         unlock();
     }
 
+    async function backupData() {
+        showToast("Đang chuẩn bị bản sao lưu...", "info");
+
+        showLoading(true, "ĐANG GOM DỮ LIỆU...");
+        try {
+            const collections = ['logs', 'metadata', 'users', 'documents', 'processes'];
+            let backup = {};
+
+            for (const colName of collections) {
+                const snapshot = await db.collection(colName).get();
+                backup[colName] = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+            }
+
+            const blob = new Blob([JSON.stringify(backup, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const date = new Date().toISOString().split('T')[0];
+            a.href = url;
+            a.download = `Backup_TechLog_${date}.json`;
+
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast("Sao lưu thành công!", "success");
+        } catch (e) {
+            console.error(e);
+            showToast("Lỗi sao lưu: " + e.message, "error");
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    async function restoreData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        showToast("Đang đọc file và chuẩn bị khôi phục...", "info");
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                showLoading(true, "ĐANG KHÔI PHỤC...");
+
+                for (const colName in data) {
+                    const items = data[colName];
+                    for (const item of items) {
+                        const {id, ...details} = item;
+                        await db.collection(colName).doc(id).set(details);
+                    }
+                }
+
+                showToast("Khôi phục hoàn tất! Trang sẽ tải lại.", "success");
+                setTimeout(() => location.reload(), 2000);
+            } catch (err) {
+                console.error(err);
+                showToast("Lỗi: File không đúng định dạng!", "error");
+            } finally {
+                showLoading(false);
+                event.target.value = ''; 
+            }
+        };
+        reader.readAsText(file);
+    }
     
     function toggleForm(containerId, btn) {
     const form = document.getElementById(containerId);
