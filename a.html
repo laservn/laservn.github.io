@@ -1188,7 +1188,7 @@
 
 
     <div id="doc-tab" class="tab-content">
-    <button onclick="toggleForm('doc-form-container', this)" class="btn-save" style="margin-bottom: 10px; background: #334155; width: auto; padding: 8px 15px; width: 100% !important;">
+    <button id="idform" onclick="toggleForm('doc-form-container', this)" class="btn-save" style="margin-bottom: 10px; background: #334155; width: auto; padding: 8px 15px; width: 100% !important;">
         <i class="fas fa-file-upload"></i> ẨN/ HIỆN FORM
     </button>
         <div id="doc-form-container"
@@ -1815,6 +1815,7 @@
                 'btnTabMeta',     // Nút tab Cấu hình
                 'btnTabUser',     // Nút tab Thành viên
                 'doc-form-container', // Form nhập liệu ở Tab Tài liệu
+                'idform',	// Nút form doc
                 'admin-backup-zone', // Khu vực backup
                 'dash-progress-container' // Thanh tiến trình ở Dashboard
             ];
@@ -1835,6 +1836,7 @@
                 'btnTabProcess',  // Nút tab Tiến trình (NEW)
                 'btnTabMeta',     // Nút tab Cấu hình
                 'btnTabUser',     // Nút tab Thành viên
+                'idform',	// Nút form doc
                 'doc-form-container', // Form nhập liệu tài liệu (Chỉ xem)
                 'admin-backup-zone', // Khu vực backup
                 'dash-progress-container' // Thanh tiến trình ở Dashboard
