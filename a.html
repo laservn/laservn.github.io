@@ -985,8 +985,8 @@
             </div>
         </div>
         
-	<button onclick="toggleForm('proc-progress-container-form', this)" class="btn-save" style="margin-bottom: 10px; background: #334155; width: auto; padding: 8px 15px;">
-        <i class="fas fa-plus-circle"></i> HIỆN FORM NHẬP TIẾN TRÌNH
+	<button onclick="toggleForm('proc-progress-container-form', this)" class="btn-save" style="margin-bottom: 10px; background: #334155; width: auto; padding: 8px 15px; width: 100% !important;">
+        <i class="fas fa-plus-circle"></i> ẨN/ HIỆN FORM
     	</button>
     	<div id="proc-progress-container-form" style="display: none">
 		<div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
@@ -1101,8 +1101,8 @@
     </div>
 
     <div id="user-tab" class="tab-content">
-	<button onclick="toggleForm('userFormWrapper', this)" class="btn-save" style="margin-bottom: 10px; background: #334155; width: auto; padding: 8px 15px;">
-        <i class="fas fa-user-plus"></i> HIỆN FORM QUẢN LÝ TÀI KHOẢN
+	<button onclick="toggleForm('userFormWrapper', this)" class="btn-save" style="margin-bottom: 10px; background: #334155; width: auto; padding: 8px 15px; width: 100% !important;">
+        <i class="fas fa-user-plus"></i> ẨN/ HIỆN FORM
    	</button>
    	<div id="userFormWrapper" style="display: none;">
 		<div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
@@ -1188,8 +1188,8 @@
 
 
     <div id="doc-tab" class="tab-content">
-    <button onclick="toggleForm('doc-form-container', this)" class="btn-save" style="margin-bottom: 10px; background: #334155; width: auto; padding: 8px 15px;">
-        <i class="fas fa-file-upload"></i> HIỆN FORM THÊM TÀI LIỆU
+    <button onclick="toggleForm('doc-form-container', this)" class="btn-save" style="margin-bottom: 10px; background: #334155; width: auto; padding: 8px 15px; width: 100% !important;">
+        <i class="fas fa-file-upload"></i> ẨN/ HIỆN FORM
     </button>
         <div id="doc-form-container"
              style="display: none; background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
@@ -2793,14 +2793,14 @@
     const form = document.getElementById(containerId);
     if (form.style.display === "none" || form.style.display === "") {
         form.style.display = "block";
-        btn.innerHTML = `<i class="fas fa-minus-circle"></i> ĐÓNG FORM`;
+        btn.innerHTML = `<i class="fas fa-minus-circle"></i> ẨN/ HIỆN FORM`;
         btn.style.background = "#7f1d1d"; // Đổi sang màu đỏ khi đang mở
     } else {
         form.style.display = "none";
         // Cập nhật lại tên nút tùy theo tab
-        if (containerId === 'formContainer') btn.innerHTML = `<i class="fas fa-plus-circle"></i> HIỆN FORM NHẬP BÁO CÁO`;
-        if (containerId === 'userFormWrapper') btn.innerHTML = `<i class="fas fa-user-plus"></i> HIỆN FORM QUẢN LÝ USER`;
-        if (containerId === 'doc-form-container') btn.innerHTML = `<i class="fas fa-file-upload"></i> HIỆN FORM THÊM TÀI LIỆU`;
+        if (containerId === 'formContainer') btn.innerHTML = `<i class="fas fa-plus-circle"></i> ẨN/ HIỆN FORM`;
+        if (containerId === 'userFormWrapper') btn.innerHTML = `<i class="fas fa-user-plus"></i> ẨN/ HIỆN FORM`;
+        if (containerId === 'doc-form-container') btn.innerHTML = `<i class="fas fa-file-upload"></i> ẨN/ HIỆN FORM`;
         
         btn.style.background = "#334155"; // Trở về màu xám xanh
     }
