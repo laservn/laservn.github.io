@@ -1,764 +1,298 @@
-<html>
+<!DOCTYPE html>
+<html lang="vi">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="color-scheme" content="light dark">
-    <!DOCTYPE html>
-    <html lang="vi">
-    <head>
-        <script>
-            var domainChinh = "tech.laser.info.vn";
-            if (window.location.hostname !== domainChinh && window.location.hostname !== "localhost" && window.location.protocol !== "file:") {
-             //    window.location.replace("https://tech.laser.info.vn" + window.location.pathname + window.location.search);
-            }
-        </script>
-
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>BÁO CÁO KỸ THUẬT</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
-        <style>
-            :root {
-                --primary: #00d2ff;
-                --secondary: #3a7bd5;
-                --dark: #0f172a;
-                --card: #1e293b;
-                --border: rgba(255, 255, 255, 0.1);
-                --text-main: #f8fafc;
-                --text-muted: #94a3b8;
-                --success: #10b981;
-                --warning: #f59e0b;
-            }
-
-            body {
-                font-family: 'Inter', sans-serif;
-                background: var(--dark);
-                color: var(--text-main);
-                margin: 0;
-                padding: 12px;
-                line-height: 1.5;
-                -webkit-tap-highlight-color: transparent;
-            }
-
-            /* Tab Navigation */
-            .tab-navigation {
-                display: flex;
-                gap: 10px;
-                margin-bottom: 20px;
-                background: rgba(0, 0, 0, 0.2);
-                padding: 5px;
-                border-radius: 12px;
-                border: 1px solid var(--border);
-            }
-
-            .tab-btn {
-                flex: 1;
-                padding: 12px;
-                border: none;
-                background: none;
-                color: var(--text-muted);
-                font-weight: 600;
-                cursor: pointer;
-                border-radius: 8px;
-                transition: 0.3s;
-                font-size: 13px;
-                text-transform: uppercase;
-            }
-
-            .tab-btn.active {
-                background: var(--primary);
-                color: var(--dark);
-                box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
-            }
-
-            .tab-content {
-                display: none;
-            }
-
-            .tab-content.active {
-                display: block;
-            }
-
-            /* Login Screen */
-            #lock-screen {
-                position: fixed;
-                inset: 0;
-                background: var(--dark);
-                z-index: 3000;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-
-            .login-box {
-                width: 320px;
-                padding: 30px;
-                background: var(--card);
-                border-radius: 20px;
-                border: 1px solid var(--border);
-                text-align: center;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            }
-
-            .login-box img {
-                filter: drop-shadow(0 0 15px var(--primary)) brightness(1.2);
-            }
-
-
-            /* Container & Header */
-            .container {
-                max-width: 1000px;
-                margin: auto;
-            }
-
-            .header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                border-bottom: 1px solid var(--border);
-                padding-bottom: 12px;
-                margin-bottom: 20px;
-            }
-
-            /* Inputs */
-            input, select, textarea {
-                background: #0f172a;
-                border: 1px solid #334155;
-                color: white;
-                padding: 12px;
-                border-radius: 10px;
-                width: 100%;
-                box-sizing: border-box;
-                margin-bottom: 12px;
-                outline: none;
-                transition: 0.3s;
-                font-size: 14px;
-            }
-
-            input:focus, select:focus, textarea:focus {
-                border-color: var(--primary);
-                box-shadow: 0 0 0 2px rgba(0, 210, 255, 0.2);
-            }
-
-            .btn-save {
-                background: linear-gradient(45deg, var(--primary), var(--secondary));
-                color: white;
-                border: none;
-                padding: 14px;
-                border-radius: 10px;
-                cursor: pointer;
-                font-weight: 600;
-                width: 100%;
-                transition: transform 0.1s;
-            }
-
-            .btn-save:active {
-                transform: scale(0.98);
-            }
-
-            .btn-save:disabled {
-                opacity: 0.6;
-                cursor: not-allowed;
-            }
-
-            /* Professional Table */
-            .table-container {
-                margin-top: 15px;
-                border: 1px solid var(--border);
-                border-radius: 12px;
-                overflow-x: auto;
-                background: var(--card);
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            }
-
-            table {
-                width: 100%;
-                border-collapse: separate;
-                border-spacing: 0;
-                min-width: 850px;
-            }
-
-            th {
-                background: #111827;
-                color: var(--text-muted);
-                font-size: 11px;
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                padding: 14px 12px;
-                border-bottom: 2px solid var(--border);
-                text-align: left;
-            }
-
-            td {
-                padding: 14px 12px;
-                border-bottom: 1px solid var(--border);
-                font-size: 13px;
-                cursor: pointer;
-                transition: 0.2s;
-            }
-
-            tbody tr:nth-child(even) {
-                background: rgba(255, 255, 255, 0.02);
-            }
-
-            tbody tr:hover td {
-                background: rgba(0, 210, 255, 0.08);
-            }
-
-            .badge-tech {
-                background: rgba(58, 123, 213, 0.2);
-                color: #93c5fd;
-                padding: 4px 8px;
-                border-radius: 6px;
-                font-size: 11px;
-                font-weight: 600;
-                white-space: nowrap;
-            }
-
-            .badge-mec {
-                background: rgba(58, 123, 213, 0.2);
-                color: #93c5ff;
-                padding: 4px 8px;
-                border-radius: 6px;
-                font-size: 11px;
-                font-weight: 600;
-                white-space: nowrap;
-            }
-
-            .badge-sup {
-                background: rgba(58, 123, 213, 0.2);
-                color: #93c5dd;
-                padding: 4px 8px;
-                border-radius: 6px;
-                font-size: 11px;
-                font-weight: 600;
-                white-space: nowrap;
-            }
-
-            /* Popup Modals */
-            .modal {
-                display: none;
-                position: fixed;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.85);
-                z-index: 2000;
-                justify-content: center;
-                align-items: center;
-                backdrop-filter: blur(4px);
-                padding: 20px;
-            }
-
-            .modal-content {
-                background: var(--card);
-                width: 95%;
-                max-width: 600px;
-                border-radius: 20px;
-                border: 1px solid var(--primary);
-                padding: 25px;
-                max-height: 85vh;
-                display: flex;
-                flex-direction: column;
-            }
-
-            #modalBody {
-                overflow-y: auto;
-                margin-top: 15px;
-                padding-right: 5px;
-            }
-
-            .detail-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-                margin-bottom: 15px;
-            }
-
-            .detail-item {
-                display: flex;
-                align-items: center;
-                font-size: 13px;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-                padding: 6px 0;
-            }
-
-            .detail-label {
-                color: var(--text-muted);
-                width: 85px;
-                flex-shrink: 0;
-            }
-
-            .detail-value {
-                color: var(--primary);
-                font-weight: 600;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            /* Metadata Block Style (Tab 3) */
-            .meta-grid {
-                display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                gap: 10px;
-                margin-top: 10px;
-            }
-
-            .meta-col {
-                background: var(--card);
-                border: 1px solid var(--border);
-                border-radius: 12px;
-                padding: 15px;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .meta-col h4 {
-                margin: 0 0 12px 0;
-                color: var(--primary);
-                font-size: 12px;
-                text-align: center;
-                border-bottom: 1px solid var(--border);
-                padding-bottom: 8px;
-            }
-
-            .meta-list {
-                flex-grow: 1;
-                min-height: 250px;
-                max-height: 400px;
-                overflow-y: auto;
-            }
-
-            .meta-item {
-                background: rgba(0, 0, 0, 0.2);
-                margin-bottom: 4px;
-                border-radius: 6px;
-                border: 1px solid transparent;
-            }
-
-            .meta-item input {
-                margin-bottom: 0;
-                padding: 8px;
-                font-size: 12px;
-                background: transparent;
-                border: none;
-                color: #fff;
-            }
-
-            .meta-item.editing {
-                background: #0f172a;
-                border-color: var(--primary);
-            }
-
-            .meta-item.editing input {
-                background: #1e293b;
-            }
-
-            .meta-actions {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 5px;
-                margin-top: 12px;
-            }
-
-            .btn-meta {
-                padding: 8px;
-                border-radius: 6px;
-                border: none;
-                font-size: 11px;
-                font-weight: 600;
-                cursor: pointer;
-                text-transform: uppercase;
-            }
-
-            .btn-edit-mode {
-                background: rgba(0, 210, 255, 0.1);
-                color: var(--primary);
-                border: 1px solid var(--primary);
-            }
-
-            .btn-save-mode {
-                background: var(--primary);
-                color: var(--dark);
-            }
-
-            @media (max-width: 480px) {
-                .meta-grid {
-                    grid-template-columns: 1fr;
-                }
-
-                .detail-grid {
-                    grid-template-columns: 1fr;
-                }
-            }
-
-            #workDateDisplay {
-                background: rgba(0, 210, 255, 0.1);
-                border: 1px solid var(--primary);
-                color: var(--primary);
-                font-weight: bold;
-                cursor: pointer;
-                text-align: center;
-            }
-
-            #searchBox {
-                border: 1px solid var(--primary);
-                background: rgba(0, 210, 255, 0.05);
-                margin-top: 10px;
-            }
-
-            /* Progress & Loading */
-            #top-progress {
-                position: fixed;
-                top: 0;
-                left: 0;
-                height: 3px;
-                background: linear-gradient(to right, var(--primary), #fff);
-                z-index: 9999;
-                transition: width 0.3s;
-                width: 0%;
-                display: none;
-            }
-
-            #loading-overlay {
-                position: fixed;
-                inset: 0;
-                background: rgba(15, 23, 42, 0.8);
-                backdrop-filter: blur(5px);
-                z-index: 4000;
-                display: none;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-            }
-
-            .spinner {
-                width: 40px;
-                height: 40px;
-                border: 4px solid rgba(255, 255, 255, 0.1);
-                border-top: 4px solid var(--primary);
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-            }
-
-            @keyframes spin {
-                0% {
-                    transform: rotate(0deg);
-                }
-                100% {
-                    transform: rotate(360deg);
-                }
-            }
-
-            /* Toasts */
-            #toast-container {
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                z-index: 10000;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                pointer-events: none;
-            }
-
-            .toast {
-                background: rgba(30, 41, 59, 0.95);
-                color: white;
-                padding: 20px 30px;
-                border-radius: 12px;
-                margin-bottom: 10px;
-                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-                text-align: center;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                animation: toastPop 0.3s forwards;
-                min-width: 300px;
-                max-width: 90vw;
-            }
-
-            @keyframes toastPop {
-                from {
-                    transform: scale(0.5);
-                    opacity: 0;
-                }
-                to {
-                    transform: scale(1);
-                    opacity: 1;
-                }
-            }
-
-            .header-logo {
-                height: 55px;
-                filter: drop-shadow(0 0 15px var(--primary)) brightness(1.2);
-            }
-
-            .cust-row:hover {
-                background: rgba(0, 210, 255, 0.1);
-            }
-
-            .card {
-                height: 200px;
-                position: relative;
-                margin-bottom: 20px;
-            }
-
-            .main-footer {
-                border-top: 1px solid var(--border);
-                padding: 40px 20px 20px 20px;
-                margin-top: 50px;
-            }
-
-            .footer-content {
-                max-width: 1200px;
-                margin: 0 auto;
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 40px;
-            }
-
-            .footer-section h3 {
-                font-size: 22px;
-                letter-spacing: 1px;
-                margin-bottom: 15px;
-            }
-
-            .footer-logo span {
-                color: var(--primary);
-            }
-
-            .footer-section h4 {
-                color: var(--primary);
-                font-size: 14px;
-                text-transform: uppercase;
-                margin-bottom: 20px;
-                letter-spacing: 2px;
-            }
-
-            .footer-section p {
-                color: var(--text-muted);
-                font-size: 14px;
-                line-height: 1.6;
-            }
-
-            .footer-links {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .footer-links a {
-                color: var(--text-muted);
-                text-decoration: none;
-                font-size: 14px;
-                transition: 0.3s;
-            }
-
-            .footer-links a:hover {
-                color: var(--primary);
-                padding-left: 5px;
-            }
-
-            .footer-bottom {
-                max-width: 1200px;
-                margin: 40px auto 0 auto;
-                padding-top: 10px;
-                border-top: 1px solid rgba(255, 255, 255, 0.05);
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                flex-wrap: wrap;
-                gap: 15px;
-                justify-content: center;
-                align-items: center;
-                text-align: center;
-                flex-direction: column;
-            }
-
-            .footer-bottom p {
-                color: var(--text-muted);
-                font-size: 12px;
-            }
-
-            .status-indicator {
-                font-size: 12px;
-                color: #10b981;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                background: rgba(16, 185, 129, 0.1);
-                padding: 5px 12px;
-                border-radius: 20px;
-                float: right;
-            }
-
-            .status-indicator .dot {
-                width: 8px;
-                height: 8px;
-                background: #10b981;
-                border-radius: 50%;
-                box-shadow: 0 0 10px #10b981;
-                animation: pulse 2s infinite;
-            }
-
-            @keyframes pulse {
-                0% {
-                    opacity: 1;
-                }
-                50% {
-                    opacity: 0.4;
-                }
-                100% {
-                    opacity: 1;
-                }
-            }
-
-            @media (max-width: 768px) {
-                .footer-bottom {
-                    justify-content: center;
-                    text-align: center;
-                }
-            }
-
-            .status-indicator.offline {
-                color: #ef4444;
-                background: rgba(239, 68, 68, 0.1);
-            }
-
-            .status-indicator.offline .dot {
-                background: #ef4444;
-                box-shadow: none;
-                animation: none;
-            }
-
-            .footer-links a::after {
-                content: " ↗";
-                font-size: 10px;
-                opacity: 0.5;
-                transition: 0.3s;
-            }
-
-            .footer-links a:hover::after {
-                opacity: 1;
-                margin-left: 5px;
-            }
-
-            @media (min-width: 769px) {
-                .tab-navigation {
-                    width: 100px;
-                    position: fixed;
-                    left: 0;
-                    top: 0;
-                    height: 100vh;
-                    flex-direction: column;
-                    padding: 10px;
-                    z-index: 1000;
-                    background: #0f172a;
-                    border-right: 1px solid var(--border);
-                    display: flex;
-                    box-sizing: border-box;
-                }
-
-                .tab-btn {
-                    flex: 1;
-                    max-height: 15vh;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 3vw !important;
-                    padding: 5px !important;
-                    margin: 2px 0;
-                }
-
-                .container {
-                    margin-left: 120px !important;
-                    max-width: calc(100% - 140px) !important;
-                }
-            }
-
-            @media (max-width: 768px) {
-                .tab-navigation {
-                    position: fixed;
-                    bottom: 0; left: 0; right: 0;
-                    height: 60px;
-                    flex-direction: row;
-                    z-index: 1000;
-                    background: #0f172a;
-                    margin-bottom: 0;
-                }
-
-                .container {
-                    margin-bottom: 80px !important;
-                }
-
-                .tab-btn {
-                    font-size: 22px !important;
-                }
-            }
-
-            .input-group {
-                position: relative;
-                margin-bottom: 15px;
-                text-align: left;
-            }
-
-            .input-group i {
-                position: absolute;
-                left: 15px;
-                top: 14px;
-                color: var(--primary);
-            }
-
-            .input-group input {
-                padding: 12px 15px 12px 45px !important;
-                margin-bottom: 0;
-                background: rgba(15, 23, 42, 0.5);
-                border: 1px solid var(--border);
-            }
-
-            /* PROCESS BAR STYLE */
-            .process-progress-container {
-                background: var(--card);
-                padding: 15px;
-                border-radius: 12px;
-                border: 1px solid var(--border);
-                margin-bottom: 20px;
-            }
-            .progress-track {
-                height: 20px;
-                background: #334155;
-                border-radius: 10px;
-                overflow: hidden;
-                position: relative;
-                margin-top: 10px;
-            }
-            .progress-fill {
-                height: 100%;
-                background: linear-gradient(90deg, #10b981, #34d399);
-                width: 0%;
-                transition: width 0.5s ease;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #064e3b;
-                font-size: 10px;
-                font-weight: bold;
-            }
-            .progress-labels {
-                display: flex;
-                justify-content: space-between;
-                font-size: 11px;
-                color: var(--text-muted);
-                margin-bottom: 5px;
-            }
-        </style>
-    </head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BÁO CÁO KỸ THUẬT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --dark: #0f172a;
+            --card: #1e293b;
+            --border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 12px;
+            line-height: 1.5;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 5px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.3s;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: var(--dark);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Login Screen */
+        #lock-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--dark);
+            z-index: 3000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-box {
+            width: 320px;
+            padding: 30px;
+            background: var(--card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-box img {
+            filter: drop-shadow(0 0 15px var(--primary)) brightness(1.2);
+        }
+
+        /* Container & Header */
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        /* Inputs */
+        input, select, textarea {
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 12px;
+            outline: none;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 210, 255, 0.2);
+        }
+
+        .btn-save {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            transition: transform 0.1s;
+        }
+
+        .btn-save:active {
+            transform: scale(0.98);
+        }
+
+        /* Tables */
+        .table-container {
+            margin-top: 15px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow-x: auto;
+            background: var(--card);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: 850px;
+        }
+
+        th {
+            background: #111827;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 14px 12px;
+            border-bottom: 2px solid var(--border);
+            text-align: left;
+        }
+
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        tbody tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        tbody tr:hover td {
+            background: rgba(0, 210, 255, 0.08);
+        }
+
+        .badge-tech, .badge-mec, .badge-sup {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .badge-tech { background: rgba(58, 123, 213, 0.2); color: #93c5fd; }
+        .badge-mec { background: rgba(58, 123, 213, 0.2); color: #93c5ff; }
+        .badge-sup { background: rgba(58, 123, 213, 0.2); color: #93c5dd; }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--card);
+            width: 95%;
+            max-width: 600px;
+            border-radius: 20px;
+            border: 1px solid var(--primary);
+            padding: 25px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #modalBody { overflow-y: auto; margin-top: 15px; padding-right: 5px; }
+
+        .detail-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;
+        }
+        .detail-item {
+            display: flex; align-items: center; font-size: 13px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding: 6px 0;
+        }
+        .detail-label { color: var(--text-muted); width: 85px; flex-shrink: 0; }
+        .detail-value { color: var(--primary); font-weight: 600; }
+
+        /* Meta Block */
+        .meta-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;
+        }
+        .meta-col {
+            background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; display: flex; flex-direction: column;
+        }
+        .meta-col h4 {
+            margin: 0 0 12px 0; color: var(--primary); font-size: 12px; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 8px;
+        }
+        .meta-list { flex-grow: 1; min-height: 250px; max-height: 400px; overflow-y: auto; }
+        .meta-item { background: rgba(0, 0, 0, 0.2); margin-bottom: 4px; border-radius: 6px; }
+        .meta-item input { margin-bottom: 0; padding: 8px; font-size: 12px; background: transparent; border: none; color: #fff; }
+        .meta-item.editing input { background: #1e293b; border: 1px solid var(--primary); }
+        
+        .meta-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 12px; }
+        .btn-meta { padding: 8px; border-radius: 6px; border: none; font-size: 11px; font-weight: 600; cursor: pointer; text-transform: uppercase; }
+        .btn-edit-mode { background: rgba(0, 210, 255, 0.1); color: var(--primary); border: 1px solid var(--primary); }
+        .btn-save-mode { background: var(--primary); color: var(--dark); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .meta-grid { grid-template-columns: 1fr; }
+            .detail-grid { grid-template-columns: 1fr; }
+            .tab-navigation { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; margin-bottom: 0; z-index: 1000; background: #0f172a; flex-direction: row; }
+            .container { margin-bottom: 80px !important; }
+            .tab-btn { font-size: 22px !important; }
+        }
+        @media (min-width: 769px) {
+            .tab-navigation { width: 100px; position: fixed; left: 0; top: 0; height: 100vh; flex-direction: column; padding: 10px; z-index: 1000; background: #0f172a; border-right: 1px solid var(--border); box-sizing: border-box; }
+            .tab-btn { flex: 1; max-height: 15vh; font-size: 3vw !important; padding: 5px !important; margin: 2px 0; display: flex; align-items: center; justify-content: center; }
+            .container { margin-left: 120px !important; max-width: calc(100% - 140px) !important; }
+        }
+
+        /* Process Progress */
+        .process-progress-container { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .progress-track { height: 20px; background: #334155; border-radius: 10px; overflow: hidden; position: relative; margin-top: 10px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #10b981, #34d399); width: 0%; transition: width 0.5s ease; display: flex; align-items: center; justify-content: center; color: #064e3b; font-size: 10px; font-weight: bold; }
+        
+        .input-group { position: relative; margin-bottom: 15px; text-align: left; }
+        .input-group i { position: absolute; left: 15px; top: 14px; color: var(--primary); }
+        .input-group input { padding: 12px 15px 12px 45px !important; }
+
+        #toast-container { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; pointer-events: none; display: flex; flex-direction: column; align-items: center; }
+        .toast { background: rgba(30, 41, 59, 0.95); color: white; padding: 20px 30px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); animation: toastPop 0.3s forwards; }
+        @keyframes toastPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        #loading-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px); z-index: 4000; display: none; flex-direction: column; justify-content: center; align-items: center; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255, 255, 255, 0.1); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
 <body>
 
 <div id="toast-container"></div>
-<div id="top-progress"></div>
 <div id="loading-overlay">
     <div class="spinner"></div>
     <div id="loading-text" style="color:var(--primary); font-weight:600; margin-top:10px;">ĐANG XỬ LÝ...</div>
@@ -768,7 +302,6 @@
     <div class="login-box">
         <img src="https://lh3.googleusercontent.com/pw/AP1GczNyKJCNBen1I6WeBIOFBHnduEAc-raKjpQsiE-xMOPlkgBLUxSUPtPfnGUO-h_gVE4xbhoZyycDSfpCjJD_uk7EkCLQJEXeuBytxHxBTDS0NEIMKC7RqBA-GIxKhZed7ddwzYsTmKsh5fKxggPZvFM=w483-h154" alt="Logo" style="width: 250px; margin-bottom: 20px;">
         <h2 style="color:var(--primary); margin:0;">BÁO CÁO KỸ THUẬT</h2>
-        <p style="margin-top: 5px; font-size: 0.75rem; color: var(--text-muted);">Hệ thống quản lý báo cáo công việc</p>
         <div class="input-group">
             <i class="fas fa-user"></i>
             <input type="text" id="userInput" placeholder="Tên đăng nhập" required autocomplete="username">
@@ -777,50 +310,32 @@
             <i class="fas fa-lock"></i>
             <input type="password" id="passInput" placeholder="Mật khẩu" required autocomplete="current-password">
         </div>
-        <button type="submit" class="btn-save" style="margin-top:10px">
-            <span>ĐĂNG NHẬP</span>
-            <i class="fas fa-sign-in-alt" style="margin-left:8px"></i>
-        </button>
-        <div style="margin-top: 25px; font-size: 0.75rem; color: var(--text-muted);">
-            © 2026 Bản quyền thuộc bộ phận Kỹ thuật
-        </div>
-
+        <button type="submit" class="btn-save">ĐĂNG NHẬP <i class="fas fa-sign-in-alt"></i></button>
     </div>
 </form>
 
 <div class="container" id="main-content" style="display:none;">
     <div class="header">
-        <img src="https://lh3.googleusercontent.com/pw/AP1GczNyKJCNBen1I6WeBIOFBHnduEAc-raKjpQsiE-xMOPlkgBLUxSUPtPfnGUO-h_gVE4xbhoZyycDSfpCjJD_uk7EkCLQJEXeuBytxHxBTDS0NEIMKC7RqBA-GIxKhZed7ddwzYsTmKsh5fKxggPZvFM=w483-h154" class="header-logo" alt="Logo">
+        <img src="https://lh3.googleusercontent.com/pw/AP1GczNyKJCNBen1I6WeBIOFBHnduEAc-raKjpQsiE-xMOPlkgBLUxSUPtPfnGUO-h_gVE4xbhoZyycDSfpCjJD_uk7EkCLQJEXeuBytxHxBTDS0NEIMKC7RqBA-GIxKhZed7ddwzYsTmKsh5fKxggPZvFM=w483-h154" class="header-logo" alt="Logo" style="height: 55px;">
         <div style="text-align: right">
             <span id="helloUser" style="color:var(--primary); font-size:13px; font-weight:600">---</span>
-            <button onclick="signOut()"
-                    style="color:#ef4444; background:none; border:none; cursor:pointer; margin-left:12px; font-size:12px; font-weight:bold">
-                THOÁT
-            </button>
-            <small id="syncStatus" style="font-size:10px; color:var(--text-muted); display:block; margin-top:4px">Đang
-                đồng bộ...</small>
-            <div class="status-indicator" id="network-status-container">
-                <span class="dot" id="status-dot"></span>
-                <span id="status-text">Hệ thống đang trực tuyến</span>
-            </div>
+            <button onclick="signOut()" style="color:#ef4444; background:none; border:none; cursor:pointer; font-weight:bold; font-size:12px;">THOÁT</button>
         </div>
     </div>
 
-    <div class="tab-navigation" id="tabBar" style="display:none;">
-        <button class="tab-btn active" onclick="switchTab('dashboard', this)" style="font-size: 40px;">🏠</button>
-        <button class="tab-btn" onclick="switchTab('data-tab', this)" style="font-size: 40px;">📑</button>
-        <button class="tab-btn" id="btnTabForm" onclick="switchTab('form-tab', this)" style="font-size: 40px;">📝</button>
-        <button class="tab-btn" id="btnTabProcess" onclick="switchTab('process-tab', this)" style="font-size: 40px;">🚀</button>
-        
-        <button class="tab-btn" id="btnTabMeta" onclick="switchTab('meta-tab', this)" style="font-size: 40px;">⚙️</button>
-        <button class="tab-btn" id="btnTabUser" onclick="switchTab('user-tab', this)" style="font-size: 40px;">👨‍🔧
-        </button>
-        <button class="tab-btn" id="btnTabDoc" onclick="switchTab('doc-tab', this)" style="font-size: 40px;">📂</button>
+    <div class="tab-navigation">
+        <button class="tab-btn active" onclick="switchTab('dashboard', this)">🏠</button>
+        <button class="tab-btn" onclick="switchTab('data-tab', this)">📑</button>
+        <button class="tab-btn" id="btnTabForm" onclick="switchTab('form-tab', this)">📝</button>
+        <button class="tab-btn" id="btnTabProcess" onclick="switchTab('process-tab', this)">🚀</button>
+        <button class="tab-btn" id="btnTabMeta" onclick="switchTab('meta-tab', this)">⚙️</button>
+        <button class="tab-btn" id="btnTabUser" onclick="switchTab('user-tab', this)">👨‍🔧</button>
+        <button class="tab-btn" id="btnTabDoc" onclick="switchTab('doc-tab', this)">📂</button>
     </div>
 
     <div id="dashboard" class="tab-content active">
         <div id="dash-progress-container" class="process-progress-container" style="display:none;">
-             <div class="progress-labels">
+             <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); margin-bottom:5px;">
                 <span><i class="fas fa-tasks"></i> TIẾN TRÌNH CÔNG VIỆC DỰ KIẾN</span>
                 <span id="dash-progress-text">0% Hoàn thành</span>
             </div>
@@ -833,114 +348,24 @@
                 <span style="color:#f59e0b">Chưa: <b id="dash-pending">0</b></span>
             </div>
         </div>
-
-        <div class="inner-filter-box"
-             style="background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
-            <div style="flex: 1; min-width: 150px;">
-                <label style="font-size: 11px; color: var(--primary); font-weight: bold; display: block; margin-bottom: 5px;">THỜI
-                    GIAN</label>
-                <select class="timePreset" onchange="handlePresetChange(this)"
-                        style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:white; border:1px solid var(--border);">
-                    <option value="7days" selected>7 ngày qua</option>
-                    <option value="all">Tất cả thời gian</option>
-                    <option value="today">Hôm nay</option>
-                    <option value="thisMonth">Tháng này</option>
-                    <option value="custom">Tùy chọn...</option>
-                </select>
-            </div>
-
-            <div class="customDateGroup" style="display: none; gap: 10px; flex: 2; min-width: 250px;">
-                <div style="flex:1">
-                    <input type="date" class="filterFrom" onchange="syncAndFilter(this)"
-                           style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:white; border:1px solid var(--border);">
-                </div>
-                <div style="flex:1">
-                    <input type="date" class="filterTo" onchange="syncAndFilter(this)"
-                           style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:white; border:1px solid var(--border);">
-                </div>
-            </div>
-
-            <div style="flex: 1; min-width: 150px;">
-                <label style="font-size: 11px; color: var(--primary); font-weight: bold; display: block; margin-bottom: 5px;">KHÁCH
-                    HÀNG</label>
-                <select class="filterCust" onchange="syncAndFilter(this)"
-                        style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:white; border:1px solid var(--border);">
-                    <option value="ALL">Tất cả khách hàng</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="card" style="position: relative; padding:15px; height: 400px; width: 100%;">
-            <h4 style="margin-top:0; color:var(--primary); ">🕵️‍♂️ Khách Hàng</h4>
+        <div class="card" style="padding:15px; height: 350px; background:var(--card); border-radius:12px; border:1px solid var(--border); margin-bottom:20px;">
+            <h4 style="margin-top:0; color:var(--primary); text-align:center;">🕵️‍♂️ Thống kê Khách Hàng</h4>
             <canvas id="chartCust"></canvas>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top:40px">
-            <div class="card" style="padding:15px;">
-                <h4 style="margin-top:0; color:var(--primary);">⚙️ Loại Máy</h4>
-                <canvas id="chartMachine"></canvas>
-            </div>
-            <div class="card" style="padding:15px;">
-                <h4 style="margin-top:0; color:var(--primary);">👨‍🔧 Kỹ Thuật Viên</h4>
-                <canvas id="chartStaff"></canvas>
-            </div>
-            <div class="card" style="padding:15px;">
-                <h4 style="margin-top:0; color:var(--primary);">🤝 Loại Hỗ Trợ</h4>
-                <canvas id="chartSupport"></canvas>
-            </div>
         </div>
     </div>
 
     <div id="data-tab" class="tab-content">
-
-        <div class="inner-filter-box"
-             style="background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
-            <div style="flex: 1; min-width: 150px;">
-                <label style="font-size: 11px; color: var(--primary); font-weight: bold; display: block; margin-bottom: 5px;">THỜI
-                    GIAN</label>
-                <select class="timePreset" onchange="handlePresetChange(this)"
-                        style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:white; border:1px solid var(--border);">
-                    <option value="7days" selected>7 ngày qua</option>
-                    <option value="all">Tất cả thời gian</option>
-                    <option value="today">Hôm nay</option>
-                    <option value="thisMonth">Tháng này</option>
-                    <option value="custom">Tùy chọn...</option>
-                </select>
-            </div>
-
-            <div class="customDateGroup" style="display: none; gap: 10px; flex: 2; min-width: 250px;">
-                <div style="flex:1">
-                    <input type="date" class="filterFrom" onchange="syncAndFilter(this)"
-                           style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:white; border:1px solid var(--border);">
-                </div>
-                <div style="flex:1">
-                    <input type="date" class="filterTo" onchange="syncAndFilter(this)"
-                           style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:white; border:1px solid var(--border);">
-                </div>
-            </div>
-
-            <div style="flex: 1; min-width: 150px;">
-                <label style="font-size: 11px; color: var(--primary); font-weight: bold; display: block; margin-bottom: 5px;">KHÁCH
-                    HÀNG</label>
-                <select class="filterCust" onchange="syncAndFilter(this)"
-                        style="width:100%; padding:8px; border-radius:6px; background:#0f172a; color:white; border:1px solid var(--border);">
-                    <option value="ALL">Tất cả khách hàng</option>
-                </select>
-            </div>
-        </div>
-
-        <input type="text" id="searchBox" onkeyup="filterTable()"
-               placeholder="🔍 Tìm kiếm nhanh (Máy, khách, nội dung...)">
+        <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="🔍 Tìm kiếm nhanh..." style="border: 1px solid var(--primary); background: rgba(0,210,255,0.05);">
         <div class="table-container">
             <table>
                 <thead>
                 <tr>
-                    <th>Ngày làm</th>
-                    <th>Khách hàng</th>
-                    <th>Loại máy</th>
+                    <th>Ngày</th>
+                    <th>Khách</th>
+                    <th>Máy</th>
                     <th>Hỗ trợ</th>
                     <th>Nội dung</th>
-                    <th>Kỹ thuật</th>
-                    <th>Ghi chú</th>
+                    <th>KTV</th>
                 </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
@@ -949,90 +374,58 @@
     </div>
 
     <div id="form-tab" class="tab-content">
-        <div id="formContainer"
-             style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
-            <input type="text" id="workDateDisplay" readonly
-                   onclick="document.getElementById('dateModal').style.display='flex'">
+        <div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary);">
+            <input type="text" id="workDateDisplay" readonly onclick="document.getElementById('dateModal').style.display='flex'" style="text-align:center; color:var(--primary); font-weight:bold; cursor:pointer;">
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <select id="customer"><option value="">Tải khách hàng...</option></select>
-                <select id="techName"><option value="">Tải kỹ thuật...</option></select>
+                <select id="customer"><option value="">Khách hàng...</option></select>
+                <select id="techName"><option value="">Kỹ thuật...</option></select>
             </div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <select id="machineType"><option value="">-- Loại máy --</option></select>
-                <select id="supportType"><option value="">-- Hỗ trợ --</option></select>
+                <select id="machineType"><option value="">Loại máy...</option></select>
+                <select id="supportType"><option value="">Hỗ trợ...</option></select>
             </div>
-            <textarea id="content" placeholder="Mô tả công việc thực hiện (Bắt buộc)..."
-                      style="height:100px"></textarea>
-            <input type="text" id="note" placeholder="Ghi chú thêm (Không bắt buộc)...">
+            <textarea id="content" placeholder="Mô tả công việc..." style="height:100px"></textarea>
+            <input type="text" id="note" placeholder="Ghi chú thêm...">
             <button class="btn-save" id="btnSave" onclick="saveData()">LƯU BÁO CÁO</button>
         </div>
     </div>
 
     <div id="process-tab" class="tab-content">
         <div id="proc-progress-container" class="process-progress-container">
-             <div class="progress-labels">
-                <span><i class="fas fa-tasks"></i> TIẾN TRÌNH CÔNG VIỆC DỰ KIẾN</span>
-                <span id="proc-progress-text">0% Hoàn thành</span>
-            </div>
             <div class="progress-track">
                 <div id="proc-progress-fill" class="progress-fill"></div>
-            </div>
-             <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:11px;">
-                <span style="color:var(--text-muted)">Tổng: <b id="proc-total" style="color:white">0</b></span>
-                <span style="color:#10b981">Xong: <b id="proc-done">0</b></span>
-                <span style="color:#f59e0b">Chưa: <b id="proc-pending">0</b></span>
             </div>
         </div>
 
         <div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-                 <div class="input-group" style="margin-bottom:0">
-                    <label style="font-size:10px; color:var(--text-muted)">Ngày bắt đầu:</label>
-                    <input type="date" id="proc_start_date" style="padding-left:12px!important">
-                 </div>
-                 <div class="input-group" style="margin-bottom:0">
-                     <label style="font-size:10px; color:var(--text-muted)">Tên tiến trình:</label>
-                     <input type="text" id="proc_name" placeholder="Tên tiến trình..." style="padding-left:12px!important">
-                 </div>
-                 <div class="input-group" style="margin-bottom:0">
-                    <label style="font-size:10px; color:var(--text-muted)">Kỹ thuật phụ trách:</label>
-                    <select id="proc_tech" style="padding-left:12px!important"><option value="">-- Chọn kỹ thuật --</option></select>
-                 </div>
+                 <input type="date" id="proc_start_date">
+                 <input type="text" id="proc_name" placeholder="Tên tiến trình...">
+                 <select id="proc_tech"><option value="">-- Kỹ thuật --</option></select>
             </div>
-            
             <textarea id="proc_content" placeholder="Nội dung chi tiết..." style="height:80px; margin-top:10px;"></textarea>
             <input type="text" id="proc_note" placeholder="Ghi chú...">
-
             <div class="input-group">
                 <label style="font-size:10px; color:var(--success); font-weight:bold">Ngày hoàn thành (Để trống nếu CHƯA xong):</label>
                 <input type="date" id="proc_end_date" style="padding-left:12px!important; border-color: var(--success);">
             </div>
-
             <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:15px;">
                 <button class="btn-save" onclick="saveProcess()" style="background:#065f46">➕ THÊM</button>
-                <button class="btn-save" id="btnUpdateProc" onclick="updateProcess()"
-                        style="background:#1e3a8a; display:none;">💾 CẬP NHẬT
-                </button>
-                <button class="btn-save" id="btnDeleteProc" onclick="deleteProcess()"
-                        style="background:#7f1d1d; display:none;">🗑️ XÓA
-                </button>
-                <button class="btn-save" onclick="resetProcessForm()" style="background:#475569">🧹 LÀM MỚI</button>
+                <button class="btn-save" id="btnUpdateProc" onclick="updateProcess()" style="background:#1e3a8a; display:none;">💾 LƯU</button>
+                <button class="btn-save" id="btnDeleteProc" onclick="deleteProcess()" style="background:#7f1d1d; display:none;">🗑️ XÓA</button>
+                <button class="btn-save" onclick="resetProcessForm()" style="background:#475569">🧹 MỚI</button>
             </div>
         </div>
 
-        <input type="text" id="searchProcess" onkeyup="filterProcesses()" placeholder="🔍 Tìm kiếm tiến trình..."
-               style="border: 1px solid var(--primary); background: rgba(0,210,255,0.05);">
-
+        <input type="text" id="searchProcess" onkeyup="filterProcesses()" placeholder="🔍 Tìm kiếm tiến trình..." style="border: 1px solid var(--primary); background: rgba(0,210,255,0.05);">
         <div class="table-container">
             <table>
                 <thead>
                 <tr>
                     <th>Bắt đầu</th>
-                    <th>Tiến trình</th>
+                    <th>Tên</th>
                     <th>Nội dung</th>
-                    <th>Ghi chú</th>
-                    <th>Kỹ thuật</th>
-                    <th>Hoàn thành</th>
+                    <th>KTV</th>
                     <th>Trạng thái</th>
                 </tr>
                 </thead>
@@ -1048,9 +441,7 @@
                 <div class="meta-list" id="list-customers"></div>
                 <div class="meta-actions">
                     <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('customers')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('customers')" style="display:none;">
-                        LƯU
-                    </button>
+                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('customers')" style="display:none;">LƯU</button>
                 </div>
             </div>
             <div class="meta-col">
@@ -1058,9 +449,7 @@
                 <div class="meta-list" id="list-machineTypes"></div>
                 <div class="meta-actions">
                     <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('machineTypes')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('machineTypes')" style="display:none;">
-                        LƯU
-                    </button>
+                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('machineTypes')" style="display:none;">LƯU</button>
                 </div>
             </div>
             <div class="meta-col">
@@ -1068,8 +457,7 @@
                 <div class="meta-list" id="list-techs"></div>
                 <div class="meta-actions">
                     <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('techs')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('techs')" style="display:none;">LƯU
-                    </button>
+                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('techs')" style="display:none;">LƯU</button>
                 </div>
             </div>
             <div class="meta-col">
@@ -1077,9 +465,7 @@
                 <div class="meta-list" id="list-supports"></div>
                 <div class="meta-actions">
                     <button class="btn-meta btn-edit-mode" onclick="enableMetaEdit('supports')">SỬA</button>
-                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('supports')" style="display:none;">
-                        LƯU
-                    </button>
+                    <button class="btn-meta btn-save-mode" onclick="saveMetaData('supports')" style="display:none;">LƯU</button>
                 </div>
             </div>
         </div>
@@ -1088,7 +474,7 @@
     <div id="user-tab" class="tab-content">
         <div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px;">
-                <input type="text" id="u_id" placeholder="User ID (Tên đăng nhập)">
+                <input type="text" id="u_id" placeholder="Email (User ID)">
                 <input type="text" id="u_name" placeholder="Họ tên">
                 <input type="text" id="u_pass" placeholder="Mật khẩu">
                 <select id="u_role">
@@ -1097,170 +483,68 @@
                     <option value="ADMIN">ADMIN</option>
                 </select>
             </div>
-
-
-            <div style="background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--border); overflow: hidden;">
-                <div style="padding: 5px 10px; font-size: 11px; color: var(--primary); font-weight: bold; border-bottom: 1px solid var(--border);">
-                    QUYỀN TRUY CẬP (CHỈNH KHÁCH HÀNG)
-                </div>
-                <div id="u_access_checks" style="max-height: 150px; overflow-y: auto; padding: 5px 0;">
-                </div>
+            <div style="background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--border); margin-top:10px;">
+                <div style="padding: 5px 10px; font-size: 11px; color: var(--primary); font-weight: bold; border-bottom: 1px solid var(--border);">QUYỀN TRUY CẬP (KHÁCH HÀNG)</div>
+                <div id="u_access_checks" style="max-height: 150px; overflow-y: auto; padding: 5px;"></div>
             </div>
-
-
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-top:15px;">
+                <button class="btn-save" onclick="addUser()" style="background:#065f46">➕ THÊM USER</button>
+                <button class="btn-save" id="btnUpdateUser" onclick="updateUser()" style="background:#1e3a8a; display:none;">💾 CẬP NHẬT</button>
+                <button class="btn-save" id="btnDeleteUser" onclick="deleteUser()" style="background:#7f1d1d; display:none;">🗑️ XÓA USER</button>
+            </div>
         </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap:10px; margin-top:10px;">
-            <button class="btn-save" onclick="addUser()" style="background:#065f46">➕ THÊM</button>
-            <button class="btn-save" id="btnUpdateUser" onclick="updateUser()"
-                    style="background:#1e3a8a; display:none;">💾 CẬP NHẬT
-            </button>
-            
-            <button class="btn-save" id="btnResetPass" onclick="resetUserPassword()"
-                    style="background:#ca8a04; display:none;">🔐 RESET PASS
-            </button>
-
-            <button class="btn-save" id="btnDeleteUser" onclick="deleteUser()"
-                    style="background:#7f1d1d; display:none;">🗑️ XÓA
-            </button>
-            <button class="btn-save" onclick="resetUserForm()" style="background:#475569">🧹 LÀM MỚI</button>
-        </div>
-
-
         <div class="table-container">
             <table>
-                <thead>
-                <tr>
-                    <th>User ID</th>
-                    <th>Họ tên</th>
-                    <th>Quyền</th>
-                    <th>Mật khẩu</th>
-                    <th>Truy cập</th>
-                </tr>
-                </thead>
+                <thead><tr><th>User ID</th><th>Họ tên</th><th>Quyền</th></tr></thead>
                 <tbody id="userTableBody"></tbody>
             </table>
-        </div>
-        <div id="admin-backup-zone">
-            <div class="meta-col"
-                 style="margin-top: 20px; border: 1px dashed var(--primary); padding: 20px; border-radius: 12px;">
-                <h3 style="color: var(--primary); margin-top: 0;"><i class="fas fa-database"></i> QUẢN TRỊ DỮ LIỆU
-                    (BACKUP)</h3>
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">
-                    * Lưu ý: Tải bản sao lưu định kỳ để đề phòng mất mát dữ liệu. File khôi phục phải có định dạng .json
-                    được xuất từ hệ thống.
-                </p>
-
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button onclick="backupData()" class="btn-edit-mode"
-                            style="background: #10b981; color: white; border: none; display: block;">
-                        📥 XUẤT DỮ LIỆU (BACKUP JSON)
-                    </button>
-
-                    <label for="restore-input" class="btn-edit-mode"
-                           style="background: #f59e0b; color: white; cursor: pointer; display: inline-block;">
-                        📤 PHỤC HỒI DỮ LIỆU (RESTORE)
-                    </label>
-                    <input type="file" id="restore-input" accept=".json" style="display: none;"
-                           onchange="restoreData(event)">
-                </div>
-            </div>
         </div>
     </div>
 
     <div id="doc-tab" class="tab-content">
-        <div id="doc-form-container"
-             style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
+        <div id="doc-form-container" style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
             <div style="display:grid; grid-template-columns: 1fr 1fr 1.5fr; gap:10px;">
-                <input type="text" id="doc_name" placeholder="Tên tài liệu (VD: HDSD Biến tần...)">
-                <select id="doc_machine_type">
-                    <option value="">-- Loại máy --</option>
-                </select>
-                <input type="text" id="doc_link" placeholder="Link tài liệu (Drive, Dropbox...)">
+                <input type="text" id="doc_name" placeholder="Tên tài liệu">
+                <select id="doc_machine_type"><option value="">-- Loại máy --</option></select>
+                <input type="text" id="doc_link" placeholder="Link tài liệu">
             </div>
-
-            <p style="font-size: 12px; color: var(--primary); margin: 10px 0 5px 0;">Phân quyền xem tài liệu (Chọn khách
-                hàng được phép xem - Trống = Tất cả):</p>
-            <div style="background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--border); overflow: hidden;">
-                <div style="display: grid; grid-template-columns: 1fr 80px; background: rgba(255,255,255,0.05); padding: 8px 15px; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; color: var(--text-muted);">
-                    <div>TÊN KHÁCH HÀNG</div>
-                    <div style="text-align: center;">CHỌN</div>
-                </div>
-                <div id="doc_customer_checks" style="max-height: 180px; overflow-y: auto; padding: 5px 0;">
-                </div>
+            <div style="background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--border); overflow: hidden; margin-top:10px;">
+                 <div style="padding: 5px 10px; font-size: 11px; color: var(--primary); font-weight: bold; border-bottom: 1px solid var(--border);">KHÁCH HÀNG ĐƯỢC XEM</div>
+                <div id="doc_customer_checks" style="max-height: 150px; overflow-y: auto; padding: 5px 0;"></div>
             </div>
-
             <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:15px;">
                 <button class="btn-save" onclick="addDoc()" style="background:#065f46">➕ THÊM</button>
-                <button class="btn-save" id="btnUpdateDoc" onclick="updateDoc()"
-                        style="background:#1e3a8a; display:none;">💾 CẬP NHẬT
-                </button>
-                <button class="btn-save" id="btnDeleteDoc" onclick="deleteDoc()"
-                        style="background:#7f1d1d; display:none;">🗑️ XÓA
-                </button>
-                <button class="btn-save" onclick="resetDocForm()" style="background:#475569">🧹 LÀM MỚI</button>
+                <button class="btn-save" id="btnUpdateDoc" onclick="updateDoc()" style="background:#1e3a8a; display:none;">💾 LƯU</button>
+                <button class="btn-save" id="btnDeleteDoc" onclick="deleteDoc()" style="background:#7f1d1d; display:none;">🗑️ XÓA</button>
+                <button class="btn-save" onclick="resetDocForm()" style="background:#475569">🧹 MỚI</button>
             </div>
         </div>
-
-        <input type="text" id="searchDoc" onkeyup="filterDocs()" placeholder="🔍 Tìm kiếm tài liệu..."
-               style="border: 1px solid var(--primary); background: rgba(0,210,255,0.05);">
-
+        <input type="text" id="searchDoc" onkeyup="filterDocs()" placeholder="🔍 Tìm kiếm tài liệu..." style="border: 1px solid var(--primary); background: rgba(0,210,255,0.05);">
         <div id="doc_groups_container" style="margin-top: 15px;"></div>
     </div>
 
-
     <div id="infoModal" class="modal" onclick="if(event.target==this) this.style.display='none'">
         <div class="modal-content">
-            <h3 style="color:var(--primary); text-align:center; margin:0 0 20px 0">CHI TIẾT 🔎</h3>
+            <h3 style="color:var(--primary); text-align:center; margin:0 0 20px 0">CHI TIẾT</h3>
             <div id="modalBody"></div>
-            <button class="btn-save" style="margin-top:25px"
-                    onclick="document.getElementById('infoModal').style.display='none'">ĐÓNG
-            </button>
+            <button class="btn-save" style="margin-top:25px" onclick="document.getElementById('infoModal').style.display='none'">ĐÓNG</button>
         </div>
     </div>
 
     <div id="dateModal" class="modal" onclick="if(event.target==this) this.style.display='none'">
         <div class="modal-content" style="text-align:center">
-            <h4 style="margin:0 0 15px 0">CHỌN NGÀY LÀM VIỆC</h4>
+            <h4>CHỌN NGÀY LÀM VIỆC</h4>
             <input type="date" id="hiddenDate" onchange="confirmDate(this.value)">
-            <button class="btn-save" onclick="document.getElementById('dateModal').style.display='none'">XÁC NHẬN
-            </button>
+            <button class="btn-save" onclick="document.getElementById('dateModal').style.display='none'">XÁC NHẬN</button>
         </div>
     </div>
-    
-	  <footer class="main-footer">
-	    <div class="footer-content">
-		<div class="footer-section">
-		    <h3 class="footer-logo">🛠️ BÁO CÁO KỸ THUẬT</h3>
-		    <p>Hệ thống quản lý báo cáo kỹ thuật & thư viện tài liệu.</p>
-		</div>
-
-		<div class="footer-section">
-		    <h4>LIÊN KẾT</h4>
-		    <div class="footer-links">
-		        <a href="https://laser.info.vn" target="_blank" rel="noopener noreferrer">Laser.info.vn</a>
-		        <a href="https://minhphatcij.com.vn" target="_blank" rel="noopener noreferrer">Minhphatcij.com.vn</a>
-		    </div>
-		</div>
-
-		<div class="footer-section">
-		    <h4>HỖ TRỢ</h4>
-		    <p>📞 0971.64.64.03</p>
-		</div>
-	    </div>
-
-	    <div class="footer-bottom">
-		<p>© 2026 Bản quyền thuộc bộ phận Kỹ thuật</p>
-	    </div>
-	</footer>  
-    
 </div>
-
 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
 <script>
-    // --- FIREBASE CONFIG (ORIGINAL) ---
     const firebaseConfig = {
         apiKey: "AIzaSyC-WW6N3ZzmZ8gk_XypHWa3oW6VJMMGloM",
         authDomain: "data-260206.firebaseapp.com",
@@ -1270,35 +554,22 @@
         appId: "1:992766098254:web:8e9f5d3216541023d03c1f"
     };
     firebase.initializeApp(firebaseConfig);
-    // Khởi tạo Firestore
     const db = firebase.firestore();
-
-    // Kiểm tra nếu chưa thiết lập thì mới thiết lập
-    try {
-        db.settings({
-            experimentalForceLongPolling: true,
-            useFetchStreams: false
-        });
-    } catch (e) {
-        console.warn("Firestore settings already configured");
-    }
 
     let AUTH = JSON.parse(localStorage.getItem('tech_auth_v4')) || null;
     let USER_ROLE = "VIEWER";
     window.currentLogs = [];
-    window.currentProcesses = []; // Lưu trữ tiến trình
-
-    function switchTab(tabId, btn) {
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        const tab = document.getElementById(tabId);
-        if(tab) tab.classList.add('active');
-        if(btn) btn.classList.add('active');
-        if (tabId === 'data-tab') resetSaveButton();
-    }
+    window.currentProcesses = [];
+    let selectedProcessId = null;
+    let selectedDocId = null;
 
     document.addEventListener("DOMContentLoaded", () => {
-        setInitialDate();
+        const iso = new Date().toISOString().split('T')[0];
+        document.getElementById('hiddenDate').value = iso;
+        document.getElementById('workDateDisplay').value = formatVN(iso);
+        const pStart = document.getElementById('proc_start_date');
+        if(pStart) pStart.value = iso;
+
         checkSession();
     });
 
@@ -1317,677 +588,168 @@
     async function unlock() {
         const email = document.getElementById('userInput').value.trim();
         const pass = document.getElementById('passInput').value.trim();
-
-        if (!email || !pass) {
-            showToast("Vui lòng nhập Email và Mật khẩu", "error");
-            return;
-        }
+        if (!email || !pass) return showToast("Vui lòng nhập đủ thông tin", "error");
 
         showLoading(true, "ĐANG XÁC THỰC...");
         try {
-            // BƯỚC 1: Xác thực với Firebase Auth
             const userCredential = await firebase.auth().signInWithEmailAndPassword(email, pass);
-            const userAuth = userCredential.user;
-
-            // BƯỚC 2: Lấy Role từ Firestore dựa trên Document ID
             const userDoc = await db.collection("users").doc(email).get();
-
             if (userDoc.exists) {
                 const userData = userDoc.data();
-                USER_ROLE = userData.role;
-
-                AUTH = {
-                    user: email,
-                    uid: userAuth.uid,
-                    role: USER_ROLE,
-                    access: userData.access || "ALL",
-                    expire: new Date().getTime() + (24 * 60 * 60 * 1000)
-                };
-
+                AUTH = { user: email, uid: userCredential.user.uid, role: userData.role, access: userData.access || "ALL", expire: new Date().getTime() + 86400000 };
                 localStorage.setItem('tech_auth_v4', JSON.stringify(AUTH));
                 showApp();
                 fetchData();
-                showToast("Đăng nhập thành công!", "success");
             } else {
                 await firebase.auth().signOut();
-                showToast("Tài khoản chưa có dữ liệu trong bảng Users!", "error");
+                showToast("Tài khoản chưa có dữ liệu!", "error");
             }
         } catch (e) {
-            console.error("Lỗi chi tiết:", e.code, e.message);
-            showToast("Email hoặc Mật khẩu không chính xác!", "error");
+            showToast("Sai Email hoặc Mật khẩu!", "error");
         }
         showLoading(false);
     }
 
     async function signOut() {
-        try {
-            await firebase.auth().signOut();
-            AUTH = null;
-            localStorage.removeItem('tech_auth_v4');
-            location.reload();
-        } catch (e) {
-            console.error("Lỗi đăng xuất:", e);
-            showToast("Không thể đăng xuất, vui lòng thử lại", "error");
-        }
+        await firebase.auth().signOut();
+        AUTH = null; localStorage.removeItem('tech_auth_v4'); location.reload();
     }
-
-
-    function handlePresetChange(el) {
-        const preset = el.value;
-        const parent = el.closest('.inner-filter-box');
-        const customGroup = parent.querySelectorAll('.customDateGroup'); 
-        const now = new Date();
-
-        let from = '', to = '';
-
-        if (preset === 'today') {
-            from = to = now.toISOString().split('T')[0];
-        } else if (preset === '7days') {
-            const d = new Date();
-            d.setDate(d.getDate() - 7);
-            from = d.toISOString().split('T')[0];
-        } else if (preset === 'thisMonth') {
-            from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-        }
-
-        document.querySelectorAll('.timePreset').forEach(s => s.value = preset);
-        document.querySelectorAll('.customDateGroup').forEach(g => g.style.display = (preset === 'custom' ? 'flex' : 'none'));
-        document.querySelectorAll('.filterFrom').forEach(i => i.value = from);
-        document.querySelectorAll('.filterTo').forEach(i => i.value = to);
-
-        syncAndFilter();
-    }
-
-    function syncAndFilter(el) {
-        if (el) {
-            if (el.classList.contains('filterFrom')) document.querySelectorAll('.filterFrom').forEach(i => i.value = el.value);
-            if (el.classList.contains('filterTo')) document.querySelectorAll('.filterTo').forEach(i => i.value = el.value);
-            if (el.classList.contains('filterCust')) document.querySelectorAll('.filterCust').forEach(i => i.value = el.value);
-        }
-
-        const fromElement = document.querySelector('.filterFrom');
-        const from = fromElement ? fromElement.value : '';
-        const toElement = document.querySelector('.filterTo');
-        const to = toElement ? toElement.value : '';
-        const custElement = document.querySelector('.filterCust');
-        const cust = custElement ? custElement.value : 'ALL';
-
-        const filtered = window.rawLogs.filter(row => {
-            const date = row[1]; // workDate
-            const customer = row[2];
-            const mFrom = from ? date >= from : true;
-            const mTo = to ? date <= to : true;
-            const mCust = cust === "ALL" ? true : customer === cust;
-            return mFrom && mTo && mCust;
-        });
-
-        renderData({logs: [["Header"], ...filtered], role: AUTH.role});
-        updateDashboard(filtered);
-    }
-
-
-    window.rawLogs = []; // Biến lưu dữ liệu gốc
-
-    function fetchData() {
-        if (!AUTH) return;
-        let query = db.collection("logs");
-
-        // Xử lý phân quyền cho VIEWER
-        if (AUTH.role === "VIEWER") {
-            if (AUTH.access && AUTH.access.trim() !== "" && AUTH.access !== "ALL") {
-                const allowedList = AUTH.access.split(",").map(s => s.trim()).filter(s => s !== "");
-                if (allowedList.length > 0) {
-                    query = query.where("customer", "in", allowedList);
-                }
-            } else if (!AUTH.access || AUTH.access.trim() === "") {
-                window.rawLogs = []; 
-                renderData({logs: [["Header"]], role: AUTH.role});
-                updateDashboard([]);
-                return;
-            }
-        }
-
-        query.orderBy("workDate", "desc").limit(1000).onSnapshot((snapshot) => {
-            window.rawLogs = snapshot.docs.map(doc => {
-                const d = doc.data();
-                return [doc.id, d.workDate, d.customer, d.machineType, d.support, d.content, d.tech, d.createdBy || "", d.note || ""];
-            });
-
-            const custs = [...new Set(window.rawLogs.map(l => l[2]))].sort();
-            document.querySelectorAll('.filterCust').forEach(select => {
-                const currentVal = select.value;
-                select.innerHTML = '<option value="ALL">Tất cả khách hàng</option>' +
-                    custs.map(c => `<option value="${c}">${c}</option>`).join('');
-                select.value = currentVal;
-            });
-
-            // GỌI HÀM NÀY ĐỂ KÍCH HOẠT BỘ LỌC MẶC ĐỊNH
-            initDefaultFilters(); 
-        }, (error) => {
-            console.error("Lỗi máy chủ:", error);
-        });
-
-        if (AUTH.role === "ADMIN" || AUTH.role === "EDIT") {
-            db.collection("metadata").doc("dropdowns").onSnapshot((doc) => {
-                if (doc.exists) {
-                    const d = doc.data();
-                    updateDropdowns(d);
-                    renderMetaBlock(d);
-                }
-            });
-        }
-    }
-
-    // --- HÀM THIẾT LẬP MẶC ĐỊNH 7 NGÀY ---
-    function initDefaultFilters() {
-        // Chỉ chạy 1 lần nếu input date chưa có giá trị
-        const fromInput = document.querySelector('.filterFrom');
-        if(!fromInput.value) {
-             const d = new Date();
-             d.setDate(d.getDate() - 7);
-             const sevenDaysAgo = d.toISOString().split('T')[0];
-             
-             // Gán giá trị
-             document.querySelectorAll('.timePreset').forEach(s => s.value = '7days');
-             document.querySelectorAll('.filterFrom').forEach(i => i.value = sevenDaysAgo);
-             document.querySelectorAll('.filterTo').forEach(i => i.value = new Date().toISOString().split('T')[0]);
-        }
-        syncAndFilter();
-    }
-
-
-    // --- UI RENDER ---
-    function renderData(data) {
-        window.currentLogs = data.logs.slice(1);
-        const html = window.currentLogs.map((row, index) => `
-            <tr onclick="openInfoModal(${index})">
-                <td style="color:var(--text-muted)">${formatVN(row[1])}</td>
-                <td><b style="color:var(--primary)">${row[2] || ''}</b></td>
-                <td style="font-size:11px"><span class="badge-mec">${row[3] || ''}</span></td>
-                <td><small>${row[4] || ''}</small></td>
-                <td style="color:#cbd5e1">${(row[5] || "").substring(0, 30)}${(row[5] || "").length > 30 ? '...' : ''}</td>
-                <td><span class="badge-tech">${row[6] || ''}</span></td>
-                <td style="font-style:italic; color:var(--text-muted); font-size:12px">
-                    ${(row[8] || '').substring(0, 15)}${(row[8] || '').length > 15 ? '...' : ''}</td>
-                
-            </tr>
-        `).join('');
-        document.getElementById('tableBody').innerHTML = html;
-        document.getElementById('syncStatus').innerText = "Đồng bộ: " + new Date().toLocaleTimeString();
-    }
-
-    function updateDropdowns(d) {
-        // Chỉ chạy cho Admin/Edit
-        const update = (id, list, txt) => {
-            const select = document.getElementById(id);
-            if(!select) return; 
-            const val = select.value;
-            select.innerHTML = `<option value="">-- ${txt} --</option>` + list.map(i => `<option value="${i}">${i}</option>`).join('');
-            select.value = val;
-        };
-        if (d.customers) update('customer', d.customers, 'Khách hàng');
-        if (d.techs) {
-            update('techName', d.techs, 'Kỹ thuật');
-            // Update cho cả tab Tiến trình mới
-            update('proc_tech', d.techs, 'Chọn kỹ thuật');
-        }
-        if (d.machineTypes) update('machineType', d.machineTypes, 'Loại máy');
-        if (d.supports) update('supportType', d.supports, 'Hỗ trợ');
-        
-        if(d.machineTypes) {
-             const docMachineSelect = document.getElementById('doc_machine_type');
-             if(docMachineSelect) {
-                 const currentVal = docMachineSelect.value;
-                 docMachineSelect.innerHTML = '<option value="">-- Loại máy --</option>' + 
-                     d.machineTypes.map(m => `<option value="${m}">${m}</option>`).join('');
-                 docMachineSelect.value = currentVal;
-             }
-        }
-        
-        if(d.customers) {
-            loadCustomerCheckboxes(d.customers); 
-            loadUserAccessCheckboxes(d.customers);
-        }
-    }
-
-    // --- POPUP CHI TIẾT ---
-    function openInfoModal(index) {
-        const row = window.currentLogs[index];
-        const isAdmin = (AUTH && AUTH.role === "ADMIN"); 
-        
-        let modalHtml = `
-            <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border)">
-                <div class="detail-grid">
-                    <div class="detail-item"><span class="detail-label">🗓️ Ngày làm:</span><span class="detail-value">${formatVN(row[1])}</span></div>
-                    <div class="detail-item"><span class="detail-label">🕵️‍♂️ Khách:</span><span class="detail-value">${row[2]}</span></div>
-                    <div class="detail-item"><span class="detail-label">⚙️ Loại máy:</span><span class="detail-value">${row[3] || '---'}</span></div>
-                    <div class="detail-item"><span class="detail-label">📌 Hỗ trợ:</span><span class="detail-value">${row[4] || '---'}</span></div>
-                    <div class="detail-item"><span class="detail-label">👷‍♂️ Kỹ thuật:</span><span class="detail-value">${row[6]}</span></div>
-                    <div class="detail-item"><span class="detail-label">🪪 User:</span><span class="detail-value">${row[7] || '---'}</span></div>
-                </div>
-                <div style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px">
-                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">📝 NỘI DUNG:</p>
-                    <div style="white-space:pre-wrap; color:#fff; background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; font-size:14px;">${row[5]}</div>
-                </div>
-                <div style="margin-top:10px">
-                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">🗒️ GHI CHÚ:</p>
-                    <div style="color:var(--primary); font-style:italic; font-size:13px">${row[8] || 'Không có ghi chú.'}</div>
-                </div>
-            </div>
-        `;
-        if (isAdmin) {
-            modalHtml += `<div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px">
-                <button onclick="deleteLog('${row[0]}')" style="background:#450a0a; color:#f87171; border:1px solid #7f1d1d; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold">🗑️ XÓA</button>
-                <button onclick="editLog(${index})" style="background:#1e1b4b; color:#818cf8; border:1px solid #312e81; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold">✏️ SỬA</button>
-            </div>`;
-        }
-        document.getElementById('modalBody').innerHTML = modalHtml;
-        document.getElementById('infoModal').style.display = 'flex';
-    }
-
-    // --- TAB 3 LOGIC ---
-    function renderMetaBlock(data) {
-        const renderCol = (id, list) => {
-            const container = document.getElementById('list-' + id);
-            if(!container) return;
-            const fullList = [...(list || []), "", "", ""]; 
-            container.innerHTML = fullList.map(v => `<div class="meta-item"><input type="text" value="${v}" readonly></div>`).join('');
-        };
-        renderCol('customers', data.customers);
-        renderCol('machineTypes', data.machineTypes);
-        renderCol('techs', data.techs);
-        renderCol('supports', data.supports);
-    }
-
-    function enableMetaEdit(id) {
-        document.querySelectorAll(`#list-${id} .meta-item`).forEach(item => {
-            item.classList.add('editing');
-            const input = item.querySelector('input');
-            if (input) input.readOnly = false;
-        });
-
-        const parentCol = document.getElementById(`list-${id}`).closest('.meta-col');
-        const btnEdit = parentCol.querySelector('.btn-edit-mode');
-        const btnSave = parentCol.querySelector('.btn-save-mode');
-
-        if (btnEdit) btnEdit.style.display = 'none';
-        if (btnSave) btnSave.style.display = 'block';
-
-        showToast("Đã mở chế độ sửa!", "info");
-    }
-
-    async function saveMetaData(id) {
-        const inputs = document.querySelectorAll(`#list-${id} input`);
-        const newList = [...new Set(Array.from(inputs).map(i => i.value.trim()).filter(v => v !== ""))];
-
-        showLoading(true, "ĐANG LƯU...");
-
-        try {
-            await db.collection("metadata").doc("dropdowns").set({
-                [id]: newList
-            }, {merge: true});
-
-            document.querySelectorAll(`#list-${id} .meta-item`).forEach(item => {
-                item.classList.remove('editing');
-                const input = item.querySelector('input');
-                if (input) input.readOnly = true;
-            });
-
-            const parentCol = document.getElementById(`list-${id}`).closest('.meta-col');
-            const btnEdit = parentCol.querySelector('.btn-edit-mode');
-            const btnSave = parentCol.querySelector('.btn-save-mode');
-
-            if (btnSave) btnSave.style.display = 'none';
-            if (btnEdit) btnEdit.style.display = 'block';
-
-            showToast("Đã lưu thành công!", "success");
-
-        } catch (e) {
-            console.error("Lỗi cập nhật Firestore:", e);
-            showToast("Lỗi: " + e.message, "error");
-        } finally {
-            showLoading(false);
-        }
-    }
-
-    // --- OTHER LOGIC ---
-    async function saveData() {
-        const d = document.getElementById('hiddenDate').value;
-        const c = document.getElementById('customer').value;
-        const n = document.getElementById('content').value.trim();
-
-        if (!c || !n) return showToast("Vui lòng điền đủ thông tin!", "error");
-
-        showLoading(true, "ĐANG LƯU...");
-        try {
-            await db.collection("logs").add({
-                workDate: d,
-                customer: c,
-                tech: document.getElementById('techName').value,
-                machineType: document.getElementById('machineType').value,
-                support: document.getElementById('supportType').value,
-                content: n,
-                note: document.getElementById('note').value.trim(),
-                createdBy: AUTH.user, 
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-
-            showToast("Đã lưu báo cáo!", "success");
-            resetSaveButton();
-            switchTab('dashboard', document.querySelector('.tab-btn'));
-        } catch (e) {
-            console.error("Lỗi chi tiết:", e); 
-            showToast("Lỗi khi lưu! " + e.message, "error");
-        }
-        showLoading(false);
-    }
-
-    function deleteLog(id) {
-        const confirmHtml = `
-        <div style="min-width: 200px;">
-            <p style="margin: 0 0 12px 0; font-weight: 600;">🗑️ XÓA BÁO CÁO NÀY?</p>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <button id="logNo" style="background: #475569; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">KHÔNG</button>
-                <button id="logYes" style="background: #7f1d1d; color: #f87171; border: 1px solid #7f1d1d; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">XÓA</button>
-            </div>
-        </div>
-    `;
-
-        const t = showToast("", "error", confirmHtml);
-
-        t.querySelector('#logNo').onclick = () => t.remove();
-
-        t.querySelector('#logYes').onclick = async () => {
-            t.remove();
-            showLoading(true, "ĐANG XÓA...");
-            await db.collection("logs").doc(id).delete();
-            document.getElementById('infoModal').style.display = 'none';
-            showLoading(false);
-            showToast("Đã xóa xong!", "success");
-        };
-    }
-
-    function editLog(index) {
-        const row = window.currentLogs[index];
-        document.getElementById('infoModal').style.display = 'none';
-        switchTab('form-tab', document.getElementById('btnTabForm'));
-        document.getElementById('hiddenDate').value = row[1];
-        document.getElementById('workDateDisplay').value = formatVN(row[1]);
-        
-        document.getElementById('customer').value = row[2];
-        document.getElementById('machineType').value = row[3];
-        document.getElementById('supportType').value = row[4];
-        document.getElementById('content').value = row[5];
-        document.getElementById('techName').value = row[6];
-        document.getElementById('note').value = row[8] || "";
-        
-        const btn = document.getElementById('btnSave');
-        btn.innerHTML = "💾 CẬP NHẬT";
-        btn.onclick = async () => {
-            showLoading(true);
-            await db.collection("logs").doc(row[0]).update({
-                workDate: document.getElementById('hiddenDate').value,
-                customer: document.getElementById('customer').value,
-                content: document.getElementById('content').value.trim(),
-                note: document.getElementById('note').value.trim(),
-                tech: document.getElementById('techName').value,
-                machineType: document.getElementById('machineType').value,
-                support: document.getElementById('supportType').value
-            });
-            showLoading(false);
-            resetSaveButton();
-            switchTab('dashboard', document.querySelector('.tab-btn'));
-        };
-    }
-
-    function resetSaveButton() {
-        const btn = document.getElementById('btnSave');
-        if(btn) {
-            btn.innerHTML = "LƯU BÁO CÁO";
-            btn.onclick = saveData;
-        }
-        const content = document.getElementById('content');
-        const note = document.getElementById('note');
-        if(content) content.value = '';
-        if(note) note.value = '';
-    }
-
 
     function showApp() {
         document.getElementById('lock-screen').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
-
-        if (AUTH && AUTH.user) {
-            const helloEl = document.getElementById('helloUser');
-            if (helloEl) helloEl.innerText = "Chào, " + AUTH.user;
-        }
-
-        const nav = document.querySelector('.tab-navigation');
-        if(nav) nav.style.display = 'flex'; 
-
-        // ÁP DỤNG PHÂN QUYỀN VÀ XÓA CODE THỪA
-        applyPermissions();
-    }
-    
-    // --- HÀM QUAN TRỌNG: PHÂN QUYỀN VÀ XÓA HTML ---
-    function applyPermissions() {
-        const role = AUTH.role;
+        document.getElementById('helloUser').innerText = "Chào, " + AUTH.user;
         
-        // CÁC THÀNH PHẦN CẦN XÓA CHO CẢ VIEWER VÀ EDIT
-        let idsToRemove = [];
-
-        if (role === "VIEWER") {
-            idsToRemove = [
-                'form-tab',       // Tab Báo cáo
-                'process-tab',    // Tab Tiến trình (NEW)
-                'meta-tab',       // Tab Cấu hình
-                'user-tab',       // Tab Thành viên
-                'btnTabForm',     // Nút tab Báo cáo
-                'btnTabProcess',  // Nút tab Tiến trình (NEW)
-                'btnTabMeta',     // Nút tab Cấu hình
-                'btnTabUser',     // Nút tab Thành viên
-                'doc-form-container', // Form nhập liệu ở Tab Tài liệu
-                'admin-backup-zone', // Khu vực backup
-                'dash-progress-container' // Thanh tiến trình ở Dashboard
-            ];
-             // Viewer vẫn xem được doc nếu có access
-            if (AUTH.access && AUTH.access !== "") {
-                 const docBtn = document.getElementById('btnTabDoc');
-                 if(docBtn) docBtn.style.display = 'block';
-                 fetchDocs(); 
-            }
-
-        } else if (role === "EDIT") {
-            // EDIT: Được dùng Form, nhưng KHÔNG được dùng Meta, User
-            // EDIT: Không được dùng Tiến trình
-            idsToRemove = [
-                'process-tab',    // Tab Tiến trình (NEW)
-                'meta-tab',       // Tab Cấu hình
-                'user-tab',       // Tab Thành viên
-                'btnTabProcess',  // Nút tab Tiến trình (NEW)
-                'btnTabMeta',     // Nút tab Cấu hình
-                'btnTabUser',     // Nút tab Thành viên
-                'doc-form-container', // Form nhập liệu tài liệu (Chỉ xem)
-                'admin-backup-zone', // Khu vực backup
-                'dash-progress-container' // Thanh tiến trình ở Dashboard
-            ];
-            
-            // EDIT được xem tất cả tài liệu
-            const docBtn = document.getElementById('btnTabDoc');
-            if(docBtn) docBtn.style.display = 'block';
-            fetchDocs(); 
-        } else if (role === "ADMIN") {
-            // ADMIN: Giữ nguyên, load thêm user và TIẾN TRÌNH
-            fetchUsers();
+        const role = AUTH.role;
+        if(role === "VIEWER") {
+            ['form-tab','process-tab','meta-tab','user-tab','btnTabForm','btnTabProcess','btnTabMeta','btnTabUser','doc-form-container','dash-progress-container'].forEach(id => {
+               const el = document.getElementById(id); if(el) el.remove();
+            });
+             if (AUTH.access) fetchDocs();
+        } else if(role === "EDIT") {
+            ['process-tab','meta-tab','user-tab','btnTabProcess','btnTabMeta','btnTabUser','doc-form-container','dash-progress-container'].forEach(id => {
+               const el = document.getElementById(id); if(el) el.remove();
+            });
             fetchDocs();
-            fetchProcesses(); // (NEW)
+        } else if(role === "ADMIN") {
+            fetchUsers(); fetchDocs(); fetchProcesses();
             document.getElementById('dash-progress-container').style.display = 'block';
         }
+    }
 
-        // Xóa DOM
-        idsToRemove.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.remove(); 
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        if(btn) btn.classList.add('active');
+    }
+
+    // --- DATA FETCHING ---
+    function fetchData() {
+        let query = db.collection("logs").orderBy("workDate", "desc").limit(500);
+        if(AUTH.role === "VIEWER" && AUTH.access && AUTH.access !== "ALL") {
+             const allowed = AUTH.access.split(",").map(s=>s.trim()).filter(s=>s);
+             if(allowed.length) query = query.where("customer", "in", allowed);
+        }
+        
+        query.onSnapshot(snapshot => {
+            window.currentLogs = snapshot.docs.map(doc => {
+                 const d = doc.data();
+                 return [doc.id, d.workDate, d.customer, d.machineType, d.support, d.content, d.tech, d.createdBy, d.note];
+            });
+            renderLogs();
+            updateDashboard();
         });
-    }
 
-
-    function setInitialDate() {
-        const iso = new Date().toISOString().split('T')[0];
-        document.getElementById('hiddenDate').value = iso;
-        document.getElementById('workDateDisplay').value = formatVN(iso);
-        // Set cho form tiến trình mới
-        const pStart = document.getElementById('proc_start_date');
-        if(pStart) pStart.value = iso;
-    }
-
-    function confirmDate(v) {
-        document.getElementById('workDateDisplay').value = formatVN(v);
-        document.getElementById('dateModal').style.display = 'none';
-    }
-
-    function formatVN(s) {
-        if (!s) return '';
-        const d = new Date(s);
-        return d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getFullYear();
-    }
-
-    function filterTable() {
-        const v = document.getElementById('searchBox').value.toUpperCase();
-        const rows = document.getElementById('tableBody').getElementsByTagName('tr');
-        for (let r of rows) r.style.display = r.innerText.toUpperCase().includes(v) ? "" : "none";
-    }
-
-    function showLoading(s, t) {
-        document.getElementById('loading-overlay').style.display = s ? 'flex' : 'none';
-        if (t) document.getElementById('loading-text').innerText = t;
-    }
-
-    function showToast(m, type, htmlContent = "") {
-        const c = document.getElementById('toast-container');
-        const t = document.createElement('div');
-        t.className = `toast ${type}`;
-        t.style.pointerEvents = "auto";
-
-        if (htmlContent) {
-            t.innerHTML = htmlContent;
-        } else {
-            t.innerText = m;
+        if(AUTH.role === "ADMIN" || AUTH.role === "EDIT") {
+            db.collection("metadata").doc("dropdowns").onSnapshot(doc => {
+                if(doc.exists) {
+                    const d = doc.data();
+                    updateDropdowns(d);
+                    renderMetaBlock(d); // FIX: Meta tab render
+                }
+            });
         }
-
-        c.appendChild(t);
-
-        if (!htmlContent) {
-            setTimeout(() => t.remove(), 2500);
-        }
-        return t;
     }
 
-    // --- LOGIC QUẢN LÝ TIẾN TRÌNH (NEW FUNCTIONALITY) ---
+    function updateDropdowns(d) {
+        const fill = (id, list, txt) => {
+            const el = document.getElementById(id); 
+            if(el) {
+                const val = el.value;
+                el.innerHTML = `<option value="">-- ${txt} --</option>` + (list||[]).map(i=>`<option value="${i}">${i}</option>`).join('');
+                el.value = val;
+            }
+        };
+        fill('customer', d.customers, 'Khách hàng');
+        fill('techName', d.techs, 'Kỹ thuật');
+        fill('proc_tech', d.techs, 'Kỹ thuật');
+        fill('machineType', d.machineTypes, 'Loại máy');
+        fill('supportType', d.supports, 'Hỗ trợ');
+        fill('doc_machine_type', d.machineTypes, 'Loại máy');
+        
+        if(d.customers) {
+            loadCustomerCheckboxes(d.customers);
+            loadUserAccessCheckboxes(d.customers); // FIX: User Tab checkboxes
+        }
+    }
+
+    function renderLogs() {
+        const html = window.currentLogs.map((row, i) => `
+            <tr onclick="openInfoModal(${i})">
+                <td style="color:var(--text-muted)">${formatVN(row[1])}</td>
+                <td><b style="color:var(--primary)">${row[2]}</b></td>
+                <td><span class="badge-mec">${row[3]||''}</span></td>
+                <td><small>${row[4]||''}</small></td>
+                <td style="color:#cbd5e1">${cutText(row[5], 30)}</td>
+                <td><span class="badge-tech">${row[6]||''}</span></td>
+            </tr>`).join('');
+        document.getElementById('tableBody').innerHTML = html;
+    }
     
-    let selectedProcessId = null;
+    // --- FIX: Cut Text Logic ---
+    function cutText(str, len) {
+        if(!str) return "";
+        return str.length > len ? str.substring(0, len) + "..." : str;
+    }
 
+    // --- PROCESS TAB LOGIC ---
     function fetchProcesses() {
-        // Chỉ Admin mới gọi hàm này (đã check ở applyPermissions)
         db.collection("processes").orderBy("startDate", "desc").onSnapshot(snapshot => {
             window.currentProcesses = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
             renderProcesses(window.currentProcesses);
-            updateProgressBar();
+            updateProcProgress();
         });
     }
 
     function renderProcesses(list) {
         const tbody = document.getElementById('processTableBody');
         if(!tbody) return;
-
-        const html = list.map(p => {
-            const isCompleted = p.endDate && p.endDate.trim() !== "";
-            const statusBadge = isCompleted 
-                ? `<span style="background:#065f46; color:#6ee7b7; padding:4px 8px; border-radius:6px; font-size:10px; font-weight:bold;">HOÀN THÀNH</span>`
-                : `<span style="background:#78350f; color:#fcd34d; padding:4px 8px; border-radius:6px; font-size:10px; font-weight:bold;">ĐANG XỬ LÝ</span>`;
-
-            // Thay đổi onclick: mở modal thay vì load form trực tiếp
+        tbody.innerHTML = list.map(p => {
+            const isDone = p.endDate && p.endDate.trim() !== "";
+            // FIX: Áp dụng hàm cutText chuẩn cho cột nội dung
+            const displayContent = cutText(p.content, 30);
             return `
-            <tr onclick="openProcessModal('${p.id}')">
+            <tr onclick="loadProcessToForm('${p.id}')">
                 <td style="color:var(--text-muted); font-size:12px">${formatVN(p.startDate)}</td>
                 <td style="font-weight:600; color:var(--primary)">${p.name}</td>
-                <td style="color:#cbd5e1">${(p.content || "").substring(0, 30)}${(p.content || "").length > 30 ? '...' : ''}...</td>
-                <td style="font-style:italic; font-size:12px; color:var(--text-muted)">${p.note || ""}</td>
-                <td><span class="badge-tech">${p.tech || ""}</span></td>
-                <td style="font-size:12px">${p.endDate ? formatVN(p.endDate) : '---'}</td>
-                <td>${statusBadge}</td>
-            </tr>
-            `;
+                <td style="color:#cbd5e1">${displayContent}</td>
+                <td><span class="badge-tech">${p.tech||""}</span></td>
+                <td>${isDone ? '<span class="badge-mec" style="background:#064e3b; color:#6ee7b7">HOÀN THÀNH</span>' : '<span class="badge-mec" style="background:#78350f; color:#fcd34d">ĐANG XỬ LÝ</span>'}</td>
+            </tr>`;
         }).join('');
-        tbody.innerHTML = html;
-    }
-    
-    // HÀM MỚI: Mở modal chi tiết tiến trình
-    function openProcessModal(id) {
-        const p = window.currentProcesses.find(item => item.id === id);
-        if(!p) return;
-        selectedProcessId = id; // Lưu ID để dùng cho xóa/sửa
-
-        const isCompleted = p.endDate && p.endDate.trim() !== "";
-        const statusText = isCompleted ? "HOÀN THÀNH" : "ĐANG XỬ LÝ";
-        const statusColor = isCompleted ? "#10b981" : "#f59e0b";
-
-        let modalHtml = `
-            <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border)">
-                <div class="detail-grid">
-                    <div class="detail-item"><span class="detail-label">🗓️ Bắt đầu:</span><span class="detail-value">${formatVN(p.startDate)}</span></div>
-                    <div class="detail-item"><span class="detail-label">🚀 Tiến trình:</span><span class="detail-value">${p.name}</span></div>
-                    <div class="detail-item"><span class="detail-label">👷‍♂️ Kỹ thuật:</span><span class="detail-value">${p.tech || '---'}</span></div>
-                    <div class="detail-item"><span class="detail-label">📊 Trạng thái:</span><span class="detail-value" style="color:${statusColor}">${statusText}</span></div>
-                    <div class="detail-item"><span class="detail-label">🏁 Hoàn thành:</span><span class="detail-value">${p.endDate ? formatVN(p.endDate) : '---'}</span></div>
-                </div>
-                <div style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px">
-                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">📝 NỘI DUNG:</p>
-                    <div style="white-space:pre-wrap; color:#fff; background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; font-size:14px;">${p.content || ""}</div>
-                </div>
-                <div style="margin-top:10px">
-                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">🗒️ GHI CHÚ:</p>
-                    <div style="color:var(--primary); font-style:italic; font-size:13px">${p.note || 'Không có ghi chú.'}</div>
-                </div>
-            </div>
-            
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px">
-                <button onclick="triggerProcessDelete()" style="background:#450a0a; color:#f87171; border:1px solid #7f1d1d; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold">🗑️ XÓA</button>
-                <button onclick="triggerProcessEdit()" style="background:#1e1b4b; color:#818cf8; border:1px solid #312e81; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold">✏️ SỬA</button>
-            </div>
-        `;
-
-        document.getElementById('modalBody').innerHTML = modalHtml;
-        document.getElementById('infoModal').style.display = 'flex';
-    }
-
-    // HÀM MỚI: Xử lý khi nhấn nút SỬA từ Modal
-    function triggerProcessEdit() {
-        document.getElementById('infoModal').style.display = 'none';
-        loadProcessToForm(selectedProcessId);
-        // Scroll lên form nhập liệu
-        document.getElementById('proc_name').focus();
-    }
-    
-    // HÀM MỚI: Xử lý khi nhấn nút XÓA từ Modal
-    function triggerProcessDelete() {
-        // Đóng modal chi tiết trước khi hiện modal xác nhận xóa
-        document.getElementById('infoModal').style.display = 'none';
-        deleteProcess(); // Gọi hàm xóa cũ
     }
 
     function loadProcessToForm(id) {
-        const p = window.currentProcesses.find(item => item.id === id);
+        const p = window.currentProcesses.find(i => i.id === id);
         if(!p) return;
-        
         selectedProcessId = id;
         document.getElementById('proc_start_date').value = p.startDate;
         document.getElementById('proc_name').value = p.name;
-        document.getElementById('proc_tech').value = p.tech || "";
-        document.getElementById('proc_content').value = p.content || "";
-        document.getElementById('proc_note').value = p.note || "";
-        document.getElementById('proc_end_date').value = p.endDate || "";
-
+        document.getElementById('proc_tech').value = p.tech||"";
+        document.getElementById('proc_content').value = p.content||"";
+        document.getElementById('proc_note').value = p.note||"";
+        document.getElementById('proc_end_date').value = p.endDate||"";
         document.getElementById('btnUpdateProc').style.display = 'block';
         document.getElementById('btnDeleteProc').style.display = 'block';
     }
@@ -1995,756 +757,355 @@
     async function saveProcess() {
         const start = document.getElementById('proc_start_date').value;
         const name = document.getElementById('proc_name').value.trim();
-        const tech = document.getElementById('proc_tech').value;
         const content = document.getElementById('proc_content').value.trim();
+        if(!start || !name) return showToast("Thiếu ngày hoặc tên!", "error");
         
-        if(!start || !name || !content) return showToast("Vui lòng nhập Ngày, Tên và Nội dung!", "error");
-
-        const data = {
-            startDate: start,
-            name: name,
-            tech: tech,
-            content: content,
-            note: document.getElementById('proc_note').value.trim(),
-            endDate: document.getElementById('proc_end_date').value, // Rỗng nghĩa là chưa xong
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        showLoading(true, "ĐANG THÊM TIẾN TRÌNH...");
-        try {
-            await db.collection("processes").add(data);
-            showToast("Thêm tiến trình thành công!", "success");
-            resetProcessForm();
-        } catch(e) {
-            showToast("Lỗi: " + e.message, "error");
-        }
-        showLoading(false);
+        await db.collection("processes").add({
+            startDate: start, name, tech: document.getElementById('proc_tech').value,
+            content, note: document.getElementById('proc_note').value,
+            endDate: document.getElementById('proc_end_date').value
+        });
+        showToast("Đã thêm!", "success"); resetProcessForm();
     }
-
+    
     async function updateProcess() {
         if(!selectedProcessId) return;
-        const data = {
-            startDate: document.getElementById('proc_start_date').value,
-            name: document.getElementById('proc_name').value.trim(),
-            tech: document.getElementById('proc_tech').value,
-            content: document.getElementById('proc_content').value.trim(),
-            note: document.getElementById('proc_note').value.trim(),
-            endDate: document.getElementById('proc_end_date').value
-        };
-
-        showLoading(true, "ĐANG CẬP NHẬT...");
-        try {
-            await db.collection("processes").doc(selectedProcessId).update(data);
-            showToast("Cập nhật thành công!", "success");
-            resetProcessForm();
-        } catch(e) {
-             showToast("Lỗi: " + e.message, "error");
-        }
-        showLoading(false);
+        await db.collection("processes").doc(selectedProcessId).update({
+             startDate: document.getElementById('proc_start_date').value,
+             name: document.getElementById('proc_name').value.trim(),
+             tech: document.getElementById('proc_tech').value,
+             content: document.getElementById('proc_content').value.trim(),
+             note: document.getElementById('proc_note').value,
+             endDate: document.getElementById('proc_end_date').value
+        });
+        showToast("Cập nhật xong!", "success"); resetProcessForm();
     }
-
+    
     async function deleteProcess() {
-        if(!selectedProcessId) return;
-        
-        const confirmHtml = `
-            <div style="min-width: 200px;">
-                <p style="margin: 0 0 12px 0; font-weight: 600;">⚠️ XÓA TIẾN TRÌNH NÀY?</p>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                    <button id="pNo" style="background: #475569; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer;">HỦY</button>
-                    <button id="pYes" style="background: #ef4444; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer;">XÓA NGAY</button>
-                </div>
-            </div>`;
-        
-        const t = showToast("", "info", confirmHtml);
-        t.querySelector('#pNo').onclick = () => t.remove();
-        t.querySelector('#pYes').onclick = async () => {
-            t.remove();
-            showLoading(true, "ĐANG XÓA...");
-            try {
-                await db.collection("processes").doc(selectedProcessId).delete();
-                showToast("Đã xóa!", "success");
-                resetProcessForm();
-            } catch(e) {
-                showToast("Lỗi: " + e.message, "error");
-            }
-            showLoading(false);
-        };
+        if(!selectedProcessId || !confirm("Xóa tiến trình này?")) return;
+        await db.collection("processes").doc(selectedProcessId).delete();
+        showToast("Đã xóa!", "success"); resetProcessForm();
     }
 
     function resetProcessForm() {
         selectedProcessId = null;
-        document.getElementById('proc_name').value = "";
-        document.getElementById('proc_content').value = "";
-        document.getElementById('proc_note').value = "";
-        document.getElementById('proc_end_date').value = "";
-        document.getElementById('proc_tech').value = "";
-        
-        // Reset ngày bắt đầu về hôm nay
-        const iso = new Date().toISOString().split('T')[0];
-        document.getElementById('proc_start_date').value = iso;
-
+        ['proc_name','proc_content','proc_note','proc_end_date','proc_tech'].forEach(id=>document.getElementById(id).value='');
+        document.getElementById('proc_start_date').value = new Date().toISOString().split('T')[0];
         document.getElementById('btnUpdateProc').style.display = 'none';
         document.getElementById('btnDeleteProc').style.display = 'none';
     }
-
-    function filterProcesses() {
-        const val = document.getElementById('searchProcess').value.toUpperCase();
-        const rows = document.getElementById('processTableBody').getElementsByTagName('tr');
-        for (let r of rows) r.style.display = r.innerText.toUpperCase().includes(val) ? "" : "none";
-    }
-
-    function updateProgressBar() {
+    
+    function updateProcProgress() {
         const total = window.currentProcesses.length;
-        if(total === 0) return;
-
-        const done = window.currentProcesses.filter(p => p.endDate && p.endDate.trim() !== "").length;
-        const percent = Math.round((done / total) * 100);
-        const pending = total - done;
-
-        // Cập nhật UI ở 2 nơi: Dashboard và Tab Tiến trình
-        const updateUI = (prefix) => {
-            const fill = document.getElementById(prefix + 'progress-fill');
-            const text = document.getElementById(prefix + 'progress-text');
-            const elTotal = document.getElementById(prefix + 'total');
-            const elDone = document.getElementById(prefix + 'done');
-            const elPending = document.getElementById(prefix + 'pending');
-
-            if(fill) {
-                fill.style.width = percent + '%';
-                fill.innerText = percent + '%';
-            }
-            if(text) text.innerText = percent + "% Hoàn thành";
-            if(elTotal) elTotal.innerText = total;
-            if(elDone) elDone.innerText = done;
-            if(elPending) elPending.innerText = pending;
-        };
-
-        updateUI('dash-');
-        updateUI('proc-');
-    }
-
-    // --- LOGIC QUẢN LÝ TÀI KHOẢN (TAB 4) ---
-
-    // 1. Tự động lấy danh sách user khi tab mở
-    function fetchUsers() {
-        // Double check: Nếu không phải ADMIN thì return
-        if (AUTH.role !== "ADMIN") return; 
+        const done = window.currentProcesses.filter(p => p.endDate).length;
+        const pct = total ? Math.round((done/total)*100) : 0;
         
-        db.collection("users").onSnapshot((snapshot) => {
-            const html = snapshot.docs.map(doc => {
-                const u = doc.data();
-                return `
-                <tr onclick="loadUserToForm('${doc.id}', '${u.name}', '${u.role}', '${u.access || ""}')">
-                    <td><b style="color:var(--primary)">${doc.id}</b></td>
-                    <td>${u.name}</td>
-                    <td><span class="badge-tech">${u.role}</span></td>
-                    <td>••••••</td>
-                    <td style="font-size:11px; color:var(--text-muted)">${u.access || 'ALL'}</td>
-                </tr>
-            `;
-            }).join('');
-            const tbody = document.getElementById('userTableBody');
-            if(tbody) tbody.innerHTML = html;
+        ['dash-','proc-'].forEach(p => {
+             const fill = document.getElementById(p+'progress-fill');
+             if(fill) { fill.style.width = pct+'%'; fill.innerText = pct+'%'; }
+             const txt = document.getElementById(p+'progress-text'); if(txt) txt.innerText = pct + "% Hoàn thành";
+             const t = document.getElementById(p+'total'); if(t) t.innerText = total;
+             const d = document.getElementById(p+'done'); if(d) d.innerText = done;
+             const pd = document.getElementById(p+'pending'); if(pd) pd.innerText = total-done;
         });
     }
 
-    // 2. Load dữ liệu từ bảng lên form khi kích vào dòng
-    // Đã bỏ load pass, pass luôn là rỗng hoặc ******
-    function loadUserToForm(id, name, role, access) {
+    // --- META TAB FIX ---
+    function renderMetaBlock(data) {
+        // Hàm render cho từng cột trong Meta tab
+        const render = (id, list) => {
+            const c = document.getElementById('list-' + id);
+            if(!c) return; 
+            const arr = [...(list || []), "",""]; // Thêm dòng trống để dễ sửa
+            c.innerHTML = arr.map(v => `<div class="meta-item"><input type="text" value="${v}" readonly></div>`).join('');
+        };
+        render('customers', data.customers);
+        render('machineTypes', data.machineTypes);
+        render('techs', data.techs);
+        render('supports', data.supports);
+    }
+    
+    function enableMetaEdit(id) {
+        const list = document.getElementById('list-'+id);
+        if(!list) return;
+        list.querySelectorAll('input').forEach(i => i.readOnly = false);
+        list.querySelectorAll('.meta-item').forEach(d => d.classList.add('editing'));
+        const col = list.closest('.meta-col');
+        col.querySelector('.btn-edit-mode').style.display = 'none';
+        col.querySelector('.btn-save-mode').style.display = 'inline-block';
+    }
+    
+    async function saveMetaData(id) {
+        const inputs = document.querySelectorAll(`#list-${id} input`);
+        const arr = [...new Set(Array.from(inputs).map(i=>i.value.trim()).filter(v=>v!==""))];
+        
+        showLoading(true, "ĐANG LƯU METADATA...");
+        await db.collection("metadata").doc("dropdowns").set({[id]: arr}, {merge:true});
+        
+        const list = document.getElementById('list-'+id);
+        list.querySelectorAll('input').forEach(i => i.readOnly = true);
+        list.querySelectorAll('.meta-item').forEach(d => d.classList.remove('editing'));
+        const col = list.closest('.meta-col');
+        col.querySelector('.btn-edit-mode').style.display = 'inline-block';
+        col.querySelector('.btn-save-mode').style.display = 'none';
+        showLoading(false);
+    }
+
+    // --- USER TAB FIX ---
+    function fetchUsers() {
+        db.collection("users").onSnapshot(snap => {
+            document.getElementById('userTableBody').innerHTML = snap.docs.map(doc => {
+                const u = doc.data();
+                return `<tr onclick="loadUser('${doc.id}','${u.name}','${u.role}','${u.access}')">
+                    <td><b>${doc.id}</b></td><td>${u.name}</td><td>${u.role}</td></tr>`;
+            }).join('');
+        });
+    }
+    
+    // Hàm mới: Tạo checkbox cho phần user
+    function loadUserAccessCheckboxes(customers) {
+        const c = document.getElementById('u_access_checks');
+        if(!c) return;
+        if(!customers || !customers.length) { c.innerHTML="Chưa có khách hàng"; return; }
+        c.innerHTML = customers.map(cust => `
+            <label style="display:block; margin-bottom:5px; cursor:pointer;">
+                <input type="checkbox" name="user_cust" value="${cust}" style="accent-color:var(--primary)"> 
+                <span style="font-size:12px">${cust}</span>
+            </label>
+        `).join('');
+    }
+
+    function loadUser(id, name, role, access) {
         document.getElementById('u_id').value = id;
         document.getElementById('u_id').readOnly = true;
         document.getElementById('u_name').value = name;
+        document.getElementById('u_pass').readOnly = true; document.getElementById('u_pass').value = "******";
         document.getElementById('u_role').value = role;
         
-        // Mật khẩu không hiển thị, và để readOnly
-        const passInput = document.getElementById('u_pass');
-        passInput.value = "******";
-        passInput.readOnly = true;
-
-        // Xử lý Checkbox quyền truy cập
-        const allowedList = (access || "").split(",").map(s => s.trim());
-        const checks = document.querySelectorAll('input[name="user_cust"]');
-        checks.forEach(ch => {
-            ch.checked = allowedList.includes(ch.value);
-        });
+        const arr = (access||"").split(',').map(s=>s.trim());
+        document.querySelectorAll('input[name="user_cust"]').forEach(cb => cb.checked = arr.includes(cb.value));
+        
         document.getElementById('btnUpdateUser').style.display = 'block';
         document.getElementById('btnDeleteUser').style.display = 'block';
-        document.getElementById('btnResetPass').style.display = 'block';
-        showToast("Đã chọn user: " + id, "info");
     }
-
-    // 3. Thêm User mới
+    
     async function addUser() {
-        const id = document.getElementById('u_id').value.trim(); // Đây chính là Email
+        const id = document.getElementById('u_id').value.trim();
         const pass = document.getElementById('u_pass').value.trim();
-
-        if (!id) return showToast("Vui lòng nhập Email làm User ID", "error");
-        if (pass.length < 6) return showToast("Mật khẩu phải từ 6 ký tự trở lên", "error");
-
-        const selectedAccess = Array.from(document.querySelectorAll('input[name="user_cust"]:checked'))
-            .map(cb => cb.value)
-            .join(', ') || "ALL"; // Nếu vế trái rỗng, lấy "ALL"
-
-        showLoading(true, "ĐANG TẠO TÀI KHOẢN...");
-
+        if(!id || pass.length < 6) return showToast("Email và Pass >= 6 ký tự!", "error");
+        
+        const access = Array.from(document.querySelectorAll('input[name="user_cust"]:checked')).map(c=>c.value).join(', ');
+        
+        showLoading(true);
         try {
-            const secondaryApp = firebase.initializeApp(firebaseConfig, "SecondaryContext");
-            try {
-                await secondaryApp.auth().createUserWithEmailAndPassword(id, pass);
-            } catch (authError) {
-                if (authError.code === 'auth/email-already-in-use') {
-                    throw new Error("Email này đã được tạo tài khoản đăng nhập rồi!");
-                }
-                throw authError;
-            }
-
+            const secondaryApp = firebase.initializeApp(firebaseConfig, "Secondary");
+            await secondaryApp.auth().createUserWithEmailAndPassword(id, pass);
             await db.collection("users").doc(id).set({
                 name: document.getElementById('u_name').value,
                 role: document.getElementById('u_role').value,
-                access: selectedAccess
-                // KHÔNG LƯU PASS VÀO FIRESTORE NỮA
+                access: access || "ALL"
             });
-
             await secondaryApp.delete();
-
-            showToast("Đã tạo tài khoản thành công!", "success");
-            resetUserForm();
-
-        } catch (e) {
-            showToast("Lỗi: " + e.message, "error");
-        } finally {
-            showLoading(false);
-        }
-    }
-
-    // 4. Cập nhật User (Chỉ cập nhật info, không pass)
-    async function updateUser() {
-        const id = document.getElementById('u_id').value.trim();
-        const selectedAccess = Array.from(document.querySelectorAll('input[name="user_cust"]:checked'))
-            .map(cb => cb.value)
-            .join(', ') || "ALL"; 
-        showLoading(true, "ĐANG CẬP NHẬT...");
-        try {
-            await db.collection("users").doc(id).update({
-                name: document.getElementById('u_name').value,
-                role: document.getElementById('u_role').value,
-                access: selectedAccess 
-            });
-            showToast("Đã cập nhật thông tin!", "success");
-        } catch (e) {
-            showToast("Lỗi khi cập nhật!", "error");
-        }
+            showToast("Tạo user thành công!", "success");
+        } catch(e) { showToast(e.message, "error"); }
         showLoading(false);
     }
     
-    // 6. Reset Password (Gửi email)
-    async function resetUserPassword() {
-        const email = document.getElementById('u_id').value.trim();
-        if(!email) return showToast("Không xác định được email user!", "error");
-        
-        const confirmHtml = `
-        <div style="min-width: 250px;">
-            <p style="margin: 0 0 10px 0; font-weight: 600; color: #fbbf24;">🔐 ĐẶT LẠI MẬT KHẨU?</p>
-            <p style="font-size:12px; margin-bottom:15px">Hệ thống sẽ gửi email yêu cầu đặt lại mật khẩu đến: <br><b style="color:white">${email}</b></p>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <button id="resetNo" style="background: #475569; color: white; border: none; padding: 8px; border-radius: 6px; font-weight: bold;">HỦY</button>
-                <button id="resetYes" style="background: #ca8a04; color: white; border: none; padding: 8px; border-radius: 6px; font-weight: bold;">GỬI EMAIL</button>
-            </div>
-        </div>
-        `;
-        
-        const t = showToast("", "info", confirmHtml);
-        
-        t.querySelector('#resetNo').onclick = () => t.remove();
-        
-        t.querySelector('#resetYes').onclick = async () => {
-            t.remove();
-            showLoading(true, "ĐANG GỬI YÊU CẦU...");
-            try {
-                await firebase.auth().sendPasswordResetEmail(email);
-                showToast("Đã gửi email khôi phục thành công!", "success");
-            } catch (e) {
-                showToast("Lỗi: " + e.message, "error");
-            }
-            showLoading(false);
-        };
+    async function updateUser() {
+        const id = document.getElementById('u_id').value;
+        const access = Array.from(document.querySelectorAll('input[name="user_cust"]:checked')).map(c=>c.value).join(', ');
+        await db.collection("users").doc(id).update({
+            name: document.getElementById('u_name').value,
+            role: document.getElementById('u_role').value,
+            access: access || "ALL"
+        });
+        showToast("Đã cập nhật!", "success");
     }
-
-    // 5. Xóa User
-    function deleteUser() {
-        const id = document.getElementById('u_id').value.trim();
-        if (!id) return showToast("Vui lòng chọn tài khoản cần xóa!", "error");
-
-        const confirmHtml = `
-        <div style="min-width: 220px;">
-            <p style="margin: 0 0 5px 0; font-weight: 600; color: #f87171;">⚠️ XÓA TÀI KHOẢN?</p>
-            <p style="margin: 0 0 12px 0; font-size: 13px; color: #cbd5e1;">Xác nhận xóa user: <b>${id}</b></p>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <button id="userNo" style="background: #475569; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">HỦY</button>
-                <button id="userYes" style="background: #7f1d1d; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">XÓA USER</button>
-            </div>
-        </div>
-    `;
-
-        const t = showToast("", "error", confirmHtml);
-        t.querySelector('#userNo').onclick = () => t.remove();
-        t.querySelector('#userYes').onclick = async () => {
-            t.remove();
-            showLoading(true, "ĐANG XÓA TÀI KHOẢN...");
-            try {
-                await db.collection("users").doc(id).delete();
-                showToast("Đã xóa tài khoản " + id, "success");
-                resetUserForm();
-            } catch (e) {
-                showToast("Lỗi khi xóa: " + e.message, "error");
-            }
-            showLoading(false);
-        };
-    }
-
-    function resetUserForm() {
-        document.getElementById('u_id').value = "";
-        document.getElementById('u_id').readOnly = false; // Khi thêm mới thì cho nhập
-        document.getElementById('u_name').value = "";
-        
-        // Reset ô pass về trạng thái nhập được cho user mới
-        const passInput = document.getElementById('u_pass');
-        passInput.value = "";
-        passInput.readOnly = false;
-        
-        document.querySelectorAll('input[name="user_cust"]').forEach(ch => ch.checked = false);
-        document.getElementById('btnUpdateUser').style.display = 'none';
-        document.getElementById('btnDeleteUser').style.display = 'none';
-        document.getElementById('btnResetPass').style.display = 'none';
-    }
-
-    let selectedDocId = null;
-
-    // 1. Load danh sách khách hàng vào Checkbox (Chỉ gọi khi là Admin/Edit)
-    function loadCustomerCheckboxes(customers) {
-        const container = document.getElementById('doc_customer_checks');
-        if (!container) return; 
-
-        if (!customers || customers.length === 0) {
-            container.innerHTML = `<div style="padding:15px; text-align:center; font-size:12px; color:var(--text-muted);">Chưa có dữ liệu khách hàng.</div>`;
-            return;
+    
+    async function deleteUser() {
+        const id = document.getElementById('u_id').value;
+        if(confirm("Xóa user "+id+"?")) {
+            await db.collection("users").doc(id).delete();
+            showToast("Đã xóa!", "success");
+            // Reset form
+            document.getElementById('u_id').value = ''; document.getElementById('u_id').readOnly = false;
+            document.getElementById('u_pass').value = ''; document.getElementById('u_pass').readOnly = false;
+            document.getElementById('u_name').value = '';
+            document.getElementById('btnUpdateUser').style.display='none'; document.getElementById('btnDeleteUser').style.display='none';
         }
-
-        container.innerHTML = customers.map(c => `
-        <label style="display: flex; align-items: center; padding: 5px 15px; cursor: pointer;" class="cust-row">
-            <input type="checkbox" name="doc_cust" value="${c}" style="width: 16px; height: 16px; margin-right: 10px; accent-color: var(--primary);">
-            <span style="font-size: 13px;">${c}</span>
-        </label>
-    `).join('');
     }
 
-    // 2. Lấy dữ liệu tài liệu
+    // --- DOC TAB ---
+    function loadCustomerCheckboxes(list) {
+        const c = document.getElementById('doc_customer_checks');
+        if(c) c.innerHTML = (list||[]).map(cust => `
+            <label style="display:block; cursor:pointer; padding:5px;">
+                <input type="checkbox" name="doc_cust" value="${cust}"> <span style="font-size:12px">${cust}</span>
+            </label>`).join('');
+    }
+    
     function fetchDocs() {
-        db.collection("documents").onSnapshot((snapshot) => {
-            const docs = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
-            renderDocs(docs);
-        });
-    }
-
-    // 3. Hiển thị tài liệu 
-    function renderDocs(docs) {
-        const container = document.getElementById('doc_groups_container');
-        if(!container) return; 
-        
-        let filtered = docs;
-
-        if (AUTH.role === "VIEWER") {
-            const allowedList = (AUTH.access || "")
-                .split(",")
-                .map(s => s.trim())
-                .filter(s => s !== "");
-
-            filtered = docs.filter(d => {
-                if (!d.customers || d.customers.length === 0) return true;
-                return d.customers.some(c => allowedList.includes(c.trim()));
+        db.collection("documents").onSnapshot(snap => {
+            const docs = snap.docs.map(d=>({id:d.id, ...d.data()}));
+            const c = document.getElementById('doc_groups_container');
+            if(!c) return;
+            // Gom nhóm
+            const groups = {};
+            docs.forEach(d => {
+                const t = d.machineType || "KHÁC";
+                if(!groups[t]) groups[t] = [];
+                groups[t].push(d);
             });
-        }
-        // EDIT VÀ ADMIN SẼ THẤY HẾT (KHÔNG FILTER)
-
-        const groups = {};
-        if (filtered.length === 0) {
-            container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">Bạn không có quyền xem tài liệu nào hoặc chưa có tài liệu.</div>`;
-            return;
-        }
-
-        filtered.forEach(d => {
-            const type = d.machineType || "KHÁC / CHƯA PHÂN LOẠI";
-            if (!groups[type]) groups[type] = [];
-            groups[type].push(d);
+            c.innerHTML = Object.keys(groups).map(g => `
+                <div style="margin-bottom:20px">
+                    <div style="background:rgba(0,210,255,0.1); padding:8px; border-radius:8px; color:var(--primary); font-weight:bold; margin-bottom:10px;">📦 ${g}</div>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap:10px;">
+                        ${groups[g].map(d => `
+                            <div class="meta-col" onclick="loadDoc('${d.id}','${d.name}','${d.link}','${d.machineType}','${encodeURIComponent(JSON.stringify(d.customers||[]))}')">
+                                <h4 style="border:none; text-align:left">📄 ${d.name}</h4>
+                                <a href="${d.link}" target="_blank" style="display:block; text-align:center; background:var(--primary); padding:6px; border-radius:4px; color:#000; text-decoration:none; font-weight:bold; font-size:11px;">MỞ TÀI LIỆU</a>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
         });
-
-        container.innerHTML = Object.keys(groups).sort().map(groupName => `
-        <div class="doc-group-section" style="margin-bottom: 20px;">
-            <div style="background: rgba(0, 210, 255, 0.1); padding: 8px 15px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid var(--primary);">
-                <span style="color: var(--primary); font-weight: 600; font-size: 14px;">📦 NHÓM: ${groupName}</span>
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
-                ${groups[groupName].map(d => {
-            const custsAttr = encodeURIComponent(JSON.stringify(d.customers || []));
-
-            // Chỉ hiển thị dòng Quyền xem nếu là ADMIN (Edit và Viewer ẩn)
-            const accessInfoHtml = (AUTH.role === "ADMIN")
-                ? `<div style="font-size:11px; color:var(--text-muted); margin: 5px 0 10px 0;">
-                               <span style="color:var(--primary)">👤 Quyền xem:</span> ${(!d.customers || d.customers.length === 0) ? 'Tất cả' : d.customers.join(', ')}
-                           </div>`
-                : `<div style="margin-top: 15px;"></div>`; 
-
-            return `
-                        <div class="meta-col" style="cursor:pointer;" onclick="handleDocClick('${d.id}', '${d.name}', '${d.link}', '${custsAttr}', '${d.machineType || ""}')">
-                            <h4 style="border:none; margin:0; text-align:left; font-size:14px;">📄 ${d.name}</h4>
-                            
-                            ${accessInfoHtml}
-
-                            <a href="${d.link}" target="_blank" onclick="event.stopPropagation()" 
-                               style="background:var(--primary); color:var(--dark); text-decoration:none; padding:8px; border-radius:6px; text-align:center; font-weight:600; font-size:11px; text-transform:uppercase;">
-                               XEM TÀI LIỆU
-                            </a>
-                        </div>
-                    `;
-        }).join('')}
-            </div>
-        </div>
-    `).join('');
     }
 
-    // Thêm tham số mType vào click
-    function handleDocClick(id, name, link, encodedCusts, mType) {
-        if (AUTH.role === "VIEWER" || AUTH.role === "EDIT") {
-            // Viewer và Edit không được hiện form sửa
-            return;
-        }
-        
-        // CHỈ ADMIN MỚI CHẠY ĐOẠN DƯỚI
+    function loadDoc(id, name, link, type, custEncoded) {
+        if(AUTH.role !== "ADMIN") return;
         selectedDocId = id;
         document.getElementById('doc_name').value = name;
         document.getElementById('doc_link').value = link;
-        document.getElementById('doc_machine_type').value = mType; 
-
-        const custs = JSON.parse(decodeURIComponent(encodedCusts));
-        const checks = document.querySelectorAll('input[name="doc_cust"]');
-        checks.forEach(ch => {
-            ch.checked = custs.includes(ch.value);
-        });
-
-        document.getElementById('btnUpdateDoc').style.display = 'block';
-        document.getElementById('btnDeleteDoc').style.display = 'block';
-        showToast("Đang sửa: " + name, "info");
+        document.getElementById('doc_machine_type').value = type;
+        const arr = JSON.parse(decodeURIComponent(custEncoded));
+        document.querySelectorAll('input[name="doc_cust"]').forEach(cb => cb.checked = arr.includes(cb.value));
+        document.getElementById('btnUpdateDoc').style.display='block';
+        document.getElementById('btnDeleteDoc').style.display='block';
     }
 
-    // 4. Lưu tài liệu mới
     async function addDoc() {
-        const name = document.getElementById('doc_name').value.trim();
-        const link = document.getElementById('doc_link').value.trim();
-        const mType = document.getElementById('doc_machine_type').value;
-        if (!name || !link) return showToast("Thiếu tên hoặc link!", "error");
-
-        const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked')).map(cb => cb.value);
-
-        showLoading(true, "ĐANG LƯU...");
-        await db.collection("documents").add({
-            name,
-            link,
-            machineType: mType,
-            customers: selectedCusts,
-            createdBy: AUTH.user,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-
-        });
-        resetDocForm();
-        showLoading(false);
+        const name = document.getElementById('doc_name').value;
+        const link = document.getElementById('doc_link').value;
+        if(!name || !link) return showToast("Thiếu tên hoặc link", "error");
+        const custs = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked')).map(c=>c.value);
+        await db.collection("documents").add({ name, link, machineType: document.getElementById('doc_machine_type').value, customers: custs });
+        showToast("Đã thêm!", "success");
     }
-
-    // 5. Cập nhật (Update) tương tự
+    
     async function updateDoc() {
-        const selectedCusts = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked')).map(cb => cb.value);
-        showLoading(true, "ĐANG CẬP NHẬT...");
+        const custs = Array.from(document.querySelectorAll('input[name="doc_cust"]:checked')).map(c=>c.value);
         await db.collection("documents").doc(selectedDocId).update({
             name: document.getElementById('doc_name').value,
             link: document.getElementById('doc_link').value,
             machineType: document.getElementById('doc_machine_type').value,
-            customers: selectedCusts
+            customers: custs
         });
-        resetDocForm();
-        showLoading(false);
+        showToast("Cập nhật xong!", "success");
     }
-
+    
+    async function deleteDoc() {
+        if(confirm("Xóa tài liệu này?")) {
+            await db.collection("documents").doc(selectedDocId).delete();
+            showToast("Đã xóa!", "success");
+            resetDocForm();
+        }
+    }
+    
     function resetDocForm() {
         selectedDocId = null;
-        document.getElementById('doc_name').value = "";
-        document.getElementById('doc_link').value = "";
-        document.getElementById('doc_machine_type').value = ""; 
-        document.querySelectorAll('input[name="doc_cust"]').forEach(ch => ch.checked = false);
-        document.getElementById('btnUpdateDoc').style.display = 'none';
-        document.getElementById('btnDeleteDoc').style.display = 'none';
+        document.getElementById('doc_name').value='';
+        document.getElementById('doc_link').value='';
+        document.querySelectorAll('input[name="doc_cust"]').forEach(c=>c.checked=false);
+        document.getElementById('btnUpdateDoc').style.display='none';
+        document.getElementById('btnDeleteDoc').style.display='none';
     }
 
-    function deleteDoc() {
-        const confirmHtml = `
-        <div style="min-width: 200px;">
-            <p style="margin: 0 0 12px 0; font-weight: 600;">⚠️ XÓA TÀI LIỆU NÀY?</p>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <button id="btnNo" style="background: #475569; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">HỦY</button>
-                <button id="btnYes" style="background: #ef4444; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">XÓA NGAY</button>
+    // --- COMMON UTILS ---
+    async function saveData() {
+        const c = document.getElementById('customer').value;
+        const n = document.getElementById('content').value;
+        if(!c || !n) return showToast("Chọn khách và nhập nội dung!", "error");
+        await db.collection("logs").add({
+            workDate: document.getElementById('hiddenDate').value,
+            customer: c, tech: document.getElementById('techName').value,
+            machineType: document.getElementById('machineType').value,
+            support: document.getElementById('supportType').value,
+            content: n, note: document.getElementById('note').value,
+            createdBy: AUTH.user
+        });
+        showToast("Lưu thành công!", "success");
+        document.getElementById('content').value = ""; document.getElementById('note').value = "";
+    }
+
+    function openInfoModal(i) {
+        const r = window.currentLogs[i];
+        document.getElementById('modalBody').innerHTML = `
+            <div class="detail-grid">
+                <div class="detail-item"><span class="detail-label">Ngày:</span><b style="color:var(--primary)">${formatVN(r[1])}</b></div>
+                <div class="detail-item"><span class="detail-label">Khách:</span><b>${r[2]}</b></div>
+                <div class="detail-item"><span class="detail-label">Máy:</span>${r[3]}</div>
+                <div class="detail-item"><span class="detail-label">Hỗ trợ:</span>${r[4]}</div>
             </div>
-        </div>
-    `;
-
-        const t = showToast("", "info", confirmHtml);
-
-        t.querySelector('#btnNo').onclick = () => t.remove();
-
-        t.querySelector('#btnYes').onclick = async () => {
-            t.remove(); 
-            showLoading(true, "ĐANG XÓA...");
-            try {
-                await db.collection("documents").doc(selectedDocId).delete();
-                showToast("Đã xóa tài liệu!", "success");
-                resetDocForm();
-            } catch (e) {
-                showToast("Lỗi: " + e.message, "error");
-            }
-            showLoading(false);
-        };
+            <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; margin-top:10px;">${r[5]}</div>
+            <div style="font-style:italic; color:var(--text-muted); margin-top:5px; font-size:12px">Note: ${r[8]}</div>
+            ${AUTH.role === "ADMIN" ? `<button onclick="deleteLog('${r[0]}')" style="margin-top:15px; background:#7f1d1d; color:#fff; border:none; padding:8px; border-radius:5px; width:100%">XÓA BÁO CÁO</button>` : ''}
+        `;
+        document.getElementById('infoModal').style.display='flex';
+    }
+    
+    async function deleteLog(id) {
+        if(confirm("Xóa báo cáo này?")) {
+            await db.collection("logs").doc(id).delete();
+            document.getElementById('infoModal').style.display='none';
+            showToast("Đã xóa!", "success");
+        }
     }
 
-    function filterDocs() {
-        const val = document.getElementById('searchDoc').value.toUpperCase();
-        const cards = document.querySelectorAll('#doc-tab .meta-col');
-        cards.forEach(c => c.style.display = c.innerText.toUpperCase().includes(val) ? "" : "none");
+    function confirmDate(v) { document.getElementById('workDateDisplay').value = formatVN(v); document.getElementById('dateModal').style.display='none'; }
+    function formatVN(s) { if(!s) return ""; const d=new Date(s); return d.getDate().toString().padStart(2,'0')+"/"+(d.getMonth()+1).toString().padStart(2,'0')+"/"+d.getFullYear(); }
+    function showLoading(s, t) { document.getElementById('loading-overlay').style.display = s?'flex':'none'; if(t) document.getElementById('loading-text').innerText=t; }
+    function showToast(m, type) {
+        const t = document.createElement('div'); t.className = 'toast'; t.innerText = m;
+        if(type==='error') t.style.borderColor='#ef4444';
+        document.getElementById('toast-container').appendChild(t);
+        setTimeout(()=>t.remove(), 2500);
     }
-
-    let charts = {}; 
-
-    function updateDashboard(logs) {
-        const stats = {
-            cust: {},
-            machine: {},
-            staff: {},
-            support: {}
-        };
-
-        logs.forEach(log => {
-            const customer = log[2];
-            const machine = log[3];
-            const support = log[4];
-            const staff = log[6];
-
-            if (customer) stats.cust[customer] = (stats.cust[customer] || 0) + 1;
-            if (machine) stats.machine[machine] = (stats.machine[machine] || 0) + 1;
-            if (staff) stats.staff[staff] = (stats.staff[staff] || 0) + 1;
-            if (support) stats.support[support] = (stats.support[support] || 0) + 1;
+    
+    // --- DASHBOARD CHARTS ---
+    function updateDashboard() {
+        if(AUTH.role === "VIEWER") return; // Viewer thường không xem chart
+        const stats = {};
+        window.currentLogs.forEach(r => {
+            const c = r[2]; stats[c] = (stats[c]||0)+1;
         });
-
-        renderChart("chartCust", "Số lần theo Khách hàng", stats.cust, 'bar');
-        renderChart("chartMachine", "Số lần theo Loại máy", stats.machine, 'bar');
-        renderChart("chartStaff", "Số lần theo Kỹ thuật", stats.staff, 'bar');
-        renderChart("chartSupport", "Số lần theo Loại hỗ trợ", stats.support, 'bar');
-    }
-
-    function renderChart(canvasId, label, dataObj, type) {
-        const ctx = document.getElementById(canvasId).getContext('2d');
-        if (charts[canvasId]) charts[canvasId].destroy();
-
-        const sortedEntries = Object.entries(dataObj).sort((a, b) => b[1] - a[1]);
-        const labels = sortedEntries.map(el => el[0]);
-        const values = sortedEntries.map(el => el[1]);
-
-        const isCust = (canvasId === "chartCust" || canvasId === "chartMachine");
-
-        charts[canvasId] = new Chart(ctx, {
-            type: type,
+        const ctx = document.getElementById('chartCust');
+        if(!ctx) return;
+        if(window.myChart) window.myChart.destroy();
+        window.myChart = new Chart(ctx, {
+            type: 'bar',
             data: {
-                labels: labels,
-                datasets: [{
-                    label: label,
-                    data: values,
-                    backgroundColor: 'rgba(0, 210, 255, 0.7)',
-                    borderColor: '#00d2ff',
-                    borderWidth: 1,
-                    borderRadius: 5,
-                    barPercentage: 0.6,
-                    categoryPercentage: 0.7,
-                    maxBarThickness: isCust ? 20 : 35
-                }]
+                labels: Object.keys(stats),
+                datasets: [{ label: 'Số lần hỗ trợ', data: Object.values(stats), backgroundColor: '#00d2ff' }]
             },
-            options: {
-                indexAxis: isCust ? 'y' : 'x',
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            display: isCust ? false : true,
-                            color: 'rgba(255,255,255,0.05)'
-                        },
-                        ticks: {
-                            color: '#94a3b8',
-                            font: {size: 10},
-                            stepSize: 1
-                        }
-                    },
-                    x: {
-                        beginAtZero: true,
-                        grid: {
-                            display: isCust ? true : false,
-                            color: 'rgba(255,255,255,0.05)'
-                        },
-                        ticks: {
-                            color: '#94a3b8',
-                            font: {size: 10}
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {display: false}
-                }
-            }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display:false} } }
         });
     }
 
-
-    firebase.auth().onAuthStateChanged(async (user) => {
-        if (user) {
-            const email = user.email;
-            try {
-                const userDoc = await db.collection("users").doc(email).get();
-                if (userDoc.exists) {
-                    const userData = userDoc.data();
-                    AUTH = {
-                        user: email,
-                        uid: user.uid,
-                        role: userData.role,
-                        access: userData.access || "ALL"
-                    };
-
-                    showApp();
-                    fetchData();
-                }
-            } catch (e) {
-                console.error("Lỗi đồng bộ dữ liệu khi F5:", e);
-            }
-        } else {
-            const lockScreen = document.getElementById('lock-screen');
-            const mainContent = document.getElementById('main-content');
-            if (lockScreen) lockScreen.style.display = 'flex';
-            if (mainContent) mainContent.style.display = 'none';
-        }
-    });
-
-    function updateOnlineStatus() {
-        const dot = document.getElementById('status-dot');
-        const text = document.getElementById('status-text');
-        const container = document.getElementById('network-status-container');
-
-        if (navigator.onLine) {
-            container.classList.remove('offline');
-            dot.style.display = 'block';
-            text.innerText = "Hệ thống đang trực tuyến";
-        } else {
-            container.classList.add('offline');
-            text.innerText = "Hệ thống đang ngoại tuyến";
-            showToast("Mất kết nối internet!", "error");
-        }
+    function filterTable() {
+        const v = document.getElementById('searchBox').value.toUpperCase();
+        const trs = document.getElementById('tableBody').getElementsByTagName('tr');
+        for(let r of trs) r.style.display = r.innerText.toUpperCase().includes(v) ? "" : "none";
     }
-
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
-    document.addEventListener('DOMContentLoaded', updateOnlineStatus);
-
-    document.addEventListener("DOMContentLoaded", () => {
-        const passwordInput = document.getElementById('passInput');
-        const userInput = document.getElementById('userInput');
-        const handleEnter = (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                unlock();
-            }
-        };
-        if (passwordInput) passwordInput.addEventListener('keypress', handleEnter);
-        if (userInput) userInput.addEventListener('keypress', handleEnter);
-    });
-
-    function handleLogin(event) {
-        event.preventDefault();
-        unlock();
+    function filterProcesses() {
+        const v = document.getElementById('searchProcess').value.toUpperCase();
+        const trs = document.getElementById('processTableBody').getElementsByTagName('tr');
+        for(let r of trs) r.style.display = r.innerText.toUpperCase().includes(v) ? "" : "none";
     }
-
-    async function backupData() {
-        showToast("Đang chuẩn bị bản sao lưu...", "info");
-
-        showLoading(true, "ĐANG GOM DỮ LIỆU...");
-        try {
-            const collections = ['logs', 'metadata', 'users', 'documents', 'processes'];
-            let backup = {};
-
-            for (const colName of collections) {
-                const snapshot = await db.collection(colName).get();
-                backup[colName] = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
-            }
-
-            const blob = new Blob([JSON.stringify(backup, null, 2)], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            const date = new Date().toISOString().split('T')[0];
-            a.href = url;
-            a.download = `Backup_TechLog_${date}.json`;
-
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            showToast("Sao lưu thành công!", "success");
-        } catch (e) {
-            console.error(e);
-            showToast("Lỗi sao lưu: " + e.message, "error");
-        } finally {
-            showLoading(false);
-        }
-    }
-
-    async function restoreData(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        showToast("Đang đọc file và chuẩn bị khôi phục...", "info");
-
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            try {
-                const data = JSON.parse(e.target.result);
-                showLoading(true, "ĐANG KHÔI PHỤC...");
-
-                for (const colName in data) {
-                    const items = data[colName];
-                    for (const item of items) {
-                        const {id, ...details} = item;
-                        await db.collection(colName).doc(id).set(details);
-                    }
-                }
-
-                showToast("Khôi phục hoàn tất! Trang sẽ tải lại.", "success");
-                setTimeout(() => location.reload(), 2000);
-            } catch (err) {
-                console.error(err);
-                showToast("Lỗi: File không đúng định dạng!", "error");
-            } finally {
-                showLoading(false);
-                event.target.value = ''; 
-            }
-        };
-        reader.readAsText(file);
+    function filterDocs() {
+        const v = document.getElementById('searchDoc').value.toUpperCase();
+        document.querySelectorAll('#doc-tab .meta-col').forEach(c => c.style.display = c.innerText.toUpperCase().includes(v)?"":"none");
     }
 </script>
-
 </body>
 </html>
