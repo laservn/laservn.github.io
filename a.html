@@ -8,7 +8,7 @@
         <script>
             var domainChinh = "tech.laser.info.vn";
             if (window.location.hostname !== domainChinh && window.location.hostname !== "localhost" && window.location.protocol !== "file:") {
-                // window.location.replace("https://tech.laser.info.vn" + window.location.pathname + window.location.search);
+                 window.location.replace("https://tech.laser.info.vn" + window.location.pathname + window.location.search);
             }
         </script>
 
@@ -28,6 +28,8 @@
                 --border: rgba(255, 255, 255, 0.1);
                 --text-main: #f8fafc;
                 --text-muted: #94a3b8;
+                --success: #10b981;
+                --warning: #f59e0b;
             }
 
             body {
@@ -715,6 +717,42 @@
                 background: rgba(15, 23, 42, 0.5);
                 border: 1px solid var(--border);
             }
+
+            /* PROCESS BAR STYLE */
+            .process-progress-container {
+                background: var(--card);
+                padding: 15px;
+                border-radius: 12px;
+                border: 1px solid var(--border);
+                margin-bottom: 20px;
+            }
+            .progress-track {
+                height: 20px;
+                background: #334155;
+                border-radius: 10px;
+                overflow: hidden;
+                position: relative;
+                margin-top: 10px;
+            }
+            .progress-fill {
+                height: 100%;
+                background: linear-gradient(90deg, #10b981, #34d399);
+                width: 0%;
+                transition: width 0.5s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #064e3b;
+                font-size: 10px;
+                font-weight: bold;
+            }
+            .progress-labels {
+                display: flex;
+                justify-content: space-between;
+                font-size: 11px;
+                color: var(--text-muted);
+                margin-bottom: 5px;
+            }
         </style>
     </head>
 <body>
@@ -772,6 +810,8 @@
         <button class="tab-btn active" onclick="switchTab('dashboard', this)" style="font-size: 40px;">🏠</button>
         <button class="tab-btn" onclick="switchTab('data-tab', this)" style="font-size: 40px;">📑</button>
         <button class="tab-btn" id="btnTabForm" onclick="switchTab('form-tab', this)" style="font-size: 40px;">📝</button>
+        <button class="tab-btn" id="btnTabProcess" onclick="switchTab('process-tab', this)" style="font-size: 40px;">🚀</button>
+        
         <button class="tab-btn" id="btnTabMeta" onclick="switchTab('meta-tab', this)" style="font-size: 40px;">⚙️</button>
         <button class="tab-btn" id="btnTabUser" onclick="switchTab('user-tab', this)" style="font-size: 40px;">👨‍🔧
         </button>
@@ -779,6 +819,20 @@
     </div>
 
     <div id="dashboard" class="tab-content active">
+        <div id="dash-progress-container" class="process-progress-container" style="display:none;">
+             <div class="progress-labels">
+                <span><i class="fas fa-tasks"></i> TIẾN TRÌNH CÔNG VIỆC DỰ KIẾN</span>
+                <span id="dash-progress-text">0% Hoàn thành</span>
+            </div>
+            <div class="progress-track">
+                <div id="dash-progress-fill" class="progress-fill"></div>
+            </div>
+             <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:11px;">
+                <span style="color:var(--text-muted)">Tổng: <b id="dash-total" style="color:white">0</b></span>
+                <span style="color:#10b981">Xong: <b id="dash-done">0</b></span>
+                <span style="color:#f59e0b">Chưa: <b id="dash-pending">0</b></span>
+            </div>
+        </div>
 
         <div class="inner-filter-box"
              style="background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
@@ -911,6 +965,79 @@
                       style="height:100px"></textarea>
             <input type="text" id="note" placeholder="Ghi chú thêm (Không bắt buộc)...">
             <button class="btn-save" id="btnSave" onclick="saveData()">LƯU BÁO CÁO</button>
+        </div>
+    </div>
+
+    <div id="process-tab" class="tab-content">
+        <div id="proc-progress-container" class="process-progress-container">
+             <div class="progress-labels">
+                <span><i class="fas fa-tasks"></i> TIẾN TRÌNH CÔNG VIỆC DỰ KIẾN</span>
+                <span id="proc-progress-text">0% Hoàn thành</span>
+            </div>
+            <div class="progress-track">
+                <div id="proc-progress-fill" class="progress-fill"></div>
+            </div>
+             <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:11px;">
+                <span style="color:var(--text-muted)">Tổng: <b id="proc-total" style="color:white">0</b></span>
+                <span style="color:#10b981">Xong: <b id="proc-done">0</b></span>
+                <span style="color:#f59e0b">Chưa: <b id="proc-pending">0</b></span>
+            </div>
+        </div>
+
+        <div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+                 <div class="input-group" style="margin-bottom:0">
+                    <label style="font-size:10px; color:var(--text-muted)">Ngày bắt đầu:</label>
+                    <input type="date" id="proc_start_date" style="padding-left:12px!important">
+                 </div>
+                 <div class="input-group" style="margin-bottom:0">
+                     <label style="font-size:10px; color:var(--text-muted)">Tên tiến trình:</label>
+                     <input type="text" id="proc_name" placeholder="Tên tiến trình..." style="padding-left:12px!important">
+                 </div>
+                 <div class="input-group" style="margin-bottom:0">
+                    <label style="font-size:10px; color:var(--text-muted)">Kỹ thuật phụ trách:</label>
+                    <select id="proc_tech" style="padding-left:12px!important"><option value="">-- Chọn kỹ thuật --</option></select>
+                 </div>
+            </div>
+            
+            <textarea id="proc_content" placeholder="Nội dung chi tiết..." style="height:80px; margin-top:10px;"></textarea>
+            <input type="text" id="proc_note" placeholder="Ghi chú...">
+
+            <div class="input-group">
+                <label style="font-size:10px; color:var(--success); font-weight:bold">Ngày hoàn thành (Để trống nếu CHƯA xong):</label>
+                <input type="date" id="proc_end_date" style="padding-left:12px!important; border-color: var(--success);">
+            </div>
+
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:15px;">
+                <button class="btn-save" onclick="saveProcess()" style="background:#065f46">➕ THÊM</button>
+                <button class="btn-save" id="btnUpdateProc" onclick="updateProcess()"
+                        style="background:#1e3a8a; display:none;">💾 CẬP NHẬT
+                </button>
+                <button class="btn-save" id="btnDeleteProc" onclick="deleteProcess()"
+                        style="background:#7f1d1d; display:none;">🗑️ XÓA
+                </button>
+                <button class="btn-save" onclick="resetProcessForm()" style="background:#475569">🧹 LÀM MỚI</button>
+            </div>
+        </div>
+
+        <input type="text" id="searchProcess" onkeyup="filterProcesses()" placeholder="🔍 Tìm kiếm tiến trình..."
+               style="border: 1px solid var(--primary); background: rgba(0,210,255,0.05);">
+
+        <div class="table-container">
+            <table>
+                <thead>
+                <tr>
+                    <th>Bắt đầu</th>
+                    <th>Tiến trình</th>
+                    <th>Nội dung</th>
+                    <th>Ghi chú</th>
+                    <th>Kỹ thuật</th>
+                    <th>Hoàn thành</th>
+                    <th>Trạng thái</th>
+                </tr>
+                </thead>
+                <tbody id="processTableBody"></tbody>
+            </table>
         </div>
     </div>
 
@@ -1159,6 +1286,7 @@
     let AUTH = JSON.parse(localStorage.getItem('tech_auth_v4')) || null;
     let USER_ROLE = "VIEWER";
     window.currentLogs = [];
+    window.currentProcesses = []; // Lưu trữ tiến trình
 
     function switchTab(tabId, btn) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -1398,7 +1526,11 @@
             select.value = val;
         };
         if (d.customers) update('customer', d.customers, 'Khách hàng');
-        if (d.techs) update('techName', d.techs, 'Kỹ thuật');
+        if (d.techs) {
+            update('techName', d.techs, 'Kỹ thuật');
+            // Update cho cả tab Tiến trình mới
+            update('proc_tech', d.techs, 'Chọn kỹ thuật');
+        }
         if (d.machineTypes) update('machineType', d.machineTypes, 'Loại máy');
         if (d.supports) update('supportType', d.supports, 'Hỗ trợ');
         
@@ -1647,13 +1779,16 @@
         if (role === "VIEWER") {
             idsToRemove = [
                 'form-tab',       // Tab Báo cáo
+                'process-tab',    // Tab Tiến trình (NEW)
                 'meta-tab',       // Tab Cấu hình
                 'user-tab',       // Tab Thành viên
                 'btnTabForm',     // Nút tab Báo cáo
+                'btnTabProcess',  // Nút tab Tiến trình (NEW)
                 'btnTabMeta',     // Nút tab Cấu hình
                 'btnTabUser',     // Nút tab Thành viên
                 'doc-form-container', // Form nhập liệu ở Tab Tài liệu
-                'admin-backup-zone' // Khu vực backup
+                'admin-backup-zone', // Khu vực backup
+                'dash-progress-container' // Thanh tiến trình ở Dashboard
             ];
              // Viewer vẫn xem được doc nếu có access
             if (AUTH.access && AUTH.access !== "") {
@@ -1664,14 +1799,17 @@
 
         } else if (role === "EDIT") {
             // EDIT: Được dùng Form, nhưng KHÔNG được dùng Meta, User
-            // Doc: Read-only ALL
+            // EDIT: Không được dùng Tiến trình
             idsToRemove = [
+                'process-tab',    // Tab Tiến trình (NEW)
                 'meta-tab',       // Tab Cấu hình
                 'user-tab',       // Tab Thành viên
+                'btnTabProcess',  // Nút tab Tiến trình (NEW)
                 'btnTabMeta',     // Nút tab Cấu hình
                 'btnTabUser',     // Nút tab Thành viên
                 'doc-form-container', // Form nhập liệu tài liệu (Chỉ xem)
-                'admin-backup-zone' // Khu vực backup
+                'admin-backup-zone', // Khu vực backup
+                'dash-progress-container' // Thanh tiến trình ở Dashboard
             ];
             
             // EDIT được xem tất cả tài liệu
@@ -1679,9 +1817,11 @@
             if(docBtn) docBtn.style.display = 'block';
             fetchDocs(); 
         } else if (role === "ADMIN") {
-            // ADMIN: Giữ nguyên, load thêm user
+            // ADMIN: Giữ nguyên, load thêm user và TIẾN TRÌNH
             fetchUsers();
             fetchDocs();
+            fetchProcesses(); // (NEW)
+            document.getElementById('dash-progress-container').style.display = 'block';
         }
 
         // Xóa DOM
@@ -1696,6 +1836,9 @@
         const iso = new Date().toISOString().split('T')[0];
         document.getElementById('hiddenDate').value = iso;
         document.getElementById('workDateDisplay').value = formatVN(iso);
+        // Set cho form tiến trình mới
+        const pStart = document.getElementById('proc_start_date');
+        if(pStart) pStart.value = iso;
     }
 
     function confirmDate(v) {
@@ -1738,6 +1881,191 @@
             setTimeout(() => t.remove(), 2500);
         }
         return t;
+    }
+
+    // --- LOGIC QUẢN LÝ TIẾN TRÌNH (NEW FUNCTIONALITY) ---
+    
+    let selectedProcessId = null;
+
+    function fetchProcesses() {
+        // Chỉ Admin mới gọi hàm này (đã check ở applyPermissions)
+        db.collection("processes").orderBy("startDate", "desc").onSnapshot(snapshot => {
+            window.currentProcesses = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+            renderProcesses(window.currentProcesses);
+            updateProgressBar();
+        });
+    }
+
+    function renderProcesses(list) {
+        const tbody = document.getElementById('processTableBody');
+        if(!tbody) return;
+
+        const html = list.map(p => {
+            const isCompleted = p.endDate && p.endDate.trim() !== "";
+            const statusBadge = isCompleted 
+                ? `<span style="background:#065f46; color:#6ee7b7; padding:4px 8px; border-radius:6px; font-size:10px; font-weight:bold;">HOÀN THÀNH</span>`
+                : `<span style="background:#78350f; color:#fcd34d; padding:4px 8px; border-radius:6px; font-size:10px; font-weight:bold;">ĐANG XỬ LÝ</span>`;
+
+            return `
+            <tr onclick="loadProcessToForm('${p.id}')">
+                <td style="color:var(--text-muted); font-size:12px">${formatVN(p.startDate)}</td>
+                <td style="font-weight:600; color:var(--primary)">${p.name}</td>
+                <td style="color:#cbd5e1">${(p.content || "").substring(0, 30)}...</td>
+                <td style="font-style:italic; font-size:12px; color:var(--text-muted)">${p.note || ""}</td>
+                <td><span class="badge-tech">${p.tech || ""}</span></td>
+                <td style="font-size:12px">${p.endDate ? formatVN(p.endDate) : '---'}</td>
+                <td>${statusBadge}</td>
+            </tr>
+            `;
+        }).join('');
+        tbody.innerHTML = html;
+    }
+
+    function loadProcessToForm(id) {
+        const p = window.currentProcesses.find(item => item.id === id);
+        if(!p) return;
+        
+        selectedProcessId = id;
+        document.getElementById('proc_start_date').value = p.startDate;
+        document.getElementById('proc_name').value = p.name;
+        document.getElementById('proc_tech').value = p.tech || "";
+        document.getElementById('proc_content').value = p.content || "";
+        document.getElementById('proc_note').value = p.note || "";
+        document.getElementById('proc_end_date').value = p.endDate || "";
+
+        document.getElementById('btnUpdateProc').style.display = 'block';
+        document.getElementById('btnDeleteProc').style.display = 'block';
+    }
+
+    async function saveProcess() {
+        const start = document.getElementById('proc_start_date').value;
+        const name = document.getElementById('proc_name').value.trim();
+        const tech = document.getElementById('proc_tech').value;
+        const content = document.getElementById('proc_content').value.trim();
+        
+        if(!start || !name || !content) return showToast("Vui lòng nhập Ngày, Tên và Nội dung!", "error");
+
+        const data = {
+            startDate: start,
+            name: name,
+            tech: tech,
+            content: content,
+            note: document.getElementById('proc_note').value.trim(),
+            endDate: document.getElementById('proc_end_date').value, // Rỗng nghĩa là chưa xong
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        showLoading(true, "ĐANG THÊM TIẾN TRÌNH...");
+        try {
+            await db.collection("processes").add(data);
+            showToast("Thêm tiến trình thành công!", "success");
+            resetProcessForm();
+        } catch(e) {
+            showToast("Lỗi: " + e.message, "error");
+        }
+        showLoading(false);
+    }
+
+    async function updateProcess() {
+        if(!selectedProcessId) return;
+        const data = {
+            startDate: document.getElementById('proc_start_date').value,
+            name: document.getElementById('proc_name').value.trim(),
+            tech: document.getElementById('proc_tech').value,
+            content: document.getElementById('proc_content').value.trim(),
+            note: document.getElementById('proc_note').value.trim(),
+            endDate: document.getElementById('proc_end_date').value
+        };
+
+        showLoading(true, "ĐANG CẬP NHẬT...");
+        try {
+            await db.collection("processes").doc(selectedProcessId).update(data);
+            showToast("Cập nhật thành công!", "success");
+            resetProcessForm();
+        } catch(e) {
+             showToast("Lỗi: " + e.message, "error");
+        }
+        showLoading(false);
+    }
+
+    async function deleteProcess() {
+        if(!selectedProcessId) return;
+        
+        const confirmHtml = `
+            <div style="min-width: 200px;">
+                <p style="margin: 0 0 12px 0; font-weight: 600;">⚠️ XÓA TIẾN TRÌNH NÀY?</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <button id="pNo" style="background: #475569; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer;">HỦY</button>
+                    <button id="pYes" style="background: #ef4444; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer;">XÓA NGAY</button>
+                </div>
+            </div>`;
+        
+        const t = showToast("", "info", confirmHtml);
+        t.querySelector('#pNo').onclick = () => t.remove();
+        t.querySelector('#pYes').onclick = async () => {
+            t.remove();
+            showLoading(true, "ĐANG XÓA...");
+            try {
+                await db.collection("processes").doc(selectedProcessId).delete();
+                showToast("Đã xóa!", "success");
+                resetProcessForm();
+            } catch(e) {
+                showToast("Lỗi: " + e.message, "error");
+            }
+            showLoading(false);
+        };
+    }
+
+    function resetProcessForm() {
+        selectedProcessId = null;
+        document.getElementById('proc_name').value = "";
+        document.getElementById('proc_content').value = "";
+        document.getElementById('proc_note').value = "";
+        document.getElementById('proc_end_date').value = "";
+        document.getElementById('proc_tech').value = "";
+        
+        // Reset ngày bắt đầu về hôm nay
+        const iso = new Date().toISOString().split('T')[0];
+        document.getElementById('proc_start_date').value = iso;
+
+        document.getElementById('btnUpdateProc').style.display = 'none';
+        document.getElementById('btnDeleteProc').style.display = 'none';
+    }
+
+    function filterProcesses() {
+        const val = document.getElementById('searchProcess').value.toUpperCase();
+        const rows = document.getElementById('processTableBody').getElementsByTagName('tr');
+        for (let r of rows) r.style.display = r.innerText.toUpperCase().includes(val) ? "" : "none";
+    }
+
+    function updateProgressBar() {
+        const total = window.currentProcesses.length;
+        if(total === 0) return;
+
+        const done = window.currentProcesses.filter(p => p.endDate && p.endDate.trim() !== "").length;
+        const percent = Math.round((done / total) * 100);
+        const pending = total - done;
+
+        // Cập nhật UI ở 2 nơi: Dashboard và Tab Tiến trình
+        const updateUI = (prefix) => {
+            const fill = document.getElementById(prefix + 'progress-fill');
+            const text = document.getElementById(prefix + 'progress-text');
+            const elTotal = document.getElementById(prefix + 'total');
+            const elDone = document.getElementById(prefix + 'done');
+            const elPending = document.getElementById(prefix + 'pending');
+
+            if(fill) {
+                fill.style.width = percent + '%';
+                fill.innerText = percent + '%';
+            }
+            if(text) text.innerText = percent + "% Hoàn thành";
+            if(elTotal) elTotal.innerText = total;
+            if(elDone) elDone.innerText = done;
+            if(elPending) elPending.innerText = pending;
+        };
+
+        updateUI('dash-');
+        updateUI('proc-');
     }
 
     // --- LOGIC QUẢN LÝ TÀI KHOẢN (TAB 4) ---
@@ -2310,7 +2638,7 @@
 
         showLoading(true, "ĐANG GOM DỮ LIỆU...");
         try {
-            const collections = ['logs', 'metadata', 'users', 'documents'];
+            const collections = ['logs', 'metadata', 'users', 'documents', 'processes'];
             let backup = {};
 
             for (const colName of collections) {
