@@ -772,11 +772,11 @@
         <p style="margin-top: 5px; font-size: 0.75rem; color: var(--text-muted);">Hệ thống quản lý báo cáo công việc</p>
         <div class="input-group">
             <i class="fas fa-user"></i>
-            <input type="text" id="userInput" spellcheck="false" placeholder=Tên đăng nhập" required autocomplete="username">
+            <input type="text" id="userInput" spellcheck="false" placeholder="Tên đăng nhập" required autocomplete="username">
         </div>
         <div class="input-group">
             <i class="fas fa-lock"></i>
-            <input type="password" id="passInput" spellcheck="false" placeholder=Mật khẩu" required autocomplete="current-password">
+            <input type="password" id="passInput" spellcheck="false" placeholder="Mật khẩu" required autocomplete="current-password">
         </div>
         <button type="submit" class="btn-save" style="margin-top:10px">
             <span>ĐĂNG NHẬP</span>
@@ -929,7 +929,7 @@
         </div>
 
         <input type="text" id="searchBox" onkeyup="filterTable()"
-               spellcheck="false" placeholder=🔍 Tìm kiếm nhanh (Máy, khách, nội dung...)">
+               spellcheck="false" placeholder="🔍 Tìm kiếm nhanh (Máy, khách, nội dung...)">
         <div class="table-container">
             <table>
                 <thead>
@@ -961,9 +961,9 @@
                 <select id="machineType"><option value="">-- Loại máy --</option></select>
                 <select id="supportType"><option value="">-- Hỗ trợ --</option></select>
             </div>
-            <textarea id="content" spellcheck="false" placeholder=Mô tả công việc thực hiện (Bắt buộc)..."
+            <textarea id="content" spellcheck="false" placeholder="Mô tả công việc thực hiện (Bắt buộc)..."
                       style="height:100px"></textarea>
-            <input type="text" id="note" spellcheck="false" placeholder=Ghi chú thêm (Không bắt buộc)...">
+            <input type="text" id="note" spellcheck="false" placeholder="Ghi chú thêm (Không bắt buộc)...">
             <button class="btn-save" id="btnSave" onclick="saveData()">LƯU BÁO CÁO</button>
         </div>
     </div>
@@ -997,7 +997,7 @@
 		         </div>
 		         <div class="input-group" style="margin-bottom:0">
 		             <label style="font-size:10px; color:var(--text-muted)">Tên tiến trình:</label>
-		             <input type="text" id="proc_name" spellcheck="false" placeholder=Tên tiến trình..." style="padding-left:12px!important">
+		             <input type="text" id="proc_name" spellcheck="false" placeholder="Tên tiến trình..." style="padding-left:12px!important">
 		         </div>
 		         <div class="input-group" style="margin-bottom:0">
 		            <label style="font-size:10px; color:var(--text-muted)">Kỹ thuật phụ trách:</label>
@@ -1005,8 +1005,8 @@
 		         </div>
 		    </div>
 		    
-		    <textarea id="proc_content" spellcheck="false" placeholder=Nội dung chi tiết..." style="height:80px; margin-top:10px;"></textarea>
-		    <input type="text" id="proc_note" spellcheck="false" placeholder=Ghi chú...">
+		    <textarea id="proc_content" spellcheck="false" placeholder="Nội dung chi tiết..." style="height:80px; margin-top:10px;"></textarea>
+		    <input type="text" id="proc_note" spellcheck="false" placeholder="Ghi chú...">
 		    
 		    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
 
@@ -1034,7 +1034,7 @@
 		    </div>
 		</div>
 	</div>
-        <input type="text" id="searchProcess" onkeyup="filterProcesses()" spellcheck="false" placeholder=🔍 Tìm kiếm tiến trình..."
+        <input type="text" id="searchProcess" onkeyup="filterProcesses()" spellcheck="false" placeholder="🔍 Tìm kiếm tiến trình..."
                style="border: 1px solid var(--primary); background: rgba(0,210,255,0.05);">
 
         <div class="table-container">
@@ -1107,9 +1107,9 @@
    	<div id="userFormWrapper" style="display: none;">
 		<div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
 		    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px;">
-		        <input type="text" id="u_id" spellcheck="false" placeholder=User ID (Tên đăng nhập)">
-		        <input type="text" id="u_name" spellcheck="false" placeholder=Họ tên">
-		        <input type="text" id="u_pass" spellcheck="false" placeholder=Mật khẩu">
+		        <input type="text" id="u_id" spellcheck="false" placeholder="User ID (Tên đăng nhập)">
+		        <input type="text" id="u_name" spellcheck="false" placeholder="Họ tên">
+		        <input type="text" id="u_pass" spellcheck="false" placeholder="Mật khẩu">
 		        <select id="u_role">
 		            <option value="VIEWER">VIEWER</option>
 		            <option value="EDIT">EDIT</option>
@@ -1194,11 +1194,11 @@
         <div id="doc-form-container"
              style="display: none; background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
             <div style="display:grid; grid-template-columns: 1fr 1fr 1.5fr; gap:10px;">
-                <input type="text" id="doc_name" spellcheck="false" placeholder=Tên tài liệu (VD: HDSD Biến tần...)">
+                <input type="text" id="doc_name" spellcheck="false" placeholder="Tên tài liệu (VD: HDSD Biến tần...)">
                 <select id="doc_machine_type">
                     <option value="">-- Loại máy --</option>
                 </select>
-                <input type="text" id="doc_link" spellcheck="false" placeholder=Link tài liệu (Drive, Dropbox...)">
+                <input type="text" id="doc_link" spellcheck="false" placeholder="Link tài liệu (Drive, Dropbox...)">
             </div>
 
             <p style="font-size: 12px; color: var(--primary); margin: 10px 0 5px 0;">Phân quyền xem tài liệu (Chọn khách
@@ -1224,7 +1224,7 @@
             </div>
         </div>
 
-        <input type="text" id="searchDoc" onkeyup="filterDocs()" spellcheck="false" placeholder=🔍 Tìm kiếm tài liệu..."
+        <input type="text" id="searchDoc" onkeyup="filterDocs()" spellcheck="false" placeholder="🔍 Tìm kiếm tài liệu..."
                style="border: 1px solid var(--primary); background: rgba(0,210,255,0.05);">
 
         <div id="doc_groups_container" style="margin-top: 15px;"></div>
