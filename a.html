@@ -8,7 +8,7 @@
         <script>
             var domainChinh = "tech.laser.info.vn";
             if (window.location.hostname !== domainChinh && window.location.hostname !== "localhost" && window.location.protocol !== "file:") {
-               //  window.location.replace("https://tech.laser.info.vn" + window.location.pathname + window.location.search);
+             //    window.location.replace("https://tech.laser.info.vn" + window.location.pathname + window.location.search);
             }
         </script>
 
@@ -1906,8 +1906,9 @@
                 ? `<span style="background:#065f46; color:#6ee7b7; padding:4px 8px; border-radius:6px; font-size:10px; font-weight:bold;">HOÀN THÀNH</span>`
                 : `<span style="background:#78350f; color:#fcd34d; padding:4px 8px; border-radius:6px; font-size:10px; font-weight:bold;">ĐANG XỬ LÝ</span>`;
 
+            // Thay đổi onclick: mở modal thay vì load form trực tiếp
             return `
-            <tr onclick="loadProcessToForm('${p.id}')">
+            <tr onclick="openProcessModal('${p.id}')">
                 <td style="color:var(--text-muted); font-size:12px">${formatVN(p.startDate)}</td>
                 <td style="font-weight:600; color:var(--primary)">${p.name}</td>
                 <td style="color:#cbd5e1">${(p.content || "").substring(0, 30)}${(p.content || "").length > 30 ? '...' : ''}...</td>
@@ -1919,6 +1920,60 @@
             `;
         }).join('');
         tbody.innerHTML = html;
+    }
+    
+    // HÀM MỚI: Mở modal chi tiết tiến trình
+    function openProcessModal(id) {
+        const p = window.currentProcesses.find(item => item.id === id);
+        if(!p) return;
+        selectedProcessId = id; // Lưu ID để dùng cho xóa/sửa
+
+        const isCompleted = p.endDate && p.endDate.trim() !== "";
+        const statusText = isCompleted ? "HOÀN THÀNH" : "ĐANG XỬ LÝ";
+        const statusColor = isCompleted ? "#10b981" : "#f59e0b";
+
+        let modalHtml = `
+            <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid var(--border)">
+                <div class="detail-grid">
+                    <div class="detail-item"><span class="detail-label">🗓️ Bắt đầu:</span><span class="detail-value">${formatVN(p.startDate)}</span></div>
+                    <div class="detail-item"><span class="detail-label">🚀 Tiến trình:</span><span class="detail-value">${p.name}</span></div>
+                    <div class="detail-item"><span class="detail-label">👷‍♂️ Kỹ thuật:</span><span class="detail-value">${p.tech || '---'}</span></div>
+                    <div class="detail-item"><span class="detail-label">📊 Trạng thái:</span><span class="detail-value" style="color:${statusColor}">${statusText}</span></div>
+                    <div class="detail-item"><span class="detail-label">🏁 Hoàn thành:</span><span class="detail-value">${p.endDate ? formatVN(p.endDate) : '---'}</span></div>
+                </div>
+                <div style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px">
+                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">📝 NỘI DUNG:</p>
+                    <div style="white-space:pre-wrap; color:#fff; background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; font-size:14px;">${p.content || ""}</div>
+                </div>
+                <div style="margin-top:10px">
+                    <p style="margin:0 0 5px 0; color:var(--text-muted); font-size:11px; font-weight:600">🗒️ GHI CHÚ:</p>
+                    <div style="color:var(--primary); font-style:italic; font-size:13px">${p.note || 'Không có ghi chú.'}</div>
+                </div>
+            </div>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px">
+                <button onclick="triggerProcessDelete()" style="background:#450a0a; color:#f87171; border:1px solid #7f1d1d; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold">🗑️ XÓA</button>
+                <button onclick="triggerProcessEdit()" style="background:#1e1b4b; color:#818cf8; border:1px solid #312e81; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold">✏️ SỬA</button>
+            </div>
+        `;
+
+        document.getElementById('modalBody').innerHTML = modalHtml;
+        document.getElementById('infoModal').style.display = 'flex';
+    }
+
+    // HÀM MỚI: Xử lý khi nhấn nút SỬA từ Modal
+    function triggerProcessEdit() {
+        document.getElementById('infoModal').style.display = 'none';
+        loadProcessToForm(selectedProcessId);
+        // Scroll lên form nhập liệu
+        document.getElementById('proc_name').focus();
+    }
+    
+    // HÀM MỚI: Xử lý khi nhấn nút XÓA từ Modal
+    function triggerProcessDelete() {
+        // Đóng modal chi tiết trước khi hiện modal xác nhận xóa
+        document.getElementById('infoModal').style.display = 'none';
+        deleteProcess(); // Gọi hàm xóa cũ
     }
 
     function loadProcessToForm(id) {
@@ -2462,19 +2517,6 @@
         const cards = document.querySelectorAll('#doc-tab .meta-col');
         cards.forEach(c => c.style.display = c.innerText.toUpperCase().includes(val) ? "" : "none");
     }
-
-    function loadUserAccessCheckboxes(customers) {
-        const container = document.getElementById('u_access_checks');
-        if (!container || !customers) return;
-
-        container.innerHTML = customers.map(c => `
-        <label style="display: flex; align-items: center; padding: 5px 15px; cursor: pointer;" class="cust-row">
-            <input type="checkbox" name="user_cust" value="${c}" style="width: 16px; height: 16px; margin-right: 10px; accent-color: var(--primary);">
-            <span style="font-size: 13px;">${c}</span>
-        </label>
-    `).join('');
-    }
-
 
     let charts = {}; 
 
