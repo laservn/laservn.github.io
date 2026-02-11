@@ -1003,10 +1003,19 @@
             
             <textarea id="proc_content" placeholder="Nội dung chi tiết..." style="height:80px; margin-top:10px;"></textarea>
             <input type="text" id="proc_note" placeholder="Ghi chú...">
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
 
-            <div class="input-group">
-                <label style="font-size:10px; color:var(--success); font-weight:bold">Ngày hoàn thành (Để trống nếu CHƯA xong):</label>
-                <input type="date" id="proc_end_date" style="padding-left:12px!important; border-color: var(--success);">
+		    <div class="input-group">
+		        <label style="font-size:10px; color:var(--success); font-weight:bold">Ngày hoàn thành dự kiến:</label>
+		        <input type="date" id="proc_end_date_p" style="padding-left:12px!important; border-color: var(--success);">
+		    </div>
+		    
+		    <div class="input-group">
+		        <label style="font-size:10px; color:var(--success); font-weight:bold">Ngày hoàn thành (Để trống nếu CHƯA xong):</label>
+		        <input type="date" id="proc_end_date" style="padding-left:12px!important; border-color: var(--success);">
+		    </div>
+            
             </div>
 
             <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:15px;">
@@ -1986,6 +1995,7 @@
         document.getElementById('proc_tech').value = p.tech || "";
         document.getElementById('proc_content').value = p.content || "";
         document.getElementById('proc_note').value = p.note || "";
+        document.getElementById('proc_end_date_p').value = p.endDate || "";
         document.getElementById('proc_end_date').value = p.endDate || "";
 
         document.getElementById('btnUpdateProc').style.display = 'block';
@@ -2006,6 +2016,7 @@
             tech: tech,
             content: content,
             note: document.getElementById('proc_note').value.trim(),
+            endDateP: document.getElementById('proc_end_date_p').value, // Rỗng nghĩa là chưa xong
             endDate: document.getElementById('proc_end_date').value, // Rỗng nghĩa là chưa xong
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };
@@ -2029,6 +2040,7 @@
             tech: document.getElementById('proc_tech').value,
             content: document.getElementById('proc_content').value.trim(),
             note: document.getElementById('proc_note').value.trim(),
+            endDateP: document.getElementById('proc_end_date_p').value,
             endDate: document.getElementById('proc_end_date').value
         };
 
@@ -2076,6 +2088,7 @@
         document.getElementById('proc_name').value = "";
         document.getElementById('proc_content').value = "";
         document.getElementById('proc_note').value = "";
+        document.getElementById('proc_end_date_p').value = "";
         document.getElementById('proc_end_date').value = "";
         document.getElementById('proc_tech').value = "";
         
