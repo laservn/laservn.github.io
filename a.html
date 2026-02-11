@@ -970,7 +970,10 @@
     </div>
 
     <div id="process-tab" class="tab-content">
-        <div id="proc-progress-container" class="process-progress-container">
+	<button onclick="toggleForm('proc-progress-container', this)" class="btn-save" style="margin-bottom: 10px; background: #334155; width: auto; padding: 8px 15px;">
+        <i class="fas fa-plus-circle"></i> HIỆN FORM NHẬP TIẾN TRÌNH
+    	</button>
+        <div id="proc-progress-container" class="process-progress-container" style="display: none">
              <div class="progress-labels">
                 <span><i class="fas fa-tasks"></i> TIẾN TRÌNH CÔNG VIỆC DỰ KIẾN</span>
                 <span id="proc-progress-text">0% Hoàn thành</span>
@@ -1097,6 +1100,10 @@
     </div>
 
     <div id="user-tab" class="tab-content">
+	<button onclick="toggleForm('userFormWrapper', this)" class="btn-save" style="margin-bottom: 10px; background: #334155; width: auto; padding: 8px 15px;">
+        <i class="fas fa-user-plus"></i> HIỆN FORM QUẢN LÝ TÀI KHOẢN
+   	</button>
+   	<div id="userFormWrapper" style="display: none;">
         <div style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px;">
                 <input type="text" id="u_id" placeholder="User ID (Tên đăng nhập)">
@@ -1177,10 +1184,14 @@
             </div>
         </div>
     </div>
+</div>
 
     <div id="doc-tab" class="tab-content">
+    <button onclick="toggleForm('doc-form-container', this)" class="btn-save" style="margin-bottom: 10px; background: #334155; width: auto; padding: 8px 15px;">
+        <i class="fas fa-file-upload"></i> HIỆN FORM THÊM TÀI LIỆU
+    </button>
         <div id="doc-form-container"
-             style="background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
+             style="display: none; background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--primary); margin-bottom: 20px;">
             <div style="display:grid; grid-template-columns: 1fr 1fr 1.5fr; gap:10px;">
                 <input type="text" id="doc_name" placeholder="Tên tài liệu (VD: HDSD Biến tần...)">
                 <select id="doc_machine_type">
@@ -2772,6 +2783,24 @@
         };
         reader.readAsText(file);
     }
+    
+    function toggleForm(containerId, btn) {
+    const form = document.getElementById(containerId);
+    if (form.style.display === "none" || form.style.display === "") {
+        form.style.display = "block";
+        btn.innerHTML = `<i class="fas fa-minus-circle"></i> ĐÓNG FORM`;
+        btn.style.background = "#7f1d1d"; // Đổi sang màu đỏ khi đang mở
+    } else {
+        form.style.display = "none";
+        // Cập nhật lại tên nút tùy theo tab
+        if (containerId === 'formContainer') btn.innerHTML = `<i class="fas fa-plus-circle"></i> HIỆN FORM NHẬP BÁO CÁO`;
+        if (containerId === 'userFormWrapper') btn.innerHTML = `<i class="fas fa-user-plus"></i> HIỆN FORM QUẢN LÝ USER`;
+        if (containerId === 'doc-form-container') btn.innerHTML = `<i class="fas fa-file-upload"></i> HIỆN FORM THÊM TÀI LIỆU`;
+        
+        btn.style.background = "#334155"; // Trở về màu xám xanh
+    }
+   }
+
 </script>
 
 </body>
