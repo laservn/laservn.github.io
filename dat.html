@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sổ Tay Cá Nhân Chuyên Nghiệp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* CSS ẩn/hiện tab */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans h-screen flex overflow-hidden">
+
+    <div id="login-screen" class="absolute inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-95">
+        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
+            <h2 class="text-3xl font-bold text-center mb-2 text-indigo-600">Đăng Nhập</h2>
+            <p class="text-center text-gray-500 mb-6 text-sm">Quản lý ghi chú & tài chính cá nhân</p>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Email</label>
+                    <input type="email" id="email" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Mật khẩu</label>
+                    <input type="password" id="password" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition font-medium">Vào Ứng Dụng</button>
+            </form>
+            <p id="login-error" class="text-red-500 text-sm mt-3 text-center hidden">Sai email hoặc mật khẩu!</p>
+        </div>
+    </div>
+
+    <div id="app-screen" class="hidden w-full h-full flex flex-col md:flex-row">
+        
+        <aside class="w-full md:w-64 bg-slate-800 text-white flex flex-col shadow-lg">
+            <div class="p-6 text-2xl font-bold border-b border-slate-700 flex items-center gap-2">
+                <i class="fas fa-wallet text-indigo-400"></i> MySpace
+            </div>
+            <nav class="flex-1 p-4 space-y-2" id="sidebar-nav">
+                <button data-target="tab-dashboard" class="nav-btn w-full text-left p-3 bg-indigo-600 rounded-lg flex items-center gap-2 transition"><i class="fas fa-chart-pie"></i> Tổng Quan</button>
+                <button data-target="tab-notes" class="nav-btn w-full text-left p-3 hover:bg-slate-700 rounded-lg flex items-center gap-2 transition"><i class="fas fa-book"></i> Sổ Ghi Chú</button>
+                <button data-target="tab-finance" class="nav-btn w-full text-left p-3 hover:bg-slate-700 rounded-lg flex items-center gap-2 transition"><i class="fas fa-money-bill-wave"></i> Quản Lý Thu Chi</button>
+            </nav>
+            <div class="p-4 border-t border-slate-700 bg-slate-900">
+                <p id="user-email-display" class="text-xs mb-3 truncate text-slate-400"></p>
+                <button id="logout-btn" class="w-full bg-red-500/10 text-red-500 border border-red-500 py-2 rounded-lg hover:bg-red-500 hover:text-white transition text-sm flex justify-center items-center gap-2"><i class="fas fa-sign-out-alt"></i> Đăng Xuất</button>
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto bg-gray-50 p-6 md:p-8">
+            
+            <section id="tab-dashboard" class="tab-content active">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Tổng Quan Giao Dịch</h1>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-green-500">
+                        <h3 class="text-gray-500 text-sm font-medium">Tổng Thu</h3>
+                        <p id="dash-income" class="text-3xl font-bold text-green-600 mt-2">0đ</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-red-500">
+                        <h3 class="text-gray-500 text-sm font-medium">Tổng Chi</h3>
+                        <p id="dash-expense" class="text-3xl font-bold text-red-600 mt-2">0đ</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-indigo-500">
+                        <h3 class="text-gray-500 text-sm font-medium">Số Dư Hiện Tại</h3>
+                        <p id="dash-balance" class="text-3xl font-bold text-indigo-600 mt-2">0đ</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-notes" class="tab-content">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Sổ Ghi Chú</h1>
+                
+                <div class="bg-white p-6 rounded-xl shadow-sm mb-6">
+                    <h3 id="note-form-title" class="text-lg font-bold mb-4 text-indigo-600">Thêm Ghi Chú Mới</h3>
+                    <form id="note-form" class="space-y-4">
+                        <input type="hidden" id="n-id">
+                        <div>
+                            <input type="text" id="n-title" placeholder="Tiêu đề ghi chú..." class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                        </div>
+                        <div>
+                            <textarea id="n-content" rows="3" placeholder="Nội dung chi tiết..." class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" required></textarea>
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="submit" id="btn-save-note" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">Lưu Ghi Chú</button>
+                            <button type="button" id="btn-cancel-note" class="hidden bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400">Hủy sửa</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold">Danh sách Ghi Chú</h3>
+                        <input type="text" id="search-note" placeholder="Tìm kiếm..." class="px-3 py-1 border rounded-lg text-sm w-48 outline-none focus:border-indigo-500">
+                    </div>
+                    <div id="notes-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        </div>
+                </div>
+            </section>
+
+            <section id="tab-finance" class="tab-content">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Quản Lý Thu Chi</h1>
+                
+                <div class="bg-white p-6 rounded-xl shadow-sm mb-6">
+                    <h3 class="text-lg font-bold mb-4 text-indigo-600">Thêm Giao Dịch</h3>
+                    <form id="transaction-form" class="flex flex-wrap gap-4 items-end">
+                        <div class="w-full md:w-auto flex-1 min-w-[150px]">
+                            <label class="block text-sm mb-1 text-gray-600">Loại giao dịch</label>
+                            <select id="t-type" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="income">Thu Tiền (+)</option>
+                                <option value="expense">Chi Tiền (-)</option>
+                            </select>
+                        </div>
+                        <div class="w-full md:w-auto flex-1 min-w-[150px]">
+                            <label class="block text-sm mb-1 text-gray-600">Số tiền (VNĐ)</label>
+                            <input type="number" id="t-amount" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" required min="1000">
+                        </div>
+                        <div class="w-full md:w-auto flex-[2] min-w-[200px]">
+                            <label class="block text-sm mb-1 text-gray-600">Nội dung / Diễn giải</label>
+                            <input type="text" id="t-note" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" required placeholder="VD: Lương tháng 10, Mua sắm...">
+                        </div>
+                        <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 h-[42px]">Thêm</button>
+                    </form>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold">Lịch Sử Giao Dịch</h3>
+                        <input type="text" id="search-finance" placeholder="Tìm giao dịch..." class="px-3 py-1 border rounded-lg text-sm w-48 outline-none focus:border-indigo-500">
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-600 border-b">
+                                    <th class="p-3 font-medium">Ngày</th>
+                                    <th class="p-3 font-medium">Nội dung</th>
+                                    <th class="p-3 font-medium text-right">Số tiền</th>
+                                    <th class="p-3 font-medium text-center">Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactions-list" class="divide-y divide-gray-100">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, serverTimestamp, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // BƯỚC 1: THAY CẤU HÌNH FIREBASE CỦA BẠN VÀO ĐÂY
+        const firebaseConfig = {
+	    apiKey: "AIzaSyCVjN-2E6GWK2onN9AZhWrx-3CcE70mioU",
+	    authDomain: "data-home-2602.firebaseapp.com",
+	    projectId: "data-home-2602",
+	    storageBucket: "data-home-2602.firebasestorage.app",
+	    messagingSenderId: "622404523849",
+	    appId: "1:622404523849:web:3fa459a4169f67873a2c98",
+	    measurementId: "G-86GHQFRDHH"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- CHUYỂN TAB ---
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Reset UI buttons
+                navBtns.forEach(b => {
+                    b.classList.remove('bg-indigo-600');
+                    b.classList.add('hover:bg-slate-700');
+                });
+                btn.classList.add('bg-indigo-600');
+                btn.classList.remove('hover:bg-slate-700');
+                // Switch Tab
+                tabContents.forEach(tab => tab.classList.remove('active'));
+                document.getElementById(btn.dataset.target).classList.add('active');
+            });
+        });
+
+        // --- XÁC THỰC & LOGIC 24H ---
+        const SESSION_LIMIT = 86400000; // 24 giờ
+        let currentUser = null;
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const loginTime = localStorage.getItem('loginTime');
+                if (loginTime && (Date.now() - parseInt(loginTime)) > SESSION_LIMIT) {
+                    alert("Phiên đăng nhập hết hạn.");
+                    signOut(auth); return;
+                }
+                currentUser = user;
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app-screen').classList.remove('hidden');
+                document.getElementById('user-email-display').innerText = user.email;
+                
+                // Khởi chạy load dữ liệu
+                initNotesListener();
+                initFinanceListener();
+            } else {
+                currentUser = null;
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('app-screen').classList.add('hidden');
+            }
+        });
+
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            signInWithEmailAndPassword(auth, email, password)
+                .then(() => { localStorage.setItem('loginTime', Date.now()); })
+                .catch(() => { document.getElementById('login-error').classList.remove('hidden'); });
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            signOut(auth).then(() => localStorage.removeItem('loginTime'));
+        });
+
+        // ==========================================
+        // MODULE: GHI CHÚ (CRUD + SEARCH)
+        // ==========================================
+        let notesData = []; // Lưu local để filter
+
+        const noteForm = document.getElementById('note-form');
+        const btnCancelNote = document.getElementById('btn-cancel-note');
+        
+        noteForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('n-id').value;
+            const title = document.getElementById('n-title').value;
+            const content = document.getElementById('n-content').value;
+
+            try {
+                if (id) {
+                    // Update
+                    await updateDoc(doc(db, "notes", id), { title, content });
+                    document.getElementById('note-form-title').innerText = "Thêm Ghi Chú Mới";
+                    btnCancelNote.classList.add('hidden');
+                } else {
+                    // Create
+                    await addDoc(collection(db, "notes"), {
+                        userId: currentUser.uid,
+                        title, content,
+                        createdAt: serverTimestamp()
+                    });
+                }
+                noteForm.reset();
+                document.getElementById('n-id').value = '';
+            } catch (err) { alert("Lỗi lưu ghi chú: " + err.message); }
+        });
+
+        btnCancelNote.addEventListener('click', () => {
+            noteForm.reset();
+            document.getElementById('n-id').value = '';
+            document.getElementById('note-form-title').innerText = "Thêm Ghi Chú Mới";
+            btnCancelNote.classList.add('hidden');
+        });
+
+        window.editNote = (id, title, content) => {
+            document.getElementById('n-id').value = id;
+            document.getElementById('n-title').value = title;
+            document.getElementById('n-content').value = content;
+            document.getElementById('note-form-title').innerText = "Chỉnh Sửa Ghi Chú";
+            btnCancelNote.classList.remove('hidden');
+            // Chuyển view về tab Notes nếu đang ở tab khác (optional)
+        };
+
+        window.deleteNote = async (id) => {
+            if(confirm("Bạn có chắc muốn xóa ghi chú này?")) {
+                await deleteDoc(doc(db, "notes", id));
+            }
+        };
+
+        function initNotesListener() {
+            const q = query(collection(db, "notes"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc"));
+            onSnapshot(q, (snapshot) => {
+                notesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderNotes();
+            });
+        }
+
+        function renderNotes(filterText = '') {
+            const listEl = document.getElementById('notes-list');
+            listEl.innerHTML = '';
+            
+            const filtered = notesData.filter(n => 
+                n.title.toLowerCase().includes(filterText.toLowerCase()) || 
+                n.content.toLowerCase().includes(filterText.toLowerCase())
+            );
+
+            if(filtered.length === 0) {
+                listEl.innerHTML = '<p class="text-gray-500 italic col-span-2">Không có ghi chú nào.</p>';
+                return;
+            }
+
+            filtered.forEach(note => {
+                const dateStr = note.createdAt ? new Date(note.createdAt.toDate()).toLocaleDateString('vi-VN') : 'Đang lưu...';
+                // Escape quotes for HTML inline handlers to prevent breaking
+                const safeTitle = note.title.replace(/'/g, "\\'");
+                const safeContent = note.content.replace(/'/g, "\\'");
+
+                listEl.innerHTML += `
+                    <div class="border rounded-lg p-4 hover:shadow-md transition bg-gray-50 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-lg text-gray-800">${note.title}</h4>
+                                <span class="text-xs text-gray-400">${dateStr}</span>
+                            </div>
+                            <p class="text-gray-600 text-sm whitespace-pre-line mb-4">${note.content}</p>
+                        </div>
+                        <div class="flex justify-end gap-2 border-t pt-2 mt-2">
+                            <button onclick="editNote('${note.id}', '${safeTitle}', '${safeContent}')" class="text-indigo-500 hover:text-indigo-700 text-sm"><i class="fas fa-edit"></i> Sửa</button>
+                            <button onclick="deleteNote('${note.id}')" class="text-red-500 hover:text-red-700 text-sm"><i class="fas fa-trash"></i> Xóa</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        document.getElementById('search-note').addEventListener('input', (e) => renderNotes(e.target.value));
+
+        // ==========================================
+        // MODULE: THU CHI (CRUD + TÍNH TỔNG + SEARCH)
+        // ==========================================
+        let financeData = [];
+
+        document.getElementById('transaction-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const type = document.getElementById('t-type').value;
+            const amount = Number(document.getElementById('t-amount').value);
+            const note = document.getElementById('t-note').value;
+
+            try {
+                await addDoc(collection(db, "transactions"), {
+                    userId: currentUser.uid, type, amount, note, createdAt: serverTimestamp()
+                });
+                document.getElementById('transaction-form').reset();
+            } catch (err) { alert("Lỗi: " + err.message); }
+        });
+
+        window.deleteTrans = async (id) => {
+            if(confirm("Xóa giao dịch này?")) await deleteDoc(doc(db, "transactions", id));
+        };
+
+        function initFinanceListener() {
+            const q = query(collection(db, "transactions"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc"));
+            onSnapshot(q, (snapshot) => {
+                financeData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderFinance();
+                updateDashboard(financeData);
+            });
+        }
+
+        function renderFinance(filterText = '') {
+            const listEl = document.getElementById('transactions-list');
+            listEl.innerHTML = '';
+            
+            const filtered = financeData.filter(t => t.note.toLowerCase().includes(filterText.toLowerCase()));
+
+            filtered.forEach(t => {
+                const dateStr = t.createdAt ? new Date(t.createdAt.toDate()).toLocaleDateString('vi-VN') : '...';
+                const isInc = t.type === 'income';
+                const color = isInc ? 'text-green-600' : 'text-red-600';
+                const sign = isInc ? '+' : '-';
+
+                listEl.innerHTML += `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-3 text-sm text-gray-500">${dateStr}</td>
+                        <td class="p-3 font-medium text-gray-800">${t.note}</td>
+                        <td class="p-3 text-right font-bold ${color}">${sign}${t.amount.toLocaleString('vi-VN')}đ</td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteTrans('${t.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-times"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        document.getElementById('search-finance').addEventListener('input', (e) => renderFinance(e.target.value));
+
+        function updateDashboard(data) {
+            let inc = 0, exp = 0;
+            data.forEach(t => {
+                if(t.type === 'income') inc += t.amount;
+                else exp += t.amount;
+            });
+            document.getElementById('dash-income').innerText = inc.toLocaleString('vi-VN') + 'đ';
+            document.getElementById('dash-expense').innerText = exp.toLocaleString('vi-VN') + 'đ';
+            document.getElementById('dash-balance').innerText = (inc - exp).toLocaleString('vi-VN') + 'đ';
+        }
+
+    </script>
+</body>
+</html>
