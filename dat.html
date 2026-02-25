@@ -9,11 +9,8 @@
     <style>
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        /* Ẩn mũi tên input number */
         input[type="number"]::-webkit-inner-spin-button, 
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        
-        /* Hiệu ứng mượt cho custom popup */
         .modal-enter { opacity: 0; transform: scale(0.9); }
         .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 200ms, transform 200ms; }
     </style>
@@ -27,8 +24,7 @@
                 <h3 id="modal-title" class="text-xl font-bold text-gray-800">Thông báo</h3>
             </div>
             <p id="modal-body" class="text-gray-600 mb-6 text-sm whitespace-pre-line leading-relaxed">Nội dung</p>
-            <div id="modal-actions" class="flex justify-end gap-3">
-                </div>
+            <div id="modal-actions" class="flex justify-end gap-3"></div>
         </div>
     </div>
 
@@ -65,17 +61,20 @@
             </div>
             
             <nav class="flex flex-1 flex-row md:flex-col p-2 md:p-4 justify-around md:justify-start space-x-1 md:space-x-0 md:space-y-2" id="sidebar-nav">
-                <button data-target="tab-dashboard" class="nav-btn flex-1 md:flex-none p-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition duration-200 shadow-md">
-                    <i class="fas fa-chart-pie text-xl md:text-base"></i> <span class="text-[10px] md:text-sm font-medium hidden md:inline">Tổng Quan</span>
+                <button data-target="tab-dashboard" class="nav-btn flex-1 md:flex-none p-2 md:p-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition duration-200 shadow-md">
+                    <i class="fas fa-chart-pie text-lg md:text-base"></i> <span class="text-[10px] md:text-sm font-medium hidden md:inline">Tổng Quan</span>
                 </button>
-                <button data-target="tab-notes" class="nav-btn flex-1 md:flex-none p-3 bg-transparent hover:bg-slate-700 text-slate-300 rounded-xl flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition duration-200">
-                    <i class="fas fa-book text-xl md:text-base"></i> <span class="text-[10px] md:text-sm font-medium hidden md:inline text-slate-300">Ghi Chú</span>
+                <button data-target="tab-notes" class="nav-btn flex-1 md:flex-none p-2 md:p-3 bg-transparent hover:bg-slate-700 text-slate-300 rounded-xl flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition duration-200">
+                    <i class="fas fa-book text-lg md:text-base"></i> <span class="text-[10px] md:text-sm font-medium hidden md:inline text-slate-300">Ghi Chú</span>
                 </button>
-                <button data-target="tab-finance" class="nav-btn flex-1 md:flex-none p-3 bg-transparent hover:bg-slate-700 text-slate-300 rounded-xl flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition duration-200">
-                    <i class="fas fa-money-bill-wave text-xl md:text-base"></i> <span class="text-[10px] md:text-sm font-medium hidden md:inline text-slate-300">Thu Chi</span>
+                <button data-target="tab-finance" class="nav-btn flex-1 md:flex-none p-2 md:p-3 bg-transparent hover:bg-slate-700 text-slate-300 rounded-xl flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition duration-200">
+                    <i class="fas fa-money-bill-wave text-lg md:text-base"></i> <span class="text-[10px] md:text-sm font-medium hidden md:inline text-slate-300">Thu Chi</span>
                 </button>
-                <button data-target="tab-admin" class="nav-btn flex-1 md:flex-none p-3 bg-transparent hover:bg-slate-700 text-slate-300 rounded-xl flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition duration-200">
-                    <i class="fas fa-cog text-xl md:text-base"></i> <span class="text-[10px] md:text-sm font-medium hidden md:inline text-slate-300">Quản Trị</span>
+                <button data-target="tab-admin" class="nav-btn flex-1 md:flex-none p-2 md:p-3 bg-transparent hover:bg-slate-700 text-slate-300 rounded-xl flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition duration-200">
+                    <i class="fas fa-cog text-lg md:text-base"></i> <span class="text-[10px] md:text-sm font-medium hidden md:inline text-slate-300">Quản Trị</span>
+                </button>
+                <button id="logout-btn-mobile" class="md:hidden flex-1 p-2 bg-transparent hover:bg-red-500/20 text-red-400 rounded-xl flex flex-col items-center justify-center gap-1 transition duration-200">
+                    <i class="fas fa-power-off text-lg"></i> <span class="text-[10px] hidden md:inline">Thoát</span>
                 </button>
             </nav>
 
@@ -88,7 +87,6 @@
         </aside>
 
         <main class="flex-1 overflow-y-auto bg-gray-50/50 p-4 md:p-8">
-            
             <section id="tab-dashboard" class="tab-content active max-w-6xl mx-auto">
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6 tracking-tight">Tổng Quan Trạng Thái</h1>
                 
@@ -275,6 +273,11 @@
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, serverTimestamp, deleteDoc, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
+        // Khởi tạo biến lưu trữ dữ liệu ở đầu file để tránh lỗi TDZ
+        let currentUser = null;
+        let notesData = [];
+        let financeData = [];
+
         // === THAY MÃ FIREBASE CỦA BẠN VÀO ĐÂY ===
         const firebaseConfig = {
 	    apiKey: "AIzaSyCVjN-2E6GWK2onN9AZhWrx-3CcE70mioU",
@@ -290,9 +293,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // ==========================================
-        // CUSTOM MODAL (ALERTS & CONFIRMS)
-        // ==========================================
+        // --- HÀM TIỆN ÍCH ---
         const modalEl = document.getElementById('custom-modal');
         const modalBox = document.getElementById('custom-modal-box');
         const modalIcon = document.getElementById('modal-icon');
@@ -311,8 +312,7 @@
         }
 
         window.showAlert = (title, message, type = 'info') => {
-            modalTitle.innerText = title;
-            modalBody.innerText = message;
+            modalTitle.innerText = title; modalBody.innerText = message;
             if (type === 'error') modalIcon.innerHTML = '<i class="fas fa-exclamation-circle text-red-500"></i>';
             else if (type === 'success') modalIcon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
             else modalIcon.innerHTML = '<i class="fas fa-info-circle text-blue-500"></i>';
@@ -322,8 +322,7 @@
         };
 
         window.showConfirm = (title, message, onConfirm) => {
-            modalTitle.innerText = title;
-            modalBody.innerText = message;
+            modalTitle.innerText = title; modalBody.innerText = message;
             modalIcon.innerHTML = '<i class="fas fa-question-circle text-yellow-500"></i>';
             modalActions.innerHTML = `
                 <button id="btn-modal-cancel" class="bg-gray-100 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-200 transition font-medium">Hủy</button>
@@ -334,7 +333,15 @@
             document.getElementById('btn-modal-yes').onclick = () => { closeModal(); onConfirm(); };
         };
 
-        // --- UI & TAB LOGIC ---
+        const formatDateTime = (timestamp) => {
+            if(!timestamp) return 'Đang xử lý...';
+            const d = new Date(timestamp.toDate ? timestamp.toDate() : timestamp);
+            const date = d.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'});
+            const time = d.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
+            return `${time} ${date}`;
+        };
+
+        // --- GIAO DIỆN & SỰ KIỆN ---
         const navBtns = document.querySelectorAll('.nav-btn');
         const tabContents = document.querySelectorAll('.tab-content');
         navBtns.forEach(btn => {
@@ -353,23 +360,13 @@
             });
         });
 
-        const amountInput = document.getElementById('t-amount');
-        amountInput.addEventListener('input', function(e) {
+        document.getElementById('t-amount').addEventListener('input', function(e) {
             let val = this.value.replace(/[^0-9]/g, ''); 
             if (val === '') { this.value = ''; return; }
             this.value = parseInt(val).toLocaleString('vi-VN');
         });
 
-        const formatDateTime = (timestamp) => {
-            if(!timestamp) return 'Đang xử lý...';
-            const d = new Date(timestamp.toDate ? timestamp.toDate() : timestamp);
-            const date = d.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'});
-            const time = d.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
-            return `${time} ${date}`;
-        };
-
-        // --- AUTH ---
-        let currentUser = null;
+        // --- AUTH & DATA LOAD ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
@@ -390,15 +387,12 @@
                 .catch(() => document.getElementById('login-error').classList.remove('hidden'));
         });
 
-        const handleLogout = () => {
-            showConfirm('Đăng xuất', 'Bạn có muốn đăng xuất khỏi ứng dụng không?', () => { signOut(auth); });
-        };
+        const handleLogout = () => { showConfirm('Đăng xuất', 'Bạn có muốn đăng xuất khỏi ứng dụng không?', () => { signOut(auth); }); };
         document.getElementById('logout-btn').addEventListener('click', handleLogout);
-        document.getElementById('logout-btn-mobile').addEventListener('click', handleLogout);
-
-        // --- DỮ LIỆU ---
-        let notesData = [];
-        let financeData = [];
+        
+        // Nút Đăng xuất mobile đã được thêm lại HTML nên sẽ không còn báo lỗi null
+        const logoutBtnMobile = document.getElementById('logout-btn-mobile');
+        if(logoutBtnMobile) logoutBtnMobile.addEventListener('click', handleLogout);
 
         function initData() {
             onSnapshot(query(collection(db, "notes"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc")), (snap) => {
@@ -425,9 +419,7 @@
             return true;
         }
 
-        // ==========================================
-        // MODULE: GHI CHÚ & THU CHI & DASHBOARD
-        // ==========================================
+        // --- MODULE: GHI CHÚ ---
         document.getElementById('note-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('n-id').value;
@@ -499,6 +491,7 @@
             `).join('') : '<p class="text-gray-500 text-sm italic col-span-full">Không tìm thấy ghi chú nào.</p>';
         }
 
+        // --- MODULE: THU CHI ---
         document.getElementById('transaction-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const type = document.getElementById('t-type').value;
@@ -543,6 +536,7 @@
             }).join('') : '<tr><td colspan="4" class="p-5 text-center text-sm text-gray-500 italic">Không tìm thấy giao dịch.</td></tr>';
         }
 
+        // --- MODULE: DASHBOARD ---
         function updateDashboardStats() {
             let inc = 0, exp = 0;
             financeData.forEach(t => { t.type === 'income' ? inc += t.amount : exp += t.amount; });
@@ -581,41 +575,27 @@
             }).join('') : '<li class="py-4 text-sm italic text-gray-400 text-center">Chưa có giao dịch nào.</li>';
         }
 
-        // ==========================================
-        // MODULE: QUẢN TRỊ (SAO LƯU & KHÔI PHỤC)
-        // ==========================================
-        
-        // 1. Logic Sao Lưu (Backup)
+        // --- MODULE: QUẢN TRỊ (BACKUP/RESTORE) ---
         document.getElementById('btn-backup').addEventListener('click', () => {
             try {
                 if (notesData.length === 0 && financeData.length === 0) {
                     return showAlert("Thông báo", "Tài khoản của bạn chưa có dữ liệu nào để sao lưu.", "info");
                 }
-
-                // Convert timestamp sang milliseconds để dễ dàng lưu trữ thành JSON
                 const backupData = {
                     notes: notesData.map(n => ({...n, createdAt: n.createdAt ? (n.createdAt.toMillis ? n.createdAt.toMillis() : new Date(n.createdAt).getTime()) : Date.now()})),
                     transactions: financeData.map(t => ({...t, createdAt: t.createdAt ? (t.createdAt.toMillis ? t.createdAt.toMillis() : new Date(t.createdAt).getTime()) : Date.now()}))
                 };
-
                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
                 const dlAnchorElem = document.createElement('a');
                 dlAnchorElem.setAttribute("href", dataStr);
                 dlAnchorElem.setAttribute("download", `MySpace_Backup_${new Date().toLocaleDateString('vi-VN').replace(/\//g, '-')}.json`);
                 dlAnchorElem.click();
-                
                 showAlert("Thành công", "Đã tạo bản sao lưu và tải xuống máy của bạn!", "success");
-            } catch (error) {
-                showAlert("Lỗi", "Không thể tạo sao lưu: " + error.message, "error");
-            }
+            } catch (error) { showAlert("Lỗi", "Không thể tạo sao lưu: " + error.message, "error"); }
         });
 
-        // 2. Logic Khôi Phục (Restore)
         const fileRestoreInput = document.getElementById('file-restore');
-        
-        document.getElementById('btn-trigger-restore').addEventListener('click', () => {
-            fileRestoreInput.click();
-        });
+        document.getElementById('btn-trigger-restore').addEventListener('click', () => { fileRestoreInput.click(); });
 
         fileRestoreInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -628,17 +608,15 @@
                         const data = JSON.parse(event.target.result);
                         let restoredCount = 0;
                         
-                        // Import Notes
                         if (data.notes && Array.isArray(data.notes)) {
                             for (let n of data.notes) {
                                 const { id, ...rest } = n;
-                                rest.createdAt = new Date(rest.createdAt); // Chuyển ms lại thành Date obj
-                                await setDoc(doc(db, "notes", id), rest); // setDoc với ID cũ để tránh trùng lặp
+                                rest.createdAt = new Date(rest.createdAt);
+                                await setDoc(doc(db, "notes", id), rest);
                                 restoredCount++;
                             }
                         }
                         
-                        // Import Transactions
                         if (data.transactions && Array.isArray(data.transactions)) {
                             for (let t of data.transactions) {
                                 const { id, ...rest } = t;
@@ -649,15 +627,12 @@
                         }
                         
                         showAlert("Tuyệt vời", `Đã khôi phục thành công ${restoredCount} mục!`, "success");
-                        fileRestoreInput.value = ''; // Reset lại input để có thể chọn lại file đó
-                    } catch (error) {
-                        showAlert("Lỗi định dạng", "File không hợp lệ hoặc có lỗi xảy ra: " + error.message, "error");
-                    }
+                        fileRestoreInput.value = ''; 
+                    } catch (error) { showAlert("Lỗi định dạng", "File không hợp lệ hoặc có lỗi xảy ra: " + error.message, "error"); }
                 };
                 reader.readAsText(file);
             });
         });
-
     </script>
 </body>
 </html>
