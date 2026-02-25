@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sổ Tay Cá Nhân Chuyên Nghiệp</title>
+    <title>Sổ Tay Cá Nhân</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📒</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -32,7 +33,7 @@
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4">
             <div class="text-center mb-6">
                 <i class="fas fa-wallet text-5xl text-indigo-600 mb-3"></i>
-                <h2 class="text-3xl font-bold text-gray-800">MySpace</h2>
+                <h2 class="text-3xl font-bold text-gray-800">Sổ tay</h2>
                 <p class="text-gray-500 text-sm mt-1">Quản lý ghi chú & tài chính cá nhân</p>
             </div>
             <form id="login-form" class="space-y-4">
@@ -57,7 +58,7 @@
                 <div class="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/30">
                     <i class="fas fa-wallet text-sm text-white"></i>
                 </div>
-                MySpace
+                Sổ tay
             </div>
             
             <nav class="flex flex-1 flex-row md:flex-col p-2 md:p-4 justify-around md:justify-start space-x-1 md:space-x-0 md:space-y-2" id="sidebar-nav">
@@ -88,17 +89,35 @@
 
         <main class="flex-1 overflow-y-auto bg-gray-50/50 p-4 md:p-8">
             <section id="tab-dashboard" class="tab-content active max-w-6xl mx-auto">
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6 tracking-tight">Tổng Quan Trạng Thái</h1>
+                <div class="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-3">
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-800 tracking-tight">Tổng Quan Trạng Thái</h1>
+                    
+                    <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                        <select id="filter-d-date" class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm flex-1 md:flex-none outline-none focus:border-indigo-500 shadow-sm font-medium text-indigo-700">
+                            <option value="month" selected>Tháng này</option>
+                            <option value="year">Năm nay</option>
+                            <option value="all">Tất cả thời gian</option>
+                            <option value="custom">Tùy chọn ngày...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="d-custom-date" class="hidden flex gap-2 mb-6 bg-white p-3 rounded-xl border border-gray-100 shadow-sm items-center w-full md:w-max">
+                    <input type="date" id="d-date-start" class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg outline-none">
+                    <span class="text-gray-400"><i class="fas fa-arrow-right"></i></span>
+                    <input type="date" id="d-date-end" class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg outline-none">
+                    <button id="btn-d-filter-custom" class="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-indigo-700 font-medium">Lọc</button>
+                </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition">
                         <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition"><i class="fas fa-arrow-down text-5xl text-green-500"></i></div>
-                        <h3 class="text-gray-500 text-sm font-medium mb-1">Tổng Thu</h3>
+                        <h3 class="text-gray-500 text-sm font-medium mb-1">Tổng Thu <span class="text-[10px] font-normal">(Gồm lãi đầu tư)</span></h3>
                         <p id="dash-income" class="text-2xl md:text-3xl font-bold text-green-600">0đ</p>
                     </div>
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition">
                         <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition"><i class="fas fa-arrow-up text-5xl text-red-500"></i></div>
-                        <h3 class="text-gray-500 text-sm font-medium mb-1">Tổng Chi</h3>
+                        <h3 class="text-gray-500 text-sm font-medium mb-1">Tổng Chi <span class="text-[10px] font-normal">(Gồm lỗ đầu tư)</span></h3>
                         <p id="dash-expense" class="text-2xl md:text-3xl font-bold text-red-600">0đ</p>
                     </div>
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition bg-gradient-to-br from-white to-indigo-50/50">
@@ -146,36 +165,42 @@
                     <div class="flex flex-col md:flex-row gap-3 items-center justify-between mb-5">
                         <h3 class="text-lg font-bold text-gray-800">Danh Sách Ghi Chú</h3>
                         <div class="flex flex-wrap gap-2 w-full md:w-auto">
-                            <select id="filter-n-date" class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm flex-1 md:flex-none outline-none focus:border-indigo-500">
+                            <select id="filter-n-date" class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm flex-1 md:flex-none outline-none focus:border-indigo-500 font-medium text-gray-700">
+                                <option value="month" selected>Tháng này</option>
                                 <option value="all">Tất cả thời gian</option>
                                 <option value="today">Hôm nay</option>
-                                <option value="month">Tháng này</option>
                                 <option value="custom">Tùy chọn ngày...</option>
                             </select>
                             <div class="relative flex-1 md:flex-none">
                                 <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
-                                <input type="text" id="search-note" placeholder="Tìm từ khóa..." class="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none focus:border-indigo-500 transition">
+                                <input type="text" id="search-note" placeholder="Tìm kiếm từ khóa..." class="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none focus:border-indigo-500 transition">
                             </div>
                         </div>
                     </div>
                     
-                    <div id="n-custom-date" class="hidden flex gap-2 mb-5 bg-indigo-50/50 p-3 rounded-lg border border-indigo-100 items-center">
-                        <input type="date" id="n-date-start" class="px-3 py-1.5 text-sm border border-gray-200 rounded outline-none">
+                    <div id="n-custom-date" class="hidden flex gap-2 mb-5 bg-indigo-50/50 p-3 rounded-lg border border-indigo-100 items-center w-full md:w-max">
+                        <input type="date" id="n-date-start" class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg outline-none">
                         <span class="text-gray-500"><i class="fas fa-arrow-right"></i></span>
-                        <input type="date" id="n-date-end" class="px-3 py-1.5 text-sm border border-gray-200 rounded outline-none">
-                        <button id="btn-n-filter-custom" class="bg-indigo-600 text-white px-4 py-1.5 rounded text-sm hover:bg-indigo-700 font-medium">Lọc</button>
+                        <input type="date" id="n-date-end" class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg outline-none">
+                        <button id="btn-n-filter-custom" class="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-indigo-700 font-medium">Lọc</button>
                     </div>
 
                     <div id="notes-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                    
+                    <div id="n-pagination-wrapper" class="flex justify-between items-center mt-6 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                        <button id="n-btn-prev" class="px-4 py-2 bg-white text-gray-700 rounded-lg border border-gray-200 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition text-sm font-medium shadow-sm"><i class="fas fa-chevron-left mr-1"></i> Trước</button>
+                        <span id="n-page-info" class="text-sm font-bold text-gray-600">Trang 1 / 1</span>
+                        <button id="n-btn-next" class="px-4 py-2 bg-white text-gray-700 rounded-lg border border-gray-200 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition text-sm font-medium shadow-sm">Sau <i class="fas fa-chevron-right ml-1"></i></button>
+                    </div>
                 </div>
             </section>
 
             <section id="tab-finance" class="tab-content max-w-6xl mx-auto">
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6 tracking-tight">Quản Lý Thu Chi</h1>
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6 tracking-tight">Quản Lý Thu Chi & Đầu Tư</h1>
                 
                 <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
                     <h3 class="text-lg font-bold mb-4 text-gray-800 flex items-center gap-2">
-                        <i class="fas fa-plus-circle text-indigo-500"></i> Thêm Giao Dịch
+                        <i class="fas fa-plus-circle text-indigo-500"></i> Thêm Giao Dịch / Chốt Lãi Lỗ
                     </h3>
                     <form id="transaction-form" class="flex flex-wrap gap-4 items-end">
                         <div class="w-full md:w-auto flex-1">
@@ -183,15 +208,16 @@
                             <select id="t-type" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
                                 <option value="income">Thu Tiền (+)</option>
                                 <option value="expense">Chi Tiền (-)</option>
+                                <option value="investment">Đầu Tư (Tính Lãi/Lỗ)</option>
                             </select>
                         </div>
                         <div class="w-full md:w-auto flex-1">
-                            <label class="block text-sm font-medium mb-1 text-gray-700">Số tiền (VNĐ)</label>
+                            <label id="t-amount-label" class="block text-sm font-medium mb-1 text-gray-700">Số tiền (VNĐ)</label>
                             <input type="text" id="t-amount" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" required placeholder="1.000.000">
                         </div>
                         <div class="w-full md:w-auto flex-[2]">
                             <label class="block text-sm font-medium mb-1 text-gray-700">Nội dung</label>
-                            <input type="text" id="t-note" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" required placeholder="VD: Lương, Mua sắm...">
+                            <input type="text" id="t-note" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" required placeholder="VD: Lương, Mua sắm, Chốt số dư Coin...">
                         </div>
                         <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white px-8 py-2.5 rounded-lg hover:bg-indigo-700 font-medium shadow-sm transition">Thêm</button>
                     </form>
@@ -201,10 +227,17 @@
                     <div class="flex flex-col md:flex-row gap-3 items-center justify-between mb-5">
                         <h3 class="text-lg font-bold text-gray-800">Lịch Sử Giao Dịch</h3>
                         <div class="flex flex-wrap gap-2 w-full md:w-auto">
-                            <select id="filter-t-date" class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm flex-1 md:flex-none outline-none focus:border-indigo-500">
+                            <select id="filter-t-type" class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm flex-1 md:flex-none outline-none focus:border-indigo-500 font-medium text-gray-700">
+                                <option value="all" selected>Tất cả loại</option>
+                                <option value="income">Chỉ Thu Tiền</option>
+                                <option value="expense">Chỉ Chi Tiền</option>
+                                <option value="investment">Chỉ Đầu Tư</option>
+                            </select>
+
+                            <select id="filter-t-date" class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm flex-1 md:flex-none outline-none focus:border-indigo-500 font-medium text-gray-700">
+                                <option value="month" selected>Tháng này</option>
                                 <option value="all">Tất cả thời gian</option>
                                 <option value="today">Hôm nay</option>
-                                <option value="month">Tháng này</option>
                                 <option value="custom">Tùy chọn ngày...</option>
                             </select>
                             <div class="relative flex-1 md:flex-none">
@@ -214,11 +247,11 @@
                         </div>
                     </div>
                     
-                    <div id="t-custom-date" class="hidden flex gap-2 mb-5 bg-indigo-50/50 p-3 rounded-lg border border-indigo-100 items-center">
-                        <input type="date" id="t-date-start" class="px-3 py-1.5 text-sm border border-gray-200 rounded outline-none">
+                    <div id="t-custom-date" class="hidden flex gap-2 mb-5 bg-indigo-50/50 p-3 rounded-lg border border-indigo-100 items-center w-full md:w-max">
+                        <input type="date" id="t-date-start" class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg outline-none">
                         <span class="text-gray-500"><i class="fas fa-arrow-right"></i></span>
-                        <input type="date" id="t-date-end" class="px-3 py-1.5 text-sm border border-gray-200 rounded outline-none">
-                        <button id="btn-t-filter-custom" class="bg-indigo-600 text-white px-4 py-1.5 rounded text-sm hover:bg-indigo-700 font-medium">Lọc</button>
+                        <input type="date" id="t-date-end" class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg outline-none">
+                        <button id="btn-t-filter-custom" class="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-indigo-700 font-medium">Lọc</button>
                     </div>
 
                     <div class="overflow-x-auto rounded-lg border border-gray-100">
@@ -227,12 +260,18 @@
                                 <tr class="bg-gray-50 text-gray-500 text-sm border-b border-gray-100">
                                     <th class="p-3 font-medium rounded-tl-lg">Thời gian</th>
                                     <th class="p-3 font-medium">Nội dung</th>
-                                    <th class="p-3 font-medium text-right">Số tiền</th>
+                                    <th class="p-3 font-medium text-right">Số tiền / Số Dư</th>
                                     <th class="p-3 font-medium text-center rounded-tr-lg w-16">Xóa</th>
                                 </tr>
                             </thead>
                             <tbody id="transactions-list" class="divide-y divide-gray-50 bg-white"></tbody>
                         </table>
+                    </div>
+
+                    <div id="t-pagination-wrapper" class="flex justify-between items-center mt-6 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                        <button id="t-btn-prev" class="px-4 py-2 bg-white text-gray-700 rounded-lg border border-gray-200 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition text-sm font-medium shadow-sm"><i class="fas fa-chevron-left mr-1"></i> Trước</button>
+                        <span id="t-page-info" class="text-sm font-bold text-gray-600">Trang 1 / 1</span>
+                        <button id="t-btn-next" class="px-4 py-2 bg-white text-gray-700 rounded-lg border border-gray-200 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition text-sm font-medium shadow-sm">Sau <i class="fas fa-chevron-right ml-1"></i></button>
                     </div>
                 </div>
             </section>
@@ -271,29 +310,29 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, serverTimestamp, deleteDoc, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, onSnapshot, query, where, orderBy, serverTimestamp, deleteDoc, doc, updateDoc, setDoc, limit, startAfter, endBefore, limitToLast, getCountFromServer, getAggregateFromServer, sum } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // Khởi tạo biến lưu trữ dữ liệu ở đầu file để tránh lỗi TDZ
         let currentUser = null;
         let notesData = [];
         let financeData = [];
+        const PAGE_SIZE = 20;
 
         // === THAY MÃ FIREBASE CỦA BẠN VÀO ĐÂY ===
         const firebaseConfig = {
-	    apiKey: "AIzaSyCVjN-2E6GWK2onN9AZhWrx-3CcE70mioU",
-	    authDomain: "data-home-2602.firebaseapp.com",
-	    projectId: "data-home-2602",
-	    storageBucket: "data-home-2602.firebasestorage.app",
-	    messagingSenderId: "622404523849",
-	    appId: "1:622404523849:web:3fa459a4169f67873a2c98",
-	    measurementId: "G-86GHQFRDHH"
+            apiKey: "AIzaSyCVjN-2E6GWK2onN9AZhWrx-3CcE70mioU",
+            authDomain: "data-home-2602.firebaseapp.com",
+            projectId: "data-home-2602",
+            storageBucket: "data-home-2602.firebasestorage.app",
+            messagingSenderId: "622404523849",
+            appId: "1:622404523849:web:3fa459a4169f67873a2c98",
+            measurementId: "G-86GHQFRDHH"
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- HÀM TIỆN ÍCH ---
+        // --- HÀM TIỆN ÍCH UI ---
         const modalEl = document.getElementById('custom-modal');
         const modalBox = document.getElementById('custom-modal-box');
         const modalIcon = document.getElementById('modal-icon');
@@ -314,6 +353,7 @@
         window.showAlert = (title, message, type = 'info') => {
             modalTitle.innerText = title; modalBody.innerText = message;
             if (type === 'error') modalIcon.innerHTML = '<i class="fas fa-exclamation-circle text-red-500"></i>';
+            else if (type === 'warning') modalIcon.innerHTML = '<i class="fas fa-exclamation-triangle text-yellow-500"></i>';
             else if (type === 'success') modalIcon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
             else modalIcon.innerHTML = '<i class="fas fa-info-circle text-blue-500"></i>';
             modalActions.innerHTML = `<button id="btn-modal-ok" class="bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition font-medium">Đóng</button>`;
@@ -341,7 +381,17 @@
             return `${time} ${date}`;
         };
 
-        // --- GIAO DIỆN & SỰ KIỆN ---
+        // Hàm xử lý lỗi Index chung
+        function handleFirebaseError(err) {
+            if(err.message && err.message.includes('index')) {
+                console.error("Link tạo Index Firebase:", err.message);
+                showAlert("Yêu cầu tạo Chỉ Mục (Index)", "Bạn vừa sử dụng một bộ lọc mới cần tạo Index trên Firebase.\n\nNhấn phím F12 mở Console, tìm đường link màu đỏ bắt đầu bằng 'https://console.firebase...', click vào đó để tạo tự động và đợi khoảng 3 phút rồi làm lại nhé.", "warning");
+            } else {
+                showAlert('Lỗi', err.message, 'error');
+            }
+        }
+
+        // --- GIAO DIỆN CHUYỂN TAB ---
         const navBtns = document.querySelectorAll('.nav-btn');
         const tabContents = document.querySelectorAll('.tab-content');
         navBtns.forEach(btn => {
@@ -360,13 +410,26 @@
             });
         });
 
+        // Đổi nhãn khi chọn loại giao dịch
+        document.getElementById('t-type').addEventListener('change', (e) => {
+            const label = document.getElementById('t-amount-label');
+            const input = document.getElementById('t-amount');
+            if(e.target.value === 'investment') {
+                label.innerText = "Số dư khoản đầu tư hiện tại (VNĐ)";
+                input.placeholder = "Ví dụ: Tổng số tiền đang có...";
+            } else {
+                label.innerText = "Số tiền (VNĐ)";
+                input.placeholder = "1.000.000";
+            }
+        });
+
         document.getElementById('t-amount').addEventListener('input', function(e) {
             let val = this.value.replace(/[^0-9]/g, ''); 
             if (val === '') { this.value = ''; return; }
             this.value = parseInt(val).toLocaleString('vi-VN');
         });
 
-        // --- AUTH & DATA LOAD ---
+        // --- AUTH ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
@@ -389,37 +452,228 @@
 
         const handleLogout = () => { showConfirm('Đăng xuất', 'Bạn có muốn đăng xuất khỏi ứng dụng không?', () => { signOut(auth); }); };
         document.getElementById('logout-btn').addEventListener('click', handleLogout);
-        
-        // Nút Đăng xuất mobile đã được thêm lại HTML nên sẽ không còn báo lỗi null
         const logoutBtnMobile = document.getElementById('logout-btn-mobile');
         if(logoutBtnMobile) logoutBtnMobile.addEventListener('click', handleLogout);
 
-        function initData() {
-            onSnapshot(query(collection(db, "notes"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc")), (snap) => {
-                notesData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderNotes(); renderDashboardNotes();
-            });
-            onSnapshot(query(collection(db, "transactions"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc")), (snap) => {
-                financeData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderFinance(); updateDashboardStats(); renderDashboardFinance();
-            });
-        }
-
-        function checkDateRange(timestamp, filterType, startDateVal, endDateVal) {
-            if(!timestamp) return false;
-            const date = new Date(timestamp.toDate ? timestamp.toDate() : timestamp);
+        // --- DATE & QUERY HELPER ---
+        function getDateBounds(filterType, startId, endId) {
+            let start = null, end = null;
             const now = new Date();
-            if (filterType === 'today') return date.toDateString() === now.toDateString();
-            if (filterType === 'month') return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-            if (filterType === 'custom') {
-                const start = startDateVal ? new Date(startDateVal).setHours(0,0,0,0) : 0;
-                const end = endDateVal ? new Date(endDateVal).setHours(23,59,59,999) : Infinity;
-                return date.getTime() >= start && date.getTime() <= end;
+            if (filterType === 'today') {
+                start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0,0,0,0);
+                end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23,59,59,999);
+            } else if (filterType === 'month') {
+                start = new Date(now.getFullYear(), now.getMonth(), 1, 0,0,0,0);
+                end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23,59,59,999);
+            } else if (filterType === 'year') {
+                start = new Date(now.getFullYear(), 0, 1, 0,0,0,0);
+                end = new Date(now.getFullYear(), 11, 31, 23,59,59,999);
+            } else if (filterType === 'custom') {
+                const sVal = document.getElementById(startId).value;
+                const eVal = document.getElementById(endId).value;
+                if(sVal) { start = new Date(sVal); start.setHours(0,0,0,0); }
+                if(eVal) { end = new Date(eVal); end.setHours(23,59,59,999); }
             }
-            return true;
+            return { start, end };
         }
 
-        // --- MODULE: GHI CHÚ ---
+        // --- INIT DATA ---
+        function initData() {
+            onSnapshot(query(collection(db, "notes"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc"), limit(5)), (snap) => {
+                renderDashboardNotes(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+            });
+            onSnapshot(query(collection(db, "transactions"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc"), limit(5)), (snap) => {
+                renderDashboardFinance(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+            });
+            updateDashboardStats();
+            loadNotes("first");
+            loadFinance("first");
+        }
+
+        // ==========================================
+        // MODULE: DASHBOARD LỌC TỔNG QUAN
+        // ==========================================
+        const filterDDate = document.getElementById('filter-d-date');
+        const dCustomBox = document.getElementById('d-custom-date');
+        filterDDate.addEventListener('change', (e) => {
+            e.target.value === 'custom' ? dCustomBox.classList.remove('hidden') : dCustomBox.classList.add('hidden');
+            updateDashboardStats();
+        });
+        document.getElementById('btn-d-filter-custom').addEventListener('click', updateDashboardStats);
+
+        async function updateDashboardStats() {
+            try {
+                const filterType = document.getElementById('filter-d-date').value;
+                const { start, end } = getDateBounds(filterType, 'd-date-start', 'd-date-end');
+                
+                let baseConstraints = [where("userId", "==", currentUser.uid)];
+                if (start) baseConstraints.push(where("createdAt", ">=", start));
+                if (end) baseConstraints.push(where("createdAt", "<=", end));
+
+                // Tính Tổng Thu Thuần
+                const qInc = query(collection(db, "transactions"), ...baseConstraints, where("type", "==", "income"));
+                // Tính Tổng Chi Thuần
+                const qExp = query(collection(db, "transactions"), ...baseConstraints, where("type", "==", "expense"));
+                
+                const [snapInc, snapExp] = await Promise.all([
+                    getAggregateFromServer(qInc, { total: sum('amount') }),
+                    getAggregateFromServer(qExp, { total: sum('amount') })
+                ]);
+
+                let totalInc = snapInc.data().total || 0;
+                let totalExp = snapExp.data().total || 0;
+
+                // Xử lý Lãi Lỗ Đầu Tư (Chỉ lấy trong khoản thời gian đã chọn)
+                const qInv = query(collection(db, "transactions"), ...baseConstraints, where("type", "==", "investment"));
+                const snapInv = await getDocs(qInv);
+                snapInv.forEach(doc => {
+                    const diff = doc.data().amount;
+                    if(diff > 0) totalInc += diff;
+                    else if(diff < 0) totalExp += Math.abs(diff);
+                });
+                
+                document.getElementById('dash-income').innerText = totalInc.toLocaleString('vi-VN') + 'đ';
+                document.getElementById('dash-expense').innerText = totalExp.toLocaleString('vi-VN') + 'đ';
+                document.getElementById('dash-balance').innerText = (totalInc - totalExp).toLocaleString('vi-VN') + 'đ';
+            } catch (error) { 
+                handleFirebaseError(error); 
+            }
+        }
+
+        function renderDashboardNotes(top5Notes) {
+            const list = document.getElementById('dash-recent-notes');
+            list.innerHTML = top5Notes.length ? top5Notes.map(n => {
+                const shortContent = n.content.length > 50 ? n.content.substring(0, 50) + '...' : n.content;
+                return `
+                <li class="py-3 flex flex-col hover:bg-gray-50 -mx-6 px-6 transition">
+                    <div class="flex justify-between items-start mb-1">
+                        <span class="font-bold text-gray-800 text-sm truncate pr-2">${n.title}</span>
+                        <span class="text-[10px] text-gray-400 whitespace-nowrap bg-gray-100 px-2 py-0.5 rounded">${formatDateTime(n.createdAt)}</span>
+                    </div>
+                    <span class="text-xs text-gray-500 line-clamp-1">${shortContent}</span>
+                </li>`;
+            }).join('') : '<li class="py-4 text-sm italic text-gray-400 text-center">Chưa có ghi chú nào.</li>';
+        }
+
+        function renderDashboardFinance(top5Trans) {
+            const list = document.getElementById('dash-recent-finance');
+            list.innerHTML = top5Trans.length ? top5Trans.map(t => {
+                const isInc = t.type === 'income';
+                const isInv = t.type === 'investment';
+                
+                let amountHtml = '';
+                if(isInv) {
+                    const diff = t.amount;
+                    const diffStr = diff >= 0 ? `+${diff.toLocaleString('vi-VN')}` : `-${Math.abs(diff).toLocaleString('vi-VN')}`;
+                    const diffColor = diff >= 0 ? 'text-green-600' : 'text-red-600';
+                    amountHtml = `<div class="text-right">
+                        <span class="font-bold text-sm whitespace-nowrap bg-gray-50 px-2 py-1 rounded text-blue-600">${(t.balance || 0).toLocaleString('vi-VN')}đ</span>
+                        <div class="text-[10px] ${diffColor} mt-1 font-bold">${diffStr}đ</div>
+                    </div>`;
+                } else {
+                    amountHtml = `<span class="font-bold text-sm whitespace-nowrap bg-gray-50 px-2 py-1 rounded ${isInc ? 'text-green-600' : 'text-red-600'}">${isInc ? '+' : '-'}${t.amount.toLocaleString('vi-VN')}đ</span>`;
+                }
+
+                return `
+                <li class="py-3 flex justify-between items-center hover:bg-gray-50 -mx-6 px-6 transition">
+                    <div class="flex flex-col truncate pr-4">
+                        <div class="flex items-center gap-2">
+                            ${isInv ? '<span class="bg-blue-100 text-blue-700 text-[9px] px-1.5 py-0.5 rounded font-bold">Đầu tư</span>' : ''}
+                            <span class="font-medium text-gray-800 text-sm truncate">${t.note}</span>
+                        </div>
+                        <span class="text-[10px] text-gray-400 mt-0.5"><i class="far fa-clock"></i> ${formatDateTime(t.createdAt)}</span>
+                    </div>
+                    ${amountHtml}
+                </li>`;
+            }).join('') : '<li class="py-4 text-sm italic text-gray-400 text-center">Chưa có giao dịch nào.</li>';
+        }
+
+        // ==========================================
+        // MODULE: GHI CHÚ
+        // ==========================================
+        let nPage = 1, nTotalPages = 1, nFirstDoc = null, nLastDoc = null;
+
+        async function loadNotes(direction = "first") {
+            try {
+                const filterType = document.getElementById('filter-n-date').value;
+                let constraints = [where("userId", "==", currentUser.uid)];
+                const { start, end } = getDateBounds(filterType, 'n-date-start', 'n-date-end');
+                if (start) constraints.push(where("createdAt", ">=", start));
+                if (end) constraints.push(where("createdAt", "<=", end));
+                constraints.push(orderBy("createdAt", "desc"));
+                
+                const baseQ = query(collection(db, "notes"), ...constraints);
+                const isAll = filterType === 'all';
+                
+                let q;
+                if (isAll) {
+                    q = baseQ; 
+                    document.getElementById('n-pagination-wrapper').classList.add('hidden');
+                } else {
+                    document.getElementById('n-pagination-wrapper').classList.remove('hidden');
+                    const countSnap = await getCountFromServer(baseQ);
+                    nTotalPages = Math.ceil(countSnap.data().count / PAGE_SIZE) || 1;
+
+                    if (direction === "first") {
+                        nPage = 1; q = query(baseQ, limit(PAGE_SIZE));
+                    } else if (direction === "next" && nLastDoc) {
+                        nPage++; q = query(baseQ, startAfter(nLastDoc), limit(PAGE_SIZE));
+                    } else if (direction === "prev" && nFirstDoc) {
+                        nPage--; q = query(baseQ, endBefore(nFirstDoc), limitToLast(PAGE_SIZE));
+                    } else return;
+                }
+
+                const snap = await getDocs(q);
+                if (!snap.empty) {
+                    nFirstDoc = snap.docs[0];
+                    nLastDoc = snap.docs[snap.docs.length - 1];
+                    notesData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                } else {
+                    notesData = [];
+                }
+                
+                renderNotesUI();
+                
+                if (!isAll) {
+                    document.getElementById('n-page-info').innerText = `Trang ${nPage} / ${nTotalPages}`;
+                    document.getElementById('n-btn-prev').disabled = nPage <= 1;
+                    document.getElementById('n-btn-next').disabled = nPage >= nTotalPages;
+                }
+            } catch (error) { handleFirebaseError(error); }
+        }
+
+        document.getElementById('n-btn-next').addEventListener('click', () => loadNotes('next'));
+        document.getElementById('n-btn-prev').addEventListener('click', () => loadNotes('prev'));
+        document.getElementById('search-note').addEventListener('input', renderNotesUI);
+
+        const filterNDate = document.getElementById('filter-n-date');
+        const nCustomBox = document.getElementById('n-custom-date');
+        filterNDate.addEventListener('change', (e) => {
+            e.target.value === 'custom' ? nCustomBox.classList.remove('hidden') : nCustomBox.classList.add('hidden');
+            loadNotes('first');
+        });
+        document.getElementById('btn-n-filter-custom').addEventListener('click', () => loadNotes('first'));
+
+        function renderNotesUI() {
+            const listEl = document.getElementById('notes-list');
+            const kw = document.getElementById('search-note').value.toLowerCase();
+            const filtered = notesData.filter(n => n.title.toLowerCase().includes(kw) || n.content.toLowerCase().includes(kw));
+
+            listEl.innerHTML = filtered.length ? filtered.map(n => `
+                <div class="border border-gray-100 rounded-xl p-5 bg-white shadow-sm hover:shadow-md transition flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start mb-2"><h4 class="font-bold text-gray-800 text-lg leading-tight line-clamp-2">${n.title}</h4></div>
+                        <span class="text-[11px] text-gray-400 font-medium mb-3 block"><i class="far fa-clock"></i> ${formatDateTime(n.createdAt)}</span>
+                        <p class="text-gray-600 text-sm whitespace-pre-line mb-4">${n.content}</p>
+                    </div>
+                    <div class="flex justify-end gap-3 border-t border-gray-50 pt-3 mt-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition">
+                        <button onclick="editNote('${n.id}', '${n.title.replace(/'/g, "\\'")}', '${n.content.replace(/'/g, "\\'")}')" class="text-indigo-500 bg-indigo-50 p-2 rounded hover:bg-indigo-100 transition"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteNote('${n.id}')" class="text-red-500 bg-red-50 p-2 rounded hover:bg-red-100 transition"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('') : '<p class="text-gray-500 text-sm italic col-span-full">Không tìm thấy ghi chú nào khớp với yêu cầu.</p>';
+        }
+
         document.getElementById('note-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('n-id').value;
@@ -435,6 +689,7 @@
                     document.getElementById('note-form').reset();
                     showAlert('Thành công', 'Đã thêm ghi chú mới', 'success');
                 }
+                loadNotes('first');
             } catch (err) { showAlert('Lỗi', err.message, 'error'); }
         });
 
@@ -454,144 +709,206 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
-        window.deleteNote = (id) => { showConfirm("Xóa Ghi Chú", "Bạn có chắc chắn muốn xóa ghi chú này không?", async () => { await deleteDoc(doc(db, "notes", id)); }); };
-        window.deleteTrans = (id) => { showConfirm("Xóa Giao Dịch", "Bạn có chắc chắn muốn xóa giao dịch này không?", async () => { await deleteDoc(doc(db, "transactions", id)); }); };
+        window.deleteNote = (id) => { showConfirm("Xóa Ghi Chú", "Bạn có chắc chắn muốn xóa ghi chú này không?", async () => { await deleteDoc(doc(db, "notes", id)); loadNotes('first'); }); };
 
-        const filterNDate = document.getElementById('filter-n-date');
-        const nCustomBox = document.getElementById('n-custom-date');
-        filterNDate.addEventListener('change', (e) => { e.target.value === 'custom' ? nCustomBox.classList.remove('hidden') : nCustomBox.classList.add('hidden'); renderNotes(); });
-        document.getElementById('search-note').addEventListener('input', renderNotes);
-        document.getElementById('btn-n-filter-custom').addEventListener('click', renderNotes);
+        // ==========================================
+        // MODULE: THU CHI & ĐẦU TƯ
+        // ==========================================
+        let tPage = 1, tTotalPages = 1, tFirstDoc = null, tLastDoc = null;
 
-        function renderNotes() {
-            const listEl = document.getElementById('notes-list');
-            const kw = document.getElementById('search-note').value.toLowerCase();
-            const dateType = filterNDate.value;
-            const start = document.getElementById('n-date-start').value;
-            const end = document.getElementById('n-date-end').value;
+        async function loadFinance(direction = "first") {
+            try {
+                const filterDateType = document.getElementById('filter-t-date').value;
+                const filterTranType = document.getElementById('filter-t-type').value;
 
-            const filtered = notesData.filter(n => {
-                const matchText = n.title.toLowerCase().includes(kw) || n.content.toLowerCase().includes(kw);
-                const matchDate = checkDateRange(n.createdAt, dateType, start, end);
-                return matchText && matchDate;
-            });
+                let constraints = [where("userId", "==", currentUser.uid)];
+                
+                // Lọc theo Loại (Yêu cầu Index Composite)
+                if(filterTranType !== 'all') {
+                    constraints.push(where("type", "==", filterTranType));
+                }
 
-            listEl.innerHTML = filtered.length ? filtered.map(n => `
-                <div class="border border-gray-100 rounded-xl p-5 bg-white shadow-sm hover:shadow-md transition flex flex-col justify-between group">
-                    <div>
-                        <div class="flex justify-between items-start mb-2"><h4 class="font-bold text-gray-800 text-lg leading-tight line-clamp-2">${n.title}</h4></div>
-                        <span class="text-[11px] text-gray-400 font-medium mb-3 block"><i class="far fa-clock"></i> ${formatDateTime(n.createdAt)}</span>
-                        <p class="text-gray-600 text-sm whitespace-pre-line mb-4">${n.content}</p>
-                    </div>
-                    <div class="flex justify-end gap-3 border-t border-gray-50 pt-3 mt-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition">
-                        <button onclick="editNote('${n.id}', '${n.title.replace(/'/g, "\\'")}', '${n.content.replace(/'/g, "\\'")}')" class="text-indigo-500 bg-indigo-50 p-2 rounded hover:bg-indigo-100 transition"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteNote('${n.id}')" class="text-red-500 bg-red-50 p-2 rounded hover:bg-red-100 transition"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>
-            `).join('') : '<p class="text-gray-500 text-sm italic col-span-full">Không tìm thấy ghi chú nào.</p>';
+                // Lọc theo Ngày
+                const { start, end } = getDateBounds(filterDateType, 't-date-start', 't-date-end');
+                if (start) constraints.push(where("createdAt", ">=", start));
+                if (end) constraints.push(where("createdAt", "<=", end));
+                constraints.push(orderBy("createdAt", "desc"));
+
+                const baseQ = query(collection(db, "transactions"), ...constraints);
+                const isAllTime = filterDateType === 'all';
+
+                let q;
+                if (isAllTime) {
+                    q = baseQ;
+                    document.getElementById('t-pagination-wrapper').classList.add('hidden');
+                } else {
+                    document.getElementById('t-pagination-wrapper').classList.remove('hidden');
+                    const countSnap = await getCountFromServer(baseQ);
+                    tTotalPages = Math.ceil(countSnap.data().count / PAGE_SIZE) || 1;
+
+                    if (direction === "first") {
+                        tPage = 1; q = query(baseQ, limit(PAGE_SIZE));
+                    } else if (direction === "next" && tLastDoc) {
+                        tPage++; q = query(baseQ, startAfter(tLastDoc), limit(PAGE_SIZE));
+                    } else if (direction === "prev" && tFirstDoc) {
+                        tPage--; q = query(baseQ, endBefore(tFirstDoc), limitToLast(PAGE_SIZE));
+                    } else return;
+                }
+
+                const snap = await getDocs(q);
+                if (!snap.empty) {
+                    tFirstDoc = snap.docs[0];
+                    tLastDoc = snap.docs[snap.docs.length - 1];
+                    financeData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                } else {
+                    financeData = [];
+                }
+                
+                renderFinanceUI();
+                
+                if (!isAllTime) {
+                    document.getElementById('t-page-info').innerText = `Trang ${tPage} / ${tTotalPages}`;
+                    document.getElementById('t-btn-prev').disabled = tPage <= 1;
+                    document.getElementById('t-btn-next').disabled = tPage >= tTotalPages;
+                }
+            } catch (error) { handleFirebaseError(error); }
         }
 
-        // --- MODULE: THU CHI ---
-        document.getElementById('transaction-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const type = document.getElementById('t-type').value;
-            const amount = Number(document.getElementById('t-amount').value.replace(/\./g, ''));
-            const note = document.getElementById('t-note').value;
-            if(!amount) return showAlert('Cảnh báo', 'Vui lòng nhập số tiền hợp lệ!', 'warning');
-            try {
-                await addDoc(collection(db, "transactions"), { userId: currentUser.uid, type, amount, note, createdAt: serverTimestamp() });
-                document.getElementById('transaction-form').reset();
-                showAlert('Thành công', 'Đã lưu giao dịch!', 'success');
-            } catch (err) { showAlert('Lỗi', err.message, 'error'); }
-        });
+        document.getElementById('t-btn-next').addEventListener('click', () => loadFinance('next'));
+        document.getElementById('t-btn-prev').addEventListener('click', () => loadFinance('prev'));
+        document.getElementById('search-finance').addEventListener('input', renderFinanceUI);
 
         const filterTDate = document.getElementById('filter-t-date');
+        const filterTType = document.getElementById('filter-t-type');
         const tCustomBox = document.getElementById('t-custom-date');
-        filterTDate.addEventListener('change', (e) => { e.target.value === 'custom' ? tCustomBox.classList.remove('hidden') : tCustomBox.classList.add('hidden'); renderFinance(); });
-        document.getElementById('search-finance').addEventListener('input', renderFinance);
-        document.getElementById('btn-t-filter-custom').addEventListener('click', renderFinance);
+        
+        filterTDate.addEventListener('change', (e) => {
+            e.target.value === 'custom' ? tCustomBox.classList.remove('hidden') : tCustomBox.classList.add('hidden');
+            loadFinance('first');
+        });
+        filterTType.addEventListener('change', () => loadFinance('first'));
+        document.getElementById('btn-t-filter-custom').addEventListener('click', () => loadFinance('first'));
 
-        function renderFinance() {
+        function renderFinanceUI() {
             const listEl = document.getElementById('transactions-list');
             const kw = document.getElementById('search-finance').value.toLowerCase();
-            const dateType = filterTDate.value;
-            const start = document.getElementById('t-date-start').value;
-            const end = document.getElementById('t-date-end').value;
-
-            const filtered = financeData.filter(t => {
-                const matchText = t.note.toLowerCase().includes(kw);
-                const matchDate = checkDateRange(t.createdAt, dateType, start, end);
-                return matchText && matchDate;
-            });
+            const filtered = financeData.filter(t => t.note.toLowerCase().includes(kw));
 
             listEl.innerHTML = filtered.length ? filtered.map(t => {
                 const isInc = t.type === 'income';
+                const isInv = t.type === 'investment';
+                
+                let amountHtml = '';
+                if(isInv) {
+                    const diff = t.amount;
+                    const diffStr = diff >= 0 ? `+${diff.toLocaleString('vi-VN')}` : `-${Math.abs(diff).toLocaleString('vi-VN')}`;
+                    const diffColor = diff >= 0 ? 'text-green-600' : 'text-red-600';
+                    amountHtml = `
+                    <div class="flex flex-col items-end">
+                        <span class="font-bold text-gray-800">${(t.balance || 0).toLocaleString('vi-VN')}đ</span>
+                        <span class="text-xs ${diffColor} font-bold bg-${diff>=0?'green':'red'}-50 px-1 rounded">${diffStr}</span>
+                    </div>`;
+                } else {
+                    amountHtml = `<span class="font-bold ${isInc ? 'text-green-600' : 'text-red-600'}">${isInc ? '+' : '-'}${t.amount.toLocaleString('vi-VN')}đ</span>`;
+                }
+
                 return `
                 <tr class="hover:bg-gray-50/50 transition border-b border-gray-50">
                     <td class="p-3 text-xs text-gray-500 whitespace-nowrap">${formatDateTime(t.createdAt)}</td>
-                    <td class="p-3 font-medium text-gray-800">${t.note}</td>
-                    <td class="p-3 text-right font-bold ${isInc ? 'text-green-600' : 'text-red-600'} whitespace-nowrap">${isInc ? '+' : '-'}${t.amount.toLocaleString('vi-VN')}</td>
+                    <td class="p-3">
+                        ${isInv ? '<span class="bg-blue-100 text-blue-700 text-[9px] px-1.5 py-0.5 rounded font-bold mr-1 block w-max mb-1">Đầu tư</span>' : ''}
+                        <span class="font-medium text-gray-800">${t.note}</span>
+                    </td>
+                    <td class="p-3 text-right whitespace-nowrap">${amountHtml}</td>
                     <td class="p-3 text-center"><button onclick="deleteTrans('${t.id}')" class="text-gray-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded transition"><i class="fas fa-trash"></i></button></td>
                 </tr>`;
-            }).join('') : '<tr><td colspan="4" class="p-5 text-center text-sm text-gray-500 italic">Không tìm thấy giao dịch.</td></tr>';
+            }).join('') : '<tr><td colspan="4" class="p-5 text-center text-sm text-gray-500 italic">Không tìm thấy dữ liệu nào.</td></tr>';
         }
 
-        // --- MODULE: DASHBOARD ---
-        function updateDashboardStats() {
-            let inc = 0, exp = 0;
-            financeData.forEach(t => { t.type === 'income' ? inc += t.amount : exp += t.amount; });
-            document.getElementById('dash-income').innerText = inc.toLocaleString('vi-VN') + 'đ';
-            document.getElementById('dash-expense').innerText = exp.toLocaleString('vi-VN') + 'đ';
-            document.getElementById('dash-balance').innerText = (inc - exp).toLocaleString('vi-VN') + 'đ';
-        }
+        document.getElementById('transaction-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const type = document.getElementById('t-type').value;
+            const inputAmount = Number(document.getElementById('t-amount').value.replace(/\./g, ''));
+            const note = document.getElementById('t-note').value;
+            
+            if(!inputAmount && inputAmount !== 0) return showAlert('Cảnh báo', 'Vui lòng nhập số hợp lệ!', 'warning');
 
-        function renderDashboardNotes() {
-            const list = document.getElementById('dash-recent-notes');
-            list.innerHTML = notesData.slice(0, 5).length ? notesData.slice(0, 5).map(n => {
-                const shortContent = n.content.length > 50 ? n.content.substring(0, 50) + '...' : n.content;
-                return `
-                <li class="py-3 flex flex-col hover:bg-gray-50 -mx-6 px-6 transition">
-                    <div class="flex justify-between items-start mb-1">
-                        <span class="font-bold text-gray-800 text-sm truncate pr-2">${n.title}</span>
-                        <span class="text-[10px] text-gray-400 whitespace-nowrap bg-gray-100 px-2 py-0.5 rounded">${formatDateTime(n.createdAt)}</span>
-                    </div>
-                    <span class="text-xs text-gray-500 line-clamp-1">${shortContent}</span>
-                </li>`;
-            }).join('') : '<li class="py-4 text-sm italic text-gray-400 text-center">Chưa có ghi chú nào.</li>';
-        }
-
-        function renderDashboardFinance() {
-            const list = document.getElementById('dash-recent-finance');
-            list.innerHTML = financeData.slice(0, 5).length ? financeData.slice(0, 5).map(t => {
-                const isInc = t.type === 'income';
-                return `
-                <li class="py-3 flex justify-between items-center hover:bg-gray-50 -mx-6 px-6 transition">
-                    <div class="flex flex-col truncate pr-4">
-                        <span class="font-medium text-gray-800 text-sm truncate">${t.note}</span>
-                        <span class="text-[10px] text-gray-400 mt-0.5"><i class="far fa-clock"></i> ${formatDateTime(t.createdAt)}</span>
-                    </div>
-                    <span class="font-bold text-sm whitespace-nowrap bg-gray-50 px-2 py-1 rounded ${isInc ? 'text-green-600' : 'text-red-600'}">${isInc ? '+' : '-'}${t.amount.toLocaleString('vi-VN')}đ</span>
-                </li>`;
-            }).join('') : '<li class="py-4 text-sm italic text-gray-400 text-center">Chưa có giao dịch nào.</li>';
-        }
-
-        // --- MODULE: QUẢN TRỊ (BACKUP/RESTORE) ---
-        document.getElementById('btn-backup').addEventListener('click', () => {
             try {
-                if (notesData.length === 0 && financeData.length === 0) {
-                    return showAlert("Thông báo", "Tài khoản của bạn chưa có dữ liệu nào để sao lưu.", "info");
+                let finalAmountToSave = inputAmount;
+                let balanceToSave = null;
+
+                if (type === 'investment') {
+                    balanceToSave = inputAmount; // Người dùng nhập Số dư cuối
+                    
+                    // Tìm khoản đầu tư gần nhất để tính Lãi/Lỗ
+                    const lastInvQ = query(collection(db, "transactions"), where("userId", "==", currentUser.uid), where("type", "==", "investment"), orderBy("createdAt", "desc"), limit(1));
+                    const lastInvSnap = await getDocs(lastInvQ);
+                    
+                    if (!lastInvSnap.empty) {
+                        const lastBalance = lastInvSnap.docs[0].data().balance || 0;
+                        finalAmountToSave = balanceToSave - lastBalance; // Chênh lệch (Lãi/Lỗ)
+                    } else {
+                        finalAmountToSave = 0; // Lần đầu tiên ghi nhận = Gốc = 0 Lãi Lỗ
+                    }
                 }
+
+                await addDoc(collection(db, "transactions"), { 
+                    userId: currentUser.uid, 
+                    type: type, 
+                    amount: finalAmountToSave, 
+                    ...(type === 'investment' && { balance: balanceToSave }),
+                    note: note, 
+                    createdAt: serverTimestamp() 
+                });
+                
+                document.getElementById('transaction-form').reset();
+                document.getElementById('t-amount-label').innerText = "Số tiền (VNĐ)"; // Reset label
+                
+                if (type === 'investment') {
+                    showAlert('Thành công', `Đã chốt số dư đầu tư mới: ${balanceToSave.toLocaleString('vi-VN')}đ\nLãi/Lỗ so với kỳ trước: ${finalAmountToSave >= 0 ? '+' : ''}${finalAmountToSave.toLocaleString('vi-VN')}đ`, 'success');
+                } else {
+                    showAlert('Thành công', 'Đã lưu giao dịch!', 'success');
+                }
+                
+                loadFinance('first');
+                updateDashboardStats();
+            } catch (err) { handleFirebaseError(err); }
+        });
+
+        window.deleteTrans = (id) => { 
+            showConfirm("Xóa Giao Dịch", "Bạn có chắc chắn muốn xóa không?", async () => { 
+                await deleteDoc(doc(db, "transactions", id)); 
+                loadFinance('first'); 
+                updateDashboardStats(); 
+            }); 
+        };
+
+        // ==========================================
+        // MODULE: QUẢN TRỊ (BACKUP/RESTORE)
+        // ==========================================
+        document.getElementById('btn-backup').addEventListener('click', async () => {
+            try {
+                const [notesSnap, transSnap] = await Promise.all([
+                    getDocs(query(collection(db, "notes"), where("userId", "==", currentUser.uid))),
+                    getDocs(query(collection(db, "transactions"), where("userId", "==", currentUser.uid)))
+                ]);
+                if (notesSnap.empty && transSnap.empty) return showAlert("Thông báo", "Tài khoản chưa có dữ liệu.", "info");
+
+                const allNotes = notesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const allTrans = transSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
                 const backupData = {
-                    notes: notesData.map(n => ({...n, createdAt: n.createdAt ? (n.createdAt.toMillis ? n.createdAt.toMillis() : new Date(n.createdAt).getTime()) : Date.now()})),
-                    transactions: financeData.map(t => ({...t, createdAt: t.createdAt ? (t.createdAt.toMillis ? t.createdAt.toMillis() : new Date(t.createdAt).getTime()) : Date.now()}))
+                    notes: allNotes.map(n => ({...n, createdAt: n.createdAt ? (n.createdAt.toMillis ? n.createdAt.toMillis() : new Date(n.createdAt).getTime()) : Date.now()})),
+                    transactions: allTrans.map(t => ({...t, createdAt: t.createdAt ? (t.createdAt.toMillis ? t.createdAt.toMillis() : new Date(t.createdAt).getTime()) : Date.now()}))
                 };
+                
                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
                 const dlAnchorElem = document.createElement('a');
                 dlAnchorElem.setAttribute("href", dataStr);
-                dlAnchorElem.setAttribute("download", `MySpace_Backup_${new Date().toLocaleDateString('vi-VN').replace(/\//g, '-')}.json`);
+                dlAnchorElem.setAttribute("download", `SoTay_Backup_${new Date().toLocaleDateString('vi-VN').replace(/\//g, '-')}.json`);
                 dlAnchorElem.click();
-                showAlert("Thành công", "Đã tạo bản sao lưu và tải xuống máy của bạn!", "success");
-            } catch (error) { showAlert("Lỗi", "Không thể tạo sao lưu: " + error.message, "error"); }
+                showAlert("Thành công", "Đã tải xuống bản sao lưu.", "success");
+            } catch (error) { showAlert("Lỗi", error.message, "error"); }
         });
 
         const fileRestoreInput = document.getElementById('file-restore');
@@ -601,34 +918,28 @@
             const file = e.target.files[0];
             if (!file) return;
 
-            showConfirm("Xác nhận Khôi Phục", "Bạn có chắc chắn muốn khôi phục? Quá trình này sẽ đẩy toàn bộ dữ liệu từ file lên tài khoản của bạn. Đừng lo, các dữ liệu bị trùng ID gốc sẽ được tự động ghi đè an toàn.", () => {
+            showConfirm("Xác nhận Khôi Phục", "Dữ liệu từ file sẽ ghi đè dữ liệu trùng ID trên tài khoản. Tiến hành?", () => {
                 const reader = new FileReader();
                 reader.onload = async (event) => {
                     try {
                         const data = JSON.parse(event.target.result);
                         let restoredCount = 0;
-                        
-                        if (data.notes && Array.isArray(data.notes)) {
+                        if (data.notes) {
                             for (let n of data.notes) {
-                                const { id, ...rest } = n;
-                                rest.createdAt = new Date(rest.createdAt);
-                                await setDoc(doc(db, "notes", id), rest);
-                                restoredCount++;
+                                const { id, ...rest } = n; rest.createdAt = new Date(rest.createdAt);
+                                await setDoc(doc(db, "notes", id), rest); restoredCount++;
                             }
                         }
-                        
-                        if (data.transactions && Array.isArray(data.transactions)) {
+                        if (data.transactions) {
                             for (let t of data.transactions) {
-                                const { id, ...rest } = t;
-                                rest.createdAt = new Date(rest.createdAt);
-                                await setDoc(doc(db, "transactions", id), rest);
-                                restoredCount++;
+                                const { id, ...rest } = t; rest.createdAt = new Date(rest.createdAt);
+                                await setDoc(doc(db, "transactions", id), rest); restoredCount++;
                             }
                         }
-                        
-                        showAlert("Tuyệt vời", `Đã khôi phục thành công ${restoredCount} mục!`, "success");
+                        showAlert("Tuyệt vời", `Đã khôi phục ${restoredCount} mục!`, "success");
                         fileRestoreInput.value = ''; 
-                    } catch (error) { showAlert("Lỗi định dạng", "File không hợp lệ hoặc có lỗi xảy ra: " + error.message, "error"); }
+                        loadNotes('first'); loadFinance('first'); updateDashboardStats();
+                    } catch (error) { showAlert("Lỗi định dạng", error.message, "error"); }
                 };
                 reader.readAsText(file);
             });
