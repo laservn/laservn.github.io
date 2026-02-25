@@ -26,7 +26,7 @@
                 <div id="modal-icon" class="text-2xl"></div>
                 <h3 id="modal-title" class="text-xl font-bold text-gray-800">Thông báo</h3>
             </div>
-            <p id="modal-body" class="text-gray-600 mb-6 text-sm whitespace-pre-line">Nội dung</p>
+            <p id="modal-body" class="text-gray-600 mb-6 text-sm whitespace-pre-line leading-relaxed">Nội dung</p>
             <div id="modal-actions" class="flex justify-end gap-3">
                 </div>
         </div>
@@ -65,17 +65,17 @@
             </div>
             
             <nav class="flex flex-1 flex-row md:flex-col p-2 md:p-4 justify-around md:justify-start space-x-1 md:space-x-0 md:space-y-2" id="sidebar-nav">
-                <button data-target="tab-dashboard" class="nav-btn flex-1 md:flex-none p-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition duration-200">
+                <button data-target="tab-dashboard" class="nav-btn flex-1 md:flex-none p-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition duration-200 shadow-md">
                     <i class="fas fa-chart-pie text-xl md:text-base"></i> <span class="text-[10px] md:text-sm font-medium hidden md:inline">Tổng Quan</span>
                 </button>
-                <button data-target="tab-notes" class="nav-btn flex-1 md:flex-none p-3 bg-transparent hover:bg-slate-700 rounded-xl flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition duration-200">
-                    <i class="fas fa-book text-xl md:text-base"></i> <span class="text-[10px] md:text-sm font-medium hidden md:inline">Ghi Chú</span>
+                <button data-target="tab-notes" class="nav-btn flex-1 md:flex-none p-3 bg-transparent hover:bg-slate-700 text-slate-300 rounded-xl flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition duration-200">
+                    <i class="fas fa-book text-xl md:text-base"></i> <span class="text-[10px] md:text-sm font-medium hidden md:inline text-slate-300">Ghi Chú</span>
                 </button>
-                <button data-target="tab-finance" class="nav-btn flex-1 md:flex-none p-3 bg-transparent hover:bg-slate-700 rounded-xl flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition duration-200">
-                    <i class="fas fa-money-bill-wave text-xl md:text-base"></i> <span class="text-[10px] md:text-sm font-medium hidden md:inline">Thu Chi</span>
+                <button data-target="tab-finance" class="nav-btn flex-1 md:flex-none p-3 bg-transparent hover:bg-slate-700 text-slate-300 rounded-xl flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition duration-200">
+                    <i class="fas fa-money-bill-wave text-xl md:text-base"></i> <span class="text-[10px] md:text-sm font-medium hidden md:inline text-slate-300">Thu Chi</span>
                 </button>
-                <button id="logout-btn-mobile" class="md:hidden flex-1 p-3 bg-transparent hover:bg-red-500/20 text-red-400 rounded-xl flex flex-col items-center justify-center gap-1 transition duration-200">
-                    <i class="fas fa-power-off text-xl"></i> <span class="text-[10px] hidden md:inline">Thoát</span>
+                <button data-target="tab-admin" class="nav-btn flex-1 md:flex-none p-3 bg-transparent hover:bg-slate-700 text-slate-300 rounded-xl flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition duration-200">
+                    <i class="fas fa-cog text-xl md:text-base"></i> <span class="text-[10px] md:text-sm font-medium hidden md:inline text-slate-300">Quản Trị</span>
                 </button>
             </nav>
 
@@ -238,13 +238,42 @@
                     </div>
                 </div>
             </section>
+
+            <section id="tab-admin" class="tab-content max-w-6xl mx-auto">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6 tracking-tight">Hệ Thống Quản Trị</h1>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center group hover:shadow-md transition">
+                        <div class="w-20 h-20 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-3xl mb-5 group-hover:scale-110 transition duration-300">
+                            <i class="fas fa-cloud-download-alt"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">Sao Lưu Dữ Liệu</h3>
+                        <p class="text-sm text-gray-500 mb-8 leading-relaxed">Xuất toàn bộ ghi chú và giao dịch thu chi của bạn thành 1 file JSON an toàn. Bạn có thể lưu trữ file này ở bất cứ đâu.</p>
+                        <button id="btn-backup" class="mt-auto w-full md:w-3/4 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 font-medium transition shadow-sm flex justify-center items-center gap-2">
+                            <i class="fas fa-download"></i> Tạo Bản Sao Lưu
+                        </button>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center group hover:shadow-md transition">
+                        <div class="w-20 h-20 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center text-3xl mb-5 group-hover:scale-110 transition duration-300">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">Khôi Phục Dữ Liệu</h3>
+                        <p class="text-sm text-gray-500 mb-8 leading-relaxed">Tải lên file JSON đã sao lưu để phục hồi dữ liệu. Quá trình này sẽ giữ nguyên ID gốc, đảm bảo không bị trùng lặp dữ liệu.</p>
+                        <input type="file" id="file-restore" accept=".json" class="hidden">
+                        <button id="btn-trigger-restore" class="mt-auto w-full md:w-3/4 bg-orange-500 text-white px-6 py-3 rounded-xl hover:bg-orange-600 font-medium transition shadow-sm flex justify-center items-center gap-2">
+                            <i class="fas fa-upload"></i> Chọn File Khôi Phục
+                        </button>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, serverTimestamp, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, serverTimestamp, deleteDoc, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         // === THAY MÃ FIREBASE CỦA BẠN VÀO ĐÂY ===
         const firebaseConfig = {
@@ -273,53 +302,37 @@
 
         function openModal() {
             modalEl.classList.remove('hidden');
-            // Trigger animation
-            setTimeout(() => {
-                modalEl.classList.remove('opacity-0');
-                modalBox.classList.remove('scale-95');
-            }, 10);
+            setTimeout(() => { modalEl.classList.remove('opacity-0'); modalBox.classList.remove('scale-95'); }, 10);
         }
 
         function closeModal() {
-            modalEl.classList.add('opacity-0');
-            modalBox.classList.add('scale-95');
+            modalEl.classList.add('opacity-0'); modalBox.classList.add('scale-95');
             setTimeout(() => { modalEl.classList.add('hidden'); }, 200);
         }
 
-        // Thay thế alert()
         window.showAlert = (title, message, type = 'info') => {
             modalTitle.innerText = title;
             modalBody.innerText = message;
-            
             if (type === 'error') modalIcon.innerHTML = '<i class="fas fa-exclamation-circle text-red-500"></i>';
             else if (type === 'success') modalIcon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
             else modalIcon.innerHTML = '<i class="fas fa-info-circle text-blue-500"></i>';
-
             modalActions.innerHTML = `<button id="btn-modal-ok" class="bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition font-medium">Đóng</button>`;
-            
             openModal();
             document.getElementById('btn-modal-ok').onclick = closeModal;
         };
 
-        // Thay thế confirm()
         window.showConfirm = (title, message, onConfirm) => {
             modalTitle.innerText = title;
             modalBody.innerText = message;
             modalIcon.innerHTML = '<i class="fas fa-question-circle text-yellow-500"></i>';
-
             modalActions.innerHTML = `
                 <button id="btn-modal-cancel" class="bg-gray-100 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-200 transition font-medium">Hủy</button>
-                <button id="btn-modal-yes" class="bg-red-500 text-white px-5 py-2 rounded-lg hover:bg-red-600 transition font-medium">Đồng ý</button>
+                <button id="btn-modal-yes" class="bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition font-medium">Đồng ý</button>
             `;
-            
             openModal();
             document.getElementById('btn-modal-cancel').onclick = closeModal;
-            document.getElementById('btn-modal-yes').onclick = () => {
-                closeModal();
-                onConfirm(); // Chạy hàm callback sau khi chọn Yes
-            };
+            document.getElementById('btn-modal-yes').onclick = () => { closeModal(); onConfirm(); };
         };
-
 
         // --- UI & TAB LOGIC ---
         const navBtns = document.querySelectorAll('.nav-btn');
@@ -329,17 +342,17 @@
                 navBtns.forEach(b => {
                     b.classList.remove('bg-indigo-600', 'text-white', 'shadow-md');
                     b.classList.add('bg-transparent', 'hover:bg-slate-700', 'text-slate-300');
-                    if(b.querySelector('span')) b.querySelector('span').classList.replace('text-white', 'text-slate-300');
+                    if(b.querySelector('span')) b.querySelector('span').classList.add('text-slate-300');
                 });
                 btn.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
                 btn.classList.remove('bg-transparent', 'hover:bg-slate-700', 'text-slate-300');
+                if(btn.querySelector('span')) btn.querySelector('span').classList.remove('text-slate-300');
                 
                 tabContents.forEach(tab => tab.classList.remove('active'));
                 document.getElementById(btn.dataset.target).classList.add('active');
             });
         });
 
-        // Định dạng input số tiền (thêm dấu chấm lúc gõ)
         const amountInput = document.getElementById('t-amount');
         amountInput.addEventListener('input', function(e) {
             let val = this.value.replace(/[^0-9]/g, ''); 
@@ -347,10 +360,9 @@
             this.value = parseInt(val).toLocaleString('vi-VN');
         });
 
-        // Format Date Time chuẩn VN
         const formatDateTime = (timestamp) => {
             if(!timestamp) return 'Đang xử lý...';
-            const d = new Date(timestamp.toDate());
+            const d = new Date(timestamp.toDate ? timestamp.toDate() : timestamp);
             const date = d.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'});
             const time = d.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
             return `${time} ${date}`;
@@ -391,22 +403,18 @@
         function initData() {
             onSnapshot(query(collection(db, "notes"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc")), (snap) => {
                 notesData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderNotes();
-                renderDashboardNotes();
+                renderNotes(); renderDashboardNotes();
             });
             onSnapshot(query(collection(db, "transactions"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc")), (snap) => {
                 financeData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderFinance();
-                updateDashboardStats();
-                renderDashboardFinance();
+                renderFinance(); updateDashboardStats(); renderDashboardFinance();
             });
         }
 
         function checkDateRange(timestamp, filterType, startDateVal, endDateVal) {
             if(!timestamp) return false;
-            const date = timestamp.toDate();
+            const date = new Date(timestamp.toDate ? timestamp.toDate() : timestamp);
             const now = new Date();
-            
             if (filterType === 'today') return date.toDateString() === now.toDateString();
             if (filterType === 'month') return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
             if (filterType === 'custom') {
@@ -418,14 +426,13 @@
         }
 
         // ==========================================
-        // MODULE: GHI CHÚ
+        // MODULE: GHI CHÚ & THU CHI & DASHBOARD
         // ==========================================
         document.getElementById('note-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('n-id').value;
             const title = document.getElementById('n-title').value;
             const content = document.getElementById('n-content').value;
-
             try {
                 if (id) {
                     await updateDoc(doc(db, "notes", id), { title, content });
@@ -455,18 +462,12 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
-        window.deleteNote = (id) => { 
-            showConfirm("Xóa Ghi Chú", "Bạn có chắc chắn muốn xóa ghi chú này không?", async () => {
-                await deleteDoc(doc(db, "notes", id));
-            });
-        };
+        window.deleteNote = (id) => { showConfirm("Xóa Ghi Chú", "Bạn có chắc chắn muốn xóa ghi chú này không?", async () => { await deleteDoc(doc(db, "notes", id)); }); };
+        window.deleteTrans = (id) => { showConfirm("Xóa Giao Dịch", "Bạn có chắc chắn muốn xóa giao dịch này không?", async () => { await deleteDoc(doc(db, "transactions", id)); }); };
 
         const filterNDate = document.getElementById('filter-n-date');
         const nCustomBox = document.getElementById('n-custom-date');
-        filterNDate.addEventListener('change', (e) => {
-            e.target.value === 'custom' ? nCustomBox.classList.remove('hidden') : nCustomBox.classList.add('hidden');
-            renderNotes();
-        });
+        filterNDate.addEventListener('change', (e) => { e.target.value === 'custom' ? nCustomBox.classList.remove('hidden') : nCustomBox.classList.add('hidden'); renderNotes(); });
         document.getElementById('search-note').addEventListener('input', renderNotes);
         document.getElementById('btn-n-filter-custom').addEventListener('click', renderNotes);
 
@@ -486,9 +487,7 @@
             listEl.innerHTML = filtered.length ? filtered.map(n => `
                 <div class="border border-gray-100 rounded-xl p-5 bg-white shadow-sm hover:shadow-md transition flex flex-col justify-between group">
                     <div>
-                        <div class="flex justify-between items-start mb-2">
-                            <h4 class="font-bold text-gray-800 text-lg leading-tight line-clamp-2">${n.title}</h4>
-                        </div>
+                        <div class="flex justify-between items-start mb-2"><h4 class="font-bold text-gray-800 text-lg leading-tight line-clamp-2">${n.title}</h4></div>
                         <span class="text-[11px] text-gray-400 font-medium mb-3 block"><i class="far fa-clock"></i> ${formatDateTime(n.createdAt)}</span>
                         <p class="text-gray-600 text-sm whitespace-pre-line mb-4">${n.content}</p>
                     </div>
@@ -500,18 +499,12 @@
             `).join('') : '<p class="text-gray-500 text-sm italic col-span-full">Không tìm thấy ghi chú nào.</p>';
         }
 
-        // ==========================================
-        // MODULE: THU CHI
-        // ==========================================
         document.getElementById('transaction-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const type = document.getElementById('t-type').value;
-            const rawAmount = document.getElementById('t-amount').value.replace(/\./g, '');
-            const amount = Number(rawAmount);
+            const amount = Number(document.getElementById('t-amount').value.replace(/\./g, ''));
             const note = document.getElementById('t-note').value;
-
             if(!amount) return showAlert('Cảnh báo', 'Vui lòng nhập số tiền hợp lệ!', 'warning');
-
             try {
                 await addDoc(collection(db, "transactions"), { userId: currentUser.uid, type, amount, note, createdAt: serverTimestamp() });
                 document.getElementById('transaction-form').reset();
@@ -519,18 +512,9 @@
             } catch (err) { showAlert('Lỗi', err.message, 'error'); }
         });
 
-        window.deleteTrans = (id) => { 
-            showConfirm("Xóa Giao Dịch", "Bạn có chắc chắn muốn xóa giao dịch này không?", async () => {
-                await deleteDoc(doc(db, "transactions", id));
-            });
-        };
-
         const filterTDate = document.getElementById('filter-t-date');
         const tCustomBox = document.getElementById('t-custom-date');
-        filterTDate.addEventListener('change', (e) => {
-            e.target.value === 'custom' ? tCustomBox.classList.remove('hidden') : tCustomBox.classList.add('hidden');
-            renderFinance();
-        });
+        filterTDate.addEventListener('change', (e) => { e.target.value === 'custom' ? tCustomBox.classList.remove('hidden') : tCustomBox.classList.add('hidden'); renderFinance(); });
         document.getElementById('search-finance').addEventListener('input', renderFinance);
         document.getElementById('btn-t-filter-custom').addEventListener('click', renderFinance);
 
@@ -553,19 +537,12 @@
                 <tr class="hover:bg-gray-50/50 transition border-b border-gray-50">
                     <td class="p-3 text-xs text-gray-500 whitespace-nowrap">${formatDateTime(t.createdAt)}</td>
                     <td class="p-3 font-medium text-gray-800">${t.note}</td>
-                    <td class="p-3 text-right font-bold ${isInc ? 'text-green-600' : 'text-red-600'} whitespace-nowrap">
-                        ${isInc ? '+' : '-'}${t.amount.toLocaleString('vi-VN')}
-                    </td>
-                    <td class="p-3 text-center">
-                        <button onclick="deleteTrans('${t.id}')" class="text-gray-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded transition"><i class="fas fa-trash"></i></button>
-                    </td>
+                    <td class="p-3 text-right font-bold ${isInc ? 'text-green-600' : 'text-red-600'} whitespace-nowrap">${isInc ? '+' : '-'}${t.amount.toLocaleString('vi-VN')}</td>
+                    <td class="p-3 text-center"><button onclick="deleteTrans('${t.id}')" class="text-gray-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded transition"><i class="fas fa-trash"></i></button></td>
                 </tr>`;
             }).join('') : '<tr><td colspan="4" class="p-5 text-center text-sm text-gray-500 italic">Không tìm thấy giao dịch.</td></tr>';
         }
 
-        // ==========================================
-        // MODULE: DASHBOARD (TỔNG QUAN)
-        // ==========================================
         function updateDashboardStats() {
             let inc = 0, exp = 0;
             financeData.forEach(t => { t.type === 'income' ? inc += t.amount : exp += t.amount; });
@@ -576,8 +553,7 @@
 
         function renderDashboardNotes() {
             const list = document.getElementById('dash-recent-notes');
-            const top5 = notesData.slice(0, 5);
-            list.innerHTML = top5.length ? top5.map(n => {
+            list.innerHTML = notesData.slice(0, 5).length ? notesData.slice(0, 5).map(n => {
                 const shortContent = n.content.length > 50 ? n.content.substring(0, 50) + '...' : n.content;
                 return `
                 <li class="py-3 flex flex-col hover:bg-gray-50 -mx-6 px-6 transition">
@@ -592,8 +568,7 @@
 
         function renderDashboardFinance() {
             const list = document.getElementById('dash-recent-finance');
-            const top5 = financeData.slice(0, 5);
-            list.innerHTML = top5.length ? top5.map(t => {
+            list.innerHTML = financeData.slice(0, 5).length ? financeData.slice(0, 5).map(t => {
                 const isInc = t.type === 'income';
                 return `
                 <li class="py-3 flex justify-between items-center hover:bg-gray-50 -mx-6 px-6 transition">
@@ -605,6 +580,83 @@
                 </li>`;
             }).join('') : '<li class="py-4 text-sm italic text-gray-400 text-center">Chưa có giao dịch nào.</li>';
         }
+
+        // ==========================================
+        // MODULE: QUẢN TRỊ (SAO LƯU & KHÔI PHỤC)
+        // ==========================================
+        
+        // 1. Logic Sao Lưu (Backup)
+        document.getElementById('btn-backup').addEventListener('click', () => {
+            try {
+                if (notesData.length === 0 && financeData.length === 0) {
+                    return showAlert("Thông báo", "Tài khoản của bạn chưa có dữ liệu nào để sao lưu.", "info");
+                }
+
+                // Convert timestamp sang milliseconds để dễ dàng lưu trữ thành JSON
+                const backupData = {
+                    notes: notesData.map(n => ({...n, createdAt: n.createdAt ? (n.createdAt.toMillis ? n.createdAt.toMillis() : new Date(n.createdAt).getTime()) : Date.now()})),
+                    transactions: financeData.map(t => ({...t, createdAt: t.createdAt ? (t.createdAt.toMillis ? t.createdAt.toMillis() : new Date(t.createdAt).getTime()) : Date.now()}))
+                };
+
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
+                const dlAnchorElem = document.createElement('a');
+                dlAnchorElem.setAttribute("href", dataStr);
+                dlAnchorElem.setAttribute("download", `MySpace_Backup_${new Date().toLocaleDateString('vi-VN').replace(/\//g, '-')}.json`);
+                dlAnchorElem.click();
+                
+                showAlert("Thành công", "Đã tạo bản sao lưu và tải xuống máy của bạn!", "success");
+            } catch (error) {
+                showAlert("Lỗi", "Không thể tạo sao lưu: " + error.message, "error");
+            }
+        });
+
+        // 2. Logic Khôi Phục (Restore)
+        const fileRestoreInput = document.getElementById('file-restore');
+        
+        document.getElementById('btn-trigger-restore').addEventListener('click', () => {
+            fileRestoreInput.click();
+        });
+
+        fileRestoreInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            showConfirm("Xác nhận Khôi Phục", "Bạn có chắc chắn muốn khôi phục? Quá trình này sẽ đẩy toàn bộ dữ liệu từ file lên tài khoản của bạn. Đừng lo, các dữ liệu bị trùng ID gốc sẽ được tự động ghi đè an toàn.", () => {
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        let restoredCount = 0;
+                        
+                        // Import Notes
+                        if (data.notes && Array.isArray(data.notes)) {
+                            for (let n of data.notes) {
+                                const { id, ...rest } = n;
+                                rest.createdAt = new Date(rest.createdAt); // Chuyển ms lại thành Date obj
+                                await setDoc(doc(db, "notes", id), rest); // setDoc với ID cũ để tránh trùng lặp
+                                restoredCount++;
+                            }
+                        }
+                        
+                        // Import Transactions
+                        if (data.transactions && Array.isArray(data.transactions)) {
+                            for (let t of data.transactions) {
+                                const { id, ...rest } = t;
+                                rest.createdAt = new Date(rest.createdAt);
+                                await setDoc(doc(db, "transactions", id), rest);
+                                restoredCount++;
+                            }
+                        }
+                        
+                        showAlert("Tuyệt vời", `Đã khôi phục thành công ${restoredCount} mục!`, "success");
+                        fileRestoreInput.value = ''; // Reset lại input để có thể chọn lại file đó
+                    } catch (error) {
+                        showAlert("Lỗi định dạng", "File không hợp lệ hoặc có lỗi xảy ra: " + error.message, "error");
+                    }
+                };
+                reader.readAsText(file);
+            });
+        });
 
     </script>
 </body>
