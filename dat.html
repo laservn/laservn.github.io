@@ -7,15 +7,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* CSS ẩn/hiện tab */
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+        /* Ẩn mũi tên trong thẻ input type date/number trên một số trình duyệt */
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans h-screen flex overflow-hidden">
 
     <div id="login-screen" class="absolute inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-95">
-        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
+        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md mx-4">
             <h2 class="text-3xl font-bold text-center mb-2 text-indigo-600">Đăng Nhập</h2>
             <p class="text-center text-gray-500 mb-6 text-sm">Quản lý ghi chú & tài chính cá nhân</p>
             <form id="login-form" class="space-y-4">
@@ -33,39 +35,61 @@
         </div>
     </div>
 
-    <div id="app-screen" class="hidden w-full h-full flex flex-col md:flex-row">
+    <div id="app-screen" class="hidden w-full h-full flex flex-col md:flex-row pb-16 md:pb-0">
         
-        <aside class="w-full md:w-64 bg-slate-800 text-white flex flex-col shadow-lg">
-            <div class="p-6 text-2xl font-bold border-b border-slate-700 flex items-center gap-2">
+        <aside class="fixed bottom-0 left-0 right-0 z-40 md:relative md:w-64 bg-slate-800 text-white flex flex-row md:flex-col shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] md:shadow-lg">
+            <div class="hidden md:flex p-6 text-2xl font-bold border-b border-slate-700 items-center gap-2">
                 <i class="fas fa-wallet text-indigo-400"></i> MySpace
             </div>
-            <nav class="flex-1 p-4 space-y-2" id="sidebar-nav">
-                <button data-target="tab-dashboard" class="nav-btn w-full text-left p-3 bg-indigo-600 rounded-lg flex items-center gap-2 transition"><i class="fas fa-chart-pie"></i> Tổng Quan</button>
-                <button data-target="tab-notes" class="nav-btn w-full text-left p-3 hover:bg-slate-700 rounded-lg flex items-center gap-2 transition"><i class="fas fa-book"></i> Sổ Ghi Chú</button>
-                <button data-target="tab-finance" class="nav-btn w-full text-left p-3 hover:bg-slate-700 rounded-lg flex items-center gap-2 transition"><i class="fas fa-money-bill-wave"></i> Quản Lý Thu Chi</button>
+            
+            <nav class="flex flex-1 flex-row md:flex-col p-2 md:p-4 justify-around md:justify-start space-x-2 md:space-x-0 md:space-y-2" id="sidebar-nav">
+                <button data-target="tab-dashboard" class="nav-btn flex-1 md:flex-none p-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition">
+                    <i class="fas fa-chart-pie text-xl md:text-base"></i> <span class="text-[10px] md:text-base hidden md:inline">Tổng Quan</span>
+                </button>
+                <button data-target="tab-notes" class="nav-btn flex-1 md:flex-none p-3 bg-transparent hover:bg-slate-700 rounded-lg flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition">
+                    <i class="fas fa-book text-xl md:text-base"></i> <span class="text-[10px] md:text-base hidden md:inline">Ghi Chú</span>
+                </button>
+                <button data-target="tab-finance" class="nav-btn flex-1 md:flex-none p-3 bg-transparent hover:bg-slate-700 rounded-lg flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition">
+                    <i class="fas fa-money-bill-wave text-xl md:text-base"></i> <span class="text-[10px] md:text-base hidden md:inline">Thu Chi</span>
+                </button>
+                <button id="logout-btn-mobile" class="md:hidden flex-1 p-3 bg-transparent hover:bg-red-500/20 text-red-400 rounded-lg flex flex-col items-center justify-center gap-1 transition">
+                    <i class="fas fa-sign-out-alt text-xl"></i> <span class="text-[10px] hidden md:inline">Thoát</span>
+                </button>
             </nav>
-            <div class="p-4 border-t border-slate-700 bg-slate-900">
+
+            <div class="hidden md:block p-4 border-t border-slate-700 bg-slate-900">
                 <p id="user-email-display" class="text-xs mb-3 truncate text-slate-400"></p>
                 <button id="logout-btn" class="w-full bg-red-500/10 text-red-500 border border-red-500 py-2 rounded-lg hover:bg-red-500 hover:text-white transition text-sm flex justify-center items-center gap-2"><i class="fas fa-sign-out-alt"></i> Đăng Xuất</button>
             </div>
         </aside>
 
-        <main class="flex-1 overflow-y-auto bg-gray-50 p-6 md:p-8">
+        <main class="flex-1 overflow-y-auto bg-gray-50 p-4 md:p-8">
             
             <section id="tab-dashboard" class="tab-content active">
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Tổng Quan Giao Dịch</h1>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Tổng Quan</h1>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
                     <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-green-500">
                         <h3 class="text-gray-500 text-sm font-medium">Tổng Thu</h3>
-                        <p id="dash-income" class="text-3xl font-bold text-green-600 mt-2">0đ</p>
+                        <p id="dash-income" class="text-2xl md:text-3xl font-bold text-green-600 mt-2">0đ</p>
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-red-500">
                         <h3 class="text-gray-500 text-sm font-medium">Tổng Chi</h3>
-                        <p id="dash-expense" class="text-3xl font-bold text-red-600 mt-2">0đ</p>
+                        <p id="dash-expense" class="text-2xl md:text-3xl font-bold text-red-600 mt-2">0đ</p>
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-indigo-500">
                         <h3 class="text-gray-500 text-sm font-medium">Số Dư Hiện Tại</h3>
-                        <p id="dash-balance" class="text-3xl font-bold text-indigo-600 mt-2">0đ</p>
+                        <p id="dash-balance" class="text-2xl md:text-3xl font-bold text-indigo-600 mt-2">0đ</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-5 rounded-xl shadow-sm">
+                        <h3 class="text-lg font-bold mb-4 border-b pb-2"><i class="fas fa-money-check-alt text-indigo-500"></i> 5 Giao Dịch Gần Nhất</h3>
+                        <ul id="dash-recent-finance" class="divide-y divide-gray-100"></ul>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-sm">
+                        <h3 class="text-lg font-bold mb-4 border-b pb-2"><i class="fas fa-sticky-note text-yellow-500"></i> 5 Ghi Chú Gần Nhất</h3>
+                        <ul id="dash-recent-notes" class="divide-y divide-gray-100"></ul>
                     </div>
                 </div>
             </section>
@@ -73,65 +97,91 @@
             <section id="tab-notes" class="tab-content">
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Sổ Ghi Chú</h1>
                 
-                <div class="bg-white p-6 rounded-xl shadow-sm mb-6">
-                    <h3 id="note-form-title" class="text-lg font-bold mb-4 text-indigo-600">Thêm Ghi Chú Mới</h3>
+                <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm mb-6">
+                    <h3 id="note-form-title" class="text-lg font-bold mb-4 text-indigo-600">Thêm Ghi Chú</h3>
                     <form id="note-form" class="space-y-4">
                         <input type="hidden" id="n-id">
-                        <div>
-                            <input type="text" id="n-title" placeholder="Tiêu đề ghi chú..." class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" required>
-                        </div>
-                        <div>
-                            <textarea id="n-content" rows="3" placeholder="Nội dung chi tiết..." class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" required></textarea>
-                        </div>
+                        <input type="text" id="n-title" placeholder="Tiêu đề..." class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        <textarea id="n-content" rows="3" placeholder="Nội dung chi tiết..." class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" required></textarea>
                         <div class="flex gap-2">
-                            <button type="submit" id="btn-save-note" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">Lưu Ghi Chú</button>
-                            <button type="button" id="btn-cancel-note" class="hidden bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400">Hủy sửa</button>
+                            <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">Lưu</button>
+                            <button type="button" id="btn-cancel-note" class="hidden bg-gray-300 px-6 py-2 rounded-lg hover:bg-gray-400">Hủy</button>
                         </div>
                     </form>
                 </div>
 
-                <div class="bg-white p-6 rounded-xl shadow-sm">
-                    <div class="flex justify-between items-center mb-4">
+                <div class="bg-white p-5 rounded-xl shadow-sm mb-6">
+                    <div class="flex flex-col md:flex-row gap-3 items-center justify-between mb-4">
                         <h3 class="text-lg font-bold">Danh sách Ghi Chú</h3>
-                        <input type="text" id="search-note" placeholder="Tìm kiếm..." class="px-3 py-1 border rounded-lg text-sm w-48 outline-none focus:border-indigo-500">
-                    </div>
-                    <div id="notes-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                            <select id="filter-n-date" class="px-3 py-1.5 border rounded-lg text-sm flex-1 md:flex-none outline-none">
+                                <option value="all">Tất cả thời gian</option>
+                                <option value="today">Hôm nay</option>
+                                <option value="month">Tháng này</option>
+                                <option value="custom">Tùy chọn ngày...</option>
+                            </select>
+                            <input type="text" id="search-note" placeholder="Tìm từ khóa..." class="px-3 py-1.5 border rounded-lg text-sm flex-1 md:flex-none outline-none focus:border-indigo-500">
                         </div>
+                    </div>
+                    <div id="n-custom-date" class="hidden flex gap-2 mb-4 bg-gray-50 p-3 rounded border">
+                        <input type="date" id="n-date-start" class="px-2 py-1 text-sm border rounded">
+                        <span class="self-center">-</span>
+                        <input type="date" id="n-date-end" class="px-2 py-1 text-sm border rounded">
+                        <button id="btn-n-filter-custom" class="bg-slate-700 text-white px-3 py-1 rounded text-sm">Lọc</button>
+                    </div>
+
+                    <div id="notes-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                 </div>
             </section>
 
             <section id="tab-finance" class="tab-content">
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Quản Lý Thu Chi</h1>
                 
-                <div class="bg-white p-6 rounded-xl shadow-sm mb-6">
+                <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm mb-6">
                     <h3 class="text-lg font-bold mb-4 text-indigo-600">Thêm Giao Dịch</h3>
                     <form id="transaction-form" class="flex flex-wrap gap-4 items-end">
-                        <div class="w-full md:w-auto flex-1 min-w-[150px]">
-                            <label class="block text-sm mb-1 text-gray-600">Loại giao dịch</label>
+                        <div class="w-full md:w-auto flex-1">
+                            <label class="block text-sm mb-1 text-gray-600">Loại</label>
                             <select id="t-type" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
                                 <option value="income">Thu Tiền (+)</option>
                                 <option value="expense">Chi Tiền (-)</option>
                             </select>
                         </div>
-                        <div class="w-full md:w-auto flex-1 min-w-[150px]">
+                        <div class="w-full md:w-auto flex-1">
                             <label class="block text-sm mb-1 text-gray-600">Số tiền (VNĐ)</label>
-                            <input type="number" id="t-amount" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" required min="1000">
+                            <input type="text" id="t-amount" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" required placeholder="1.000.000">
                         </div>
-                        <div class="w-full md:w-auto flex-[2] min-w-[200px]">
-                            <label class="block text-sm mb-1 text-gray-600">Nội dung / Diễn giải</label>
-                            <input type="text" id="t-note" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" required placeholder="VD: Lương tháng 10, Mua sắm...">
+                        <div class="w-full md:w-auto flex-[2]">
+                            <label class="block text-sm mb-1 text-gray-600">Nội dung</label>
+                            <input type="text" id="t-note" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" required placeholder="VD: Lương, Cafe...">
                         </div>
                         <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 h-[42px]">Thêm</button>
                     </form>
                 </div>
 
-                <div class="bg-white p-6 rounded-xl shadow-sm">
-                    <div class="flex justify-between items-center mb-4">
+                <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm">
+                    <div class="flex flex-col md:flex-row gap-3 items-center justify-between mb-4">
                         <h3 class="text-lg font-bold">Lịch Sử Giao Dịch</h3>
-                        <input type="text" id="search-finance" placeholder="Tìm giao dịch..." class="px-3 py-1 border rounded-lg text-sm w-48 outline-none focus:border-indigo-500">
+                        <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                            <select id="filter-t-date" class="px-3 py-1.5 border rounded-lg text-sm flex-1 md:flex-none outline-none">
+                                <option value="all">Tất cả thời gian</option>
+                                <option value="today">Hôm nay</option>
+                                <option value="month">Tháng này</option>
+                                <option value="custom">Tùy chọn ngày...</option>
+                            </select>
+                            <input type="text" id="search-finance" placeholder="Tìm nội dung..." class="px-3 py-1.5 border rounded-lg text-sm flex-1 md:flex-none outline-none focus:border-indigo-500">
+                        </div>
                     </div>
+                    
+                    <div id="t-custom-date" class="hidden flex gap-2 mb-4 bg-gray-50 p-3 rounded border">
+                        <input type="date" id="t-date-start" class="px-2 py-1 text-sm border rounded">
+                        <span class="self-center">-</span>
+                        <input type="date" id="t-date-end" class="px-2 py-1 text-sm border rounded">
+                        <button id="btn-t-filter-custom" class="bg-slate-700 text-white px-3 py-1 rounded text-sm">Lọc</button>
+                    </div>
+
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                        <table class="w-full text-left border-collapse min-w-[400px]">
                             <thead>
                                 <tr class="bg-gray-50 text-gray-600 border-b">
                                     <th class="p-3 font-medium">Ngày</th>
@@ -140,8 +190,7 @@
                                     <th class="p-3 font-medium text-center">Xóa</th>
                                 </tr>
                             </thead>
-                            <tbody id="transactions-list" class="divide-y divide-gray-100">
-                                </tbody>
+                            <tbody id="transactions-list" class="divide-y divide-gray-100"></tbody>
                         </table>
                     </div>
                 </div>
@@ -154,7 +203,7 @@
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, serverTimestamp, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // BƯỚC 1: THAY CẤU HÌNH FIREBASE CỦA BẠN VÀO ĐÂY
+        // === THAY MÃ FIREBASE CỦA BẠN VÀO ĐÂY ===
         const firebaseConfig = {
 	    apiKey: "AIzaSyCVjN-2E6GWK2onN9AZhWrx-3CcE70mioU",
 	    authDomain: "data-home-2602.firebaseapp.com",
@@ -169,43 +218,43 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- CHUYỂN TAB ---
+        // --- UI & TAB LOGIC ---
         const navBtns = document.querySelectorAll('.nav-btn');
         const tabContents = document.querySelectorAll('.tab-content');
         navBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                // Reset UI buttons
                 navBtns.forEach(b => {
-                    b.classList.remove('bg-indigo-600');
-                    b.classList.add('hover:bg-slate-700');
+                    b.classList.remove('bg-indigo-600', 'text-white');
+                    b.classList.add('bg-transparent', 'hover:bg-slate-700', 'text-slate-300');
+                    if(b.querySelector('span')) b.querySelector('span').classList.replace('text-white', 'text-slate-300');
                 });
-                btn.classList.add('bg-indigo-600');
-                btn.classList.remove('hover:bg-slate-700');
-                // Switch Tab
+                btn.classList.add('bg-indigo-600', 'text-white');
+                btn.classList.remove('bg-transparent', 'hover:bg-slate-700', 'text-slate-300');
+                
                 tabContents.forEach(tab => tab.classList.remove('active'));
                 document.getElementById(btn.dataset.target).classList.add('active');
             });
         });
 
-        // --- XÁC THỰC & LOGIC 24H ---
-        const SESSION_LIMIT = 86400000; // 24 giờ
-        let currentUser = null;
+        // Định dạng input số tiền (thêm dấu chấm lúc gõ)
+        const amountInput = document.getElementById('t-amount');
+        amountInput.addEventListener('input', function(e) {
+            // Xóa mọi ký tự không phải số
+            let val = this.value.replace(/[^0-9]/g, ''); 
+            if (val === '') { this.value = ''; return; }
+            // Định dạng theo chuẩn VN
+            this.value = parseInt(val).toLocaleString('vi-VN');
+        });
 
+        // --- AUTH ---
+        let currentUser = null;
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                const loginTime = localStorage.getItem('loginTime');
-                if (loginTime && (Date.now() - parseInt(loginTime)) > SESSION_LIMIT) {
-                    alert("Phiên đăng nhập hết hạn.");
-                    signOut(auth); return;
-                }
                 currentUser = user;
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('app-screen').classList.remove('hidden');
                 document.getElementById('user-email-display').innerText = user.email;
-                
-                // Khởi chạy load dữ liệu
-                initNotesListener();
-                initFinanceListener();
+                initData();
             } else {
                 currentUser = null;
                 document.getElementById('login-screen').classList.remove('hidden');
@@ -215,55 +264,77 @@
 
         document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            signInWithEmailAndPassword(auth, email, password)
-                .then(() => { localStorage.setItem('loginTime', Date.now()); })
-                .catch(() => { document.getElementById('login-error').classList.remove('hidden'); });
+            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value)
+                .catch(() => document.getElementById('login-error').classList.remove('hidden'));
         });
 
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            signOut(auth).then(() => localStorage.removeItem('loginTime'));
-        });
+        const handleLogout = () => signOut(auth);
+        document.getElementById('logout-btn').addEventListener('click', handleLogout);
+        document.getElementById('logout-btn-mobile').addEventListener('click', handleLogout);
+
+        // --- DỮ LIỆU ---
+        let notesData = [];
+        let financeData = [];
+
+        function initData() {
+            // Lắng nghe Notes
+            onSnapshot(query(collection(db, "notes"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc")), (snap) => {
+                notesData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderNotes();
+                renderDashboardNotes();
+            });
+            // Lắng nghe Finance
+            onSnapshot(query(collection(db, "transactions"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc")), (snap) => {
+                financeData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderFinance();
+                updateDashboardStats();
+                renderDashboardFinance();
+            });
+        }
+
+        // --- HÀM HỖ TRỢ LỌC NGÀY ---
+        function checkDateRange(timestamp, filterType, startDateVal, endDateVal) {
+            if(!timestamp) return false;
+            const date = timestamp.toDate();
+            const now = new Date();
+            
+            if (filterType === 'today') {
+                return date.toDateString() === now.toDateString();
+            }
+            if (filterType === 'month') {
+                return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+            }
+            if (filterType === 'custom') {
+                const start = startDateVal ? new Date(startDateVal).setHours(0,0,0,0) : 0;
+                const end = endDateVal ? new Date(endDateVal).setHours(23,59,59,999) : Infinity;
+                return date.getTime() >= start && date.getTime() <= end;
+            }
+            return true; // 'all'
+        }
 
         // ==========================================
-        // MODULE: GHI CHÚ (CRUD + SEARCH)
+        // MODULE: GHI CHÚ
         // ==========================================
-        let notesData = []; // Lưu local để filter
-
-        const noteForm = document.getElementById('note-form');
-        const btnCancelNote = document.getElementById('btn-cancel-note');
-        
-        noteForm.addEventListener('submit', async (e) => {
+        document.getElementById('note-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('n-id').value;
             const title = document.getElementById('n-title').value;
             const content = document.getElementById('n-content').value;
 
-            try {
-                if (id) {
-                    // Update
-                    await updateDoc(doc(db, "notes", id), { title, content });
-                    document.getElementById('note-form-title').innerText = "Thêm Ghi Chú Mới";
-                    btnCancelNote.classList.add('hidden');
-                } else {
-                    // Create
-                    await addDoc(collection(db, "notes"), {
-                        userId: currentUser.uid,
-                        title, content,
-                        createdAt: serverTimestamp()
-                    });
-                }
-                noteForm.reset();
-                document.getElementById('n-id').value = '';
-            } catch (err) { alert("Lỗi lưu ghi chú: " + err.message); }
+            if (id) {
+                await updateDoc(doc(db, "notes", id), { title, content });
+                document.getElementById('btn-cancel-note').click();
+            } else {
+                await addDoc(collection(db, "notes"), { userId: currentUser.uid, title, content, createdAt: serverTimestamp() });
+                document.getElementById('note-form').reset();
+            }
         });
 
-        btnCancelNote.addEventListener('click', () => {
-            noteForm.reset();
+        document.getElementById('btn-cancel-note').addEventListener('click', () => {
+            document.getElementById('note-form').reset();
             document.getElementById('n-id').value = '';
-            document.getElementById('note-form-title').innerText = "Thêm Ghi Chú Mới";
-            btnCancelNote.classList.add('hidden');
+            document.getElementById('note-form-title').innerText = "Thêm Ghi Chú";
+            document.getElementById('btn-cancel-note').classList.add('hidden');
         });
 
         window.editNote = (id, title, content) => {
@@ -271,132 +342,140 @@
             document.getElementById('n-title').value = title;
             document.getElementById('n-content').value = content;
             document.getElementById('note-form-title').innerText = "Chỉnh Sửa Ghi Chú";
-            btnCancelNote.classList.remove('hidden');
-            // Chuyển view về tab Notes nếu đang ở tab khác (optional)
+            document.getElementById('btn-cancel-note').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
+        window.deleteNote = async (id) => { if(confirm("Xóa ghi chú này?")) await deleteDoc(doc(db, "notes", id)); };
 
-        window.deleteNote = async (id) => {
-            if(confirm("Bạn có chắc muốn xóa ghi chú này?")) {
-                await deleteDoc(doc(db, "notes", id));
-            }
-        };
+        // Xử lý UI Bộ lọc
+        const filterNDate = document.getElementById('filter-n-date');
+        const nCustomBox = document.getElementById('n-custom-date');
+        filterNDate.addEventListener('change', (e) => {
+            e.target.value === 'custom' ? nCustomBox.classList.remove('hidden') : nCustomBox.classList.add('hidden');
+            renderNotes();
+        });
+        document.getElementById('search-note').addEventListener('input', renderNotes);
+        document.getElementById('btn-n-filter-custom').addEventListener('click', renderNotes);
 
-        function initNotesListener() {
-            const q = query(collection(db, "notes"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc"));
-            onSnapshot(q, (snapshot) => {
-                notesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderNotes();
-            });
-        }
-
-        function renderNotes(filterText = '') {
+        function renderNotes() {
             const listEl = document.getElementById('notes-list');
-            listEl.innerHTML = '';
-            
-            const filtered = notesData.filter(n => 
-                n.title.toLowerCase().includes(filterText.toLowerCase()) || 
-                n.content.toLowerCase().includes(filterText.toLowerCase())
-            );
+            const kw = document.getElementById('search-note').value.toLowerCase();
+            const dateType = filterNDate.value;
+            const start = document.getElementById('n-date-start').value;
+            const end = document.getElementById('n-date-end').value;
 
-            if(filtered.length === 0) {
-                listEl.innerHTML = '<p class="text-gray-500 italic col-span-2">Không có ghi chú nào.</p>';
-                return;
-            }
-
-            filtered.forEach(note => {
-                const dateStr = note.createdAt ? new Date(note.createdAt.toDate()).toLocaleDateString('vi-VN') : 'Đang lưu...';
-                // Escape quotes for HTML inline handlers to prevent breaking
-                const safeTitle = note.title.replace(/'/g, "\\'");
-                const safeContent = note.content.replace(/'/g, "\\'");
-
-                listEl.innerHTML += `
-                    <div class="border rounded-lg p-4 hover:shadow-md transition bg-gray-50 flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-bold text-lg text-gray-800">${note.title}</h4>
-                                <span class="text-xs text-gray-400">${dateStr}</span>
-                            </div>
-                            <p class="text-gray-600 text-sm whitespace-pre-line mb-4">${note.content}</p>
-                        </div>
-                        <div class="flex justify-end gap-2 border-t pt-2 mt-2">
-                            <button onclick="editNote('${note.id}', '${safeTitle}', '${safeContent}')" class="text-indigo-500 hover:text-indigo-700 text-sm"><i class="fas fa-edit"></i> Sửa</button>
-                            <button onclick="deleteNote('${note.id}')" class="text-red-500 hover:text-red-700 text-sm"><i class="fas fa-trash"></i> Xóa</button>
-                        </div>
-                    </div>
-                `;
+            const filtered = notesData.filter(n => {
+                const matchText = n.title.toLowerCase().includes(kw) || n.content.toLowerCase().includes(kw);
+                const matchDate = checkDateRange(n.createdAt, dateType, start, end);
+                return matchText && matchDate;
             });
+
+            listEl.innerHTML = filtered.length ? filtered.map(n => `
+                <div class="border rounded-lg p-4 bg-gray-50 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-lg">${n.title}</h4>
+                            <span class="text-xs text-gray-400">${n.createdAt ? new Date(n.createdAt.toDate()).toLocaleDateString('vi-VN') : ''}</span>
+                        </div>
+                        <p class="text-gray-600 text-sm whitespace-pre-line mb-4">${n.content}</p>
+                    </div>
+                    <div class="flex justify-end gap-3 border-t pt-2 mt-2">
+                        <button onclick="editNote('${n.id}', '${n.title.replace(/'/g, "\\'")}', '${n.content.replace(/'/g, "\\'")}')" class="text-indigo-500 text-sm"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteNote('${n.id}')" class="text-red-500 text-sm"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('') : '<p class="text-gray-500 text-sm italic col-span-2">Không có ghi chú nào phù hợp.</p>';
         }
 
-        document.getElementById('search-note').addEventListener('input', (e) => renderNotes(e.target.value));
-
         // ==========================================
-        // MODULE: THU CHI (CRUD + TÍNH TỔNG + SEARCH)
+        // MODULE: THU CHI
         // ==========================================
-        let financeData = [];
-
         document.getElementById('transaction-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const type = document.getElementById('t-type').value;
-            const amount = Number(document.getElementById('t-amount').value);
+            // Loại bỏ dấu chấm trước khi lưu vào database
+            const rawAmount = document.getElementById('t-amount').value.replace(/\./g, '');
+            const amount = Number(rawAmount);
             const note = document.getElementById('t-note').value;
 
-            try {
-                await addDoc(collection(db, "transactions"), {
-                    userId: currentUser.uid, type, amount, note, createdAt: serverTimestamp()
-                });
-                document.getElementById('transaction-form').reset();
-            } catch (err) { alert("Lỗi: " + err.message); }
+            if(!amount) return alert("Vui lòng nhập số tiền hợp lệ!");
+
+            await addDoc(collection(db, "transactions"), { userId: currentUser.uid, type, amount, note, createdAt: serverTimestamp() });
+            document.getElementById('transaction-form').reset();
         });
 
-        window.deleteTrans = async (id) => {
-            if(confirm("Xóa giao dịch này?")) await deleteDoc(doc(db, "transactions", id));
-        };
+        window.deleteTrans = async (id) => { if(confirm("Xóa giao dịch này?")) await deleteDoc(doc(db, "transactions", id)); };
 
-        function initFinanceListener() {
-            const q = query(collection(db, "transactions"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc"));
-            onSnapshot(q, (snapshot) => {
-                financeData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderFinance();
-                updateDashboard(financeData);
-            });
-        }
+        // UI Bộ lọc thu chi
+        const filterTDate = document.getElementById('filter-t-date');
+        const tCustomBox = document.getElementById('t-custom-date');
+        filterTDate.addEventListener('change', (e) => {
+            e.target.value === 'custom' ? tCustomBox.classList.remove('hidden') : tCustomBox.classList.add('hidden');
+            renderFinance();
+        });
+        document.getElementById('search-finance').addEventListener('input', renderFinance);
+        document.getElementById('btn-t-filter-custom').addEventListener('click', renderFinance);
 
-        function renderFinance(filterText = '') {
+        function renderFinance() {
             const listEl = document.getElementById('transactions-list');
-            listEl.innerHTML = '';
-            
-            const filtered = financeData.filter(t => t.note.toLowerCase().includes(filterText.toLowerCase()));
+            const kw = document.getElementById('search-finance').value.toLowerCase();
+            const dateType = filterTDate.value;
+            const start = document.getElementById('t-date-start').value;
+            const end = document.getElementById('t-date-end').value;
 
-            filtered.forEach(t => {
-                const dateStr = t.createdAt ? new Date(t.createdAt.toDate()).toLocaleDateString('vi-VN') : '...';
-                const isInc = t.type === 'income';
-                const color = isInc ? 'text-green-600' : 'text-red-600';
-                const sign = isInc ? '+' : '-';
-
-                listEl.innerHTML += `
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="p-3 text-sm text-gray-500">${dateStr}</td>
-                        <td class="p-3 font-medium text-gray-800">${t.note}</td>
-                        <td class="p-3 text-right font-bold ${color}">${sign}${t.amount.toLocaleString('vi-VN')}đ</td>
-                        <td class="p-3 text-center">
-                            <button onclick="deleteTrans('${t.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-times"></i></button>
-                        </td>
-                    </tr>
-                `;
+            const filtered = financeData.filter(t => {
+                const matchText = t.note.toLowerCase().includes(kw);
+                const matchDate = checkDateRange(t.createdAt, dateType, start, end);
+                return matchText && matchDate;
             });
+
+            listEl.innerHTML = filtered.length ? filtered.map(t => {
+                const isInc = t.type === 'income';
+                return `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-3 text-sm text-gray-500 whitespace-nowrap">${t.createdAt ? new Date(t.createdAt.toDate()).toLocaleDateString('vi-VN') : ''}</td>
+                    <td class="p-3 font-medium text-gray-800">${t.note}</td>
+                    <td class="p-3 text-right font-bold ${isInc ? 'text-green-600' : 'text-red-600'} whitespace-nowrap">
+                        ${isInc ? '+' : '-'}${t.amount.toLocaleString('vi-VN')}
+                    </td>
+                    <td class="p-3 text-center"><button onclick="deleteTrans('${t.id}')" class="text-red-400"><i class="fas fa-times"></i></button></td>
+                </tr>`;
+            }).join('') : '<tr><td colspan="4" class="p-4 text-center text-sm text-gray-500 italic">Không có giao dịch.</td></tr>';
         }
 
-        document.getElementById('search-finance').addEventListener('input', (e) => renderFinance(e.target.value));
-
-        function updateDashboard(data) {
+        // ==========================================
+        // MODULE: DASHBOARD (TỔNG QUAN)
+        // ==========================================
+        function updateDashboardStats() {
             let inc = 0, exp = 0;
-            data.forEach(t => {
-                if(t.type === 'income') inc += t.amount;
-                else exp += t.amount;
-            });
+            financeData.forEach(t => { t.type === 'income' ? inc += t.amount : exp += t.amount; });
             document.getElementById('dash-income').innerText = inc.toLocaleString('vi-VN') + 'đ';
             document.getElementById('dash-expense').innerText = exp.toLocaleString('vi-VN') + 'đ';
             document.getElementById('dash-balance').innerText = (inc - exp).toLocaleString('vi-VN') + 'đ';
+        }
+
+        function renderDashboardNotes() {
+            const list = document.getElementById('dash-recent-notes');
+            const top5 = notesData.slice(0, 5); // Lấy 5 phần tử đầu tiên (mới nhất)
+            list.innerHTML = top5.length ? top5.map(n => `
+                <li class="py-3 flex justify-between items-center">
+                    <span class="font-medium truncate pr-4 text-gray-800 text-sm">${n.title}</span>
+                    <span class="text-xs text-gray-400 whitespace-nowrap">${n.createdAt ? new Date(n.createdAt.toDate()).toLocaleDateString('vi-VN') : ''}</span>
+                </li>
+            `).join('') : '<li class="py-3 text-sm italic text-gray-500">Chưa có ghi chú nào.</li>';
+        }
+
+        function renderDashboardFinance() {
+            const list = document.getElementById('dash-recent-finance');
+            const top5 = financeData.slice(0, 5);
+            list.innerHTML = top5.length ? top5.map(t => {
+                const isInc = t.type === 'income';
+                return `
+                <li class="py-3 flex justify-between items-center">
+                    <span class="font-medium truncate pr-4 text-gray-800 text-sm">${t.note}</span>
+                    <span class="font-bold text-sm whitespace-nowrap ${isInc ? 'text-green-600' : 'text-red-600'}">${isInc ? '+' : '-'}${t.amount.toLocaleString('vi-VN')}</span>
+                </li>`;
+            }).join('') : '<li class="py-3 text-sm italic text-gray-500">Chưa có giao dịch nào.</li>';
         }
 
     </script>
