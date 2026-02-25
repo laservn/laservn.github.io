@@ -9,188 +9,231 @@
     <style>
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        /* Ẩn mũi tên trong thẻ input type date/number trên một số trình duyệt */
+        /* Ẩn mũi tên input number */
         input[type="number"]::-webkit-inner-spin-button, 
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        /* Hiệu ứng mượt cho custom popup */
+        .modal-enter { opacity: 0; transform: scale(0.9); }
+        .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 200ms, transform 200ms; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans h-screen flex overflow-hidden">
 
+    <div id="custom-modal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-900/60 hidden backdrop-blur-sm transition-opacity duration-200 opacity-0">
+        <div id="custom-modal-box" class="bg-white rounded-2xl shadow-2xl p-6 w-[90%] max-w-sm transform scale-95 transition-transform duration-200">
+            <div class="flex items-center gap-3 mb-3">
+                <div id="modal-icon" class="text-2xl"></div>
+                <h3 id="modal-title" class="text-xl font-bold text-gray-800">Thông báo</h3>
+            </div>
+            <p id="modal-body" class="text-gray-600 mb-6 text-sm whitespace-pre-line">Nội dung</p>
+            <div id="modal-actions" class="flex justify-end gap-3">
+                </div>
+        </div>
+    </div>
+
     <div id="login-screen" class="absolute inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-95">
-        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md mx-4">
-            <h2 class="text-3xl font-bold text-center mb-2 text-indigo-600">Đăng Nhập</h2>
-            <p class="text-center text-gray-500 mb-6 text-sm">Quản lý ghi chú & tài chính cá nhân</p>
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4">
+            <div class="text-center mb-6">
+                <i class="fas fa-wallet text-5xl text-indigo-600 mb-3"></i>
+                <h2 class="text-3xl font-bold text-gray-800">MySpace</h2>
+                <p class="text-gray-500 text-sm mt-1">Quản lý ghi chú & tài chính cá nhân</p>
+            </div>
             <form id="login-form" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium mb-1">Email</label>
-                    <input type="email" id="email" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                    <label class="block text-sm font-medium mb-1 text-gray-700">Email</label>
+                    <input type="email" id="email" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">Mật khẩu</label>
-                    <input type="password" id="password" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" required>
+                    <label class="block text-sm font-medium mb-1 text-gray-700">Mật khẩu</label>
+                    <input type="password" id="password" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" required>
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition font-medium">Vào Ứng Dụng</button>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 transition font-medium mt-2 shadow-md shadow-indigo-200">Đăng Nhập</button>
             </form>
-            <p id="login-error" class="text-red-500 text-sm mt-3 text-center hidden">Sai email hoặc mật khẩu!</p>
+            <p id="login-error" class="text-red-500 text-sm mt-4 text-center hidden bg-red-50 py-2 rounded-lg">Sai email hoặc mật khẩu!</p>
         </div>
     </div>
 
     <div id="app-screen" class="hidden w-full h-full flex flex-col md:flex-row pb-16 md:pb-0">
         
-        <aside class="fixed bottom-0 left-0 right-0 z-40 md:relative md:w-64 bg-slate-800 text-white flex flex-row md:flex-col shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] md:shadow-lg">
-            <div class="hidden md:flex p-6 text-2xl font-bold border-b border-slate-700 items-center gap-2">
-                <i class="fas fa-wallet text-indigo-400"></i> MySpace
+        <aside class="fixed bottom-0 left-0 right-0 z-40 md:relative md:w-64 bg-slate-800 text-white flex flex-row md:flex-col shadow-[0_-4px_10px_-1px_rgba(0,0,0,0.1)] md:shadow-xl">
+            <div class="hidden md:flex p-6 text-2xl font-bold border-b border-slate-700 items-center gap-3">
+                <div class="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                    <i class="fas fa-wallet text-sm text-white"></i>
+                </div>
+                MySpace
             </div>
             
-            <nav class="flex flex-1 flex-row md:flex-col p-2 md:p-4 justify-around md:justify-start space-x-2 md:space-x-0 md:space-y-2" id="sidebar-nav">
-                <button data-target="tab-dashboard" class="nav-btn flex-1 md:flex-none p-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition">
-                    <i class="fas fa-chart-pie text-xl md:text-base"></i> <span class="text-[10px] md:text-base hidden md:inline">Tổng Quan</span>
+            <nav class="flex flex-1 flex-row md:flex-col p-2 md:p-4 justify-around md:justify-start space-x-1 md:space-x-0 md:space-y-2" id="sidebar-nav">
+                <button data-target="tab-dashboard" class="nav-btn flex-1 md:flex-none p-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition duration-200">
+                    <i class="fas fa-chart-pie text-xl md:text-base"></i> <span class="text-[10px] md:text-sm font-medium hidden md:inline">Tổng Quan</span>
                 </button>
-                <button data-target="tab-notes" class="nav-btn flex-1 md:flex-none p-3 bg-transparent hover:bg-slate-700 rounded-lg flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition">
-                    <i class="fas fa-book text-xl md:text-base"></i> <span class="text-[10px] md:text-base hidden md:inline">Ghi Chú</span>
+                <button data-target="tab-notes" class="nav-btn flex-1 md:flex-none p-3 bg-transparent hover:bg-slate-700 rounded-xl flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition duration-200">
+                    <i class="fas fa-book text-xl md:text-base"></i> <span class="text-[10px] md:text-sm font-medium hidden md:inline">Ghi Chú</span>
                 </button>
-                <button data-target="tab-finance" class="nav-btn flex-1 md:flex-none p-3 bg-transparent hover:bg-slate-700 rounded-lg flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition">
-                    <i class="fas fa-money-bill-wave text-xl md:text-base"></i> <span class="text-[10px] md:text-base hidden md:inline">Thu Chi</span>
+                <button data-target="tab-finance" class="nav-btn flex-1 md:flex-none p-3 bg-transparent hover:bg-slate-700 rounded-xl flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 transition duration-200">
+                    <i class="fas fa-money-bill-wave text-xl md:text-base"></i> <span class="text-[10px] md:text-sm font-medium hidden md:inline">Thu Chi</span>
                 </button>
-                <button id="logout-btn-mobile" class="md:hidden flex-1 p-3 bg-transparent hover:bg-red-500/20 text-red-400 rounded-lg flex flex-col items-center justify-center gap-1 transition">
-                    <i class="fas fa-sign-out-alt text-xl"></i> <span class="text-[10px] hidden md:inline">Thoát</span>
+                <button id="logout-btn-mobile" class="md:hidden flex-1 p-3 bg-transparent hover:bg-red-500/20 text-red-400 rounded-xl flex flex-col items-center justify-center gap-1 transition duration-200">
+                    <i class="fas fa-power-off text-xl"></i> <span class="text-[10px] hidden md:inline">Thoát</span>
                 </button>
             </nav>
 
-            <div class="hidden md:block p-4 border-t border-slate-700 bg-slate-900">
-                <p id="user-email-display" class="text-xs mb-3 truncate text-slate-400"></p>
-                <button id="logout-btn" class="w-full bg-red-500/10 text-red-500 border border-red-500 py-2 rounded-lg hover:bg-red-500 hover:text-white transition text-sm flex justify-center items-center gap-2"><i class="fas fa-sign-out-alt"></i> Đăng Xuất</button>
+            <div class="hidden md:block p-4 border-t border-slate-700 bg-slate-900 mt-auto">
+                <p id="user-email-display" class="text-xs mb-3 truncate text-slate-400 font-medium"></p>
+                <button id="logout-btn" class="w-full bg-slate-800 text-red-400 border border-slate-700 py-2.5 rounded-lg hover:bg-red-500 hover:text-white transition duration-200 text-sm flex justify-center items-center gap-2 font-medium">
+                    <i class="fas fa-power-off"></i> Đăng Xuất
+                </button>
             </div>
         </aside>
 
-        <main class="flex-1 overflow-y-auto bg-gray-50 p-4 md:p-8">
+        <main class="flex-1 overflow-y-auto bg-gray-50/50 p-4 md:p-8">
             
-            <section id="tab-dashboard" class="tab-content active">
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Tổng Quan</h1>
+            <section id="tab-dashboard" class="tab-content active max-w-6xl mx-auto">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6 tracking-tight">Tổng Quan Trạng Thái</h1>
+                
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-green-500">
-                        <h3 class="text-gray-500 text-sm font-medium">Tổng Thu</h3>
-                        <p id="dash-income" class="text-2xl md:text-3xl font-bold text-green-600 mt-2">0đ</p>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition"><i class="fas fa-arrow-down text-5xl text-green-500"></i></div>
+                        <h3 class="text-gray-500 text-sm font-medium mb-1">Tổng Thu</h3>
+                        <p id="dash-income" class="text-2xl md:text-3xl font-bold text-green-600">0đ</p>
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-red-500">
-                        <h3 class="text-gray-500 text-sm font-medium">Tổng Chi</h3>
-                        <p id="dash-expense" class="text-2xl md:text-3xl font-bold text-red-600 mt-2">0đ</p>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition"><i class="fas fa-arrow-up text-5xl text-red-500"></i></div>
+                        <h3 class="text-gray-500 text-sm font-medium mb-1">Tổng Chi</h3>
+                        <p id="dash-expense" class="text-2xl md:text-3xl font-bold text-red-600">0đ</p>
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-indigo-500">
-                        <h3 class="text-gray-500 text-sm font-medium">Số Dư Hiện Tại</h3>
-                        <p id="dash-balance" class="text-2xl md:text-3xl font-bold text-indigo-600 mt-2">0đ</p>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition bg-gradient-to-br from-white to-indigo-50/50">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition"><i class="fas fa-piggy-bank text-5xl text-indigo-500"></i></div>
+                        <h3 class="text-gray-500 text-sm font-medium mb-1">Số Dư Hiện Tại</h3>
+                        <p id="dash-balance" class="text-2xl md:text-3xl font-bold text-indigo-600">0đ</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white p-5 rounded-xl shadow-sm">
-                        <h3 class="text-lg font-bold mb-4 border-b pb-2"><i class="fas fa-money-check-alt text-indigo-500"></i> 5 Giao Dịch Gần Nhất</h3>
-                        <ul id="dash-recent-finance" class="divide-y divide-gray-100"></ul>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <div class="flex items-center justify-between mb-4 border-b pb-3">
+                            <h3 class="text-lg font-bold text-gray-800"><i class="fas fa-history text-indigo-500 mr-2"></i> 5 Giao Dịch Gần Nhất</h3>
+                        </div>
+                        <ul id="dash-recent-finance" class="divide-y divide-gray-50"></ul>
                     </div>
-                    <div class="bg-white p-5 rounded-xl shadow-sm">
-                        <h3 class="text-lg font-bold mb-4 border-b pb-2"><i class="fas fa-sticky-note text-yellow-500"></i> 5 Ghi Chú Gần Nhất</h3>
-                        <ul id="dash-recent-notes" class="divide-y divide-gray-100"></ul>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <div class="flex items-center justify-between mb-4 border-b pb-3">
+                            <h3 class="text-lg font-bold text-gray-800"><i class="fas fa-file-alt text-yellow-500 mr-2"></i> 5 Ghi Chú Mới Nhất</h3>
+                        </div>
+                        <ul id="dash-recent-notes" class="divide-y divide-gray-50"></ul>
                     </div>
                 </div>
             </section>
 
-            <section id="tab-notes" class="tab-content">
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Sổ Ghi Chú</h1>
+            <section id="tab-notes" class="tab-content max-w-6xl mx-auto">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6 tracking-tight">Sổ Ghi Chú</h1>
                 
-                <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm mb-6">
-                    <h3 id="note-form-title" class="text-lg font-bold mb-4 text-indigo-600">Thêm Ghi Chú</h3>
+                <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                    <h3 id="note-form-title" class="text-lg font-bold mb-4 text-gray-800 flex items-center gap-2">
+                        <i class="fas fa-plus-circle text-indigo-500"></i> Viết Ghi Chú
+                    </h3>
                     <form id="note-form" class="space-y-4">
                         <input type="hidden" id="n-id">
-                        <input type="text" id="n-title" placeholder="Tiêu đề..." class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" required>
-                        <textarea id="n-content" rows="3" placeholder="Nội dung chi tiết..." class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" required></textarea>
-                        <div class="flex gap-2">
-                            <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">Lưu</button>
-                            <button type="button" id="btn-cancel-note" class="hidden bg-gray-300 px-6 py-2 rounded-lg hover:bg-gray-400">Hủy</button>
+                        <input type="text" id="n-title" placeholder="Tiêu đề..." class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition" required>
+                        <textarea id="n-content" rows="3" placeholder="Nội dung chi tiết..." class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition" required></textarea>
+                        <div class="flex gap-3">
+                            <button type="submit" class="bg-indigo-600 text-white px-6 py-2.5 rounded-lg hover:bg-indigo-700 transition font-medium shadow-sm">Lưu Ghi Chú</button>
+                            <button type="button" id="btn-cancel-note" class="hidden bg-gray-100 text-gray-600 px-6 py-2.5 rounded-lg hover:bg-gray-200 transition font-medium">Hủy bỏ</button>
                         </div>
                     </form>
                 </div>
 
-                <div class="bg-white p-5 rounded-xl shadow-sm mb-6">
-                    <div class="flex flex-col md:flex-row gap-3 items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold">Danh sách Ghi Chú</h3>
+                <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                    <div class="flex flex-col md:flex-row gap-3 items-center justify-between mb-5">
+                        <h3 class="text-lg font-bold text-gray-800">Danh Sách Ghi Chú</h3>
                         <div class="flex flex-wrap gap-2 w-full md:w-auto">
-                            <select id="filter-n-date" class="px-3 py-1.5 border rounded-lg text-sm flex-1 md:flex-none outline-none">
+                            <select id="filter-n-date" class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm flex-1 md:flex-none outline-none focus:border-indigo-500">
                                 <option value="all">Tất cả thời gian</option>
                                 <option value="today">Hôm nay</option>
                                 <option value="month">Tháng này</option>
                                 <option value="custom">Tùy chọn ngày...</option>
                             </select>
-                            <input type="text" id="search-note" placeholder="Tìm từ khóa..." class="px-3 py-1.5 border rounded-lg text-sm flex-1 md:flex-none outline-none focus:border-indigo-500">
+                            <div class="relative flex-1 md:flex-none">
+                                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                                <input type="text" id="search-note" placeholder="Tìm từ khóa..." class="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none focus:border-indigo-500 transition">
+                            </div>
                         </div>
                     </div>
-                    <div id="n-custom-date" class="hidden flex gap-2 mb-4 bg-gray-50 p-3 rounded border">
-                        <input type="date" id="n-date-start" class="px-2 py-1 text-sm border rounded">
-                        <span class="self-center">-</span>
-                        <input type="date" id="n-date-end" class="px-2 py-1 text-sm border rounded">
-                        <button id="btn-n-filter-custom" class="bg-slate-700 text-white px-3 py-1 rounded text-sm">Lọc</button>
+                    
+                    <div id="n-custom-date" class="hidden flex gap-2 mb-5 bg-indigo-50/50 p-3 rounded-lg border border-indigo-100 items-center">
+                        <input type="date" id="n-date-start" class="px-3 py-1.5 text-sm border border-gray-200 rounded outline-none">
+                        <span class="text-gray-500"><i class="fas fa-arrow-right"></i></span>
+                        <input type="date" id="n-date-end" class="px-3 py-1.5 text-sm border border-gray-200 rounded outline-none">
+                        <button id="btn-n-filter-custom" class="bg-indigo-600 text-white px-4 py-1.5 rounded text-sm hover:bg-indigo-700 font-medium">Lọc</button>
                     </div>
 
-                    <div id="notes-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                    <div id="notes-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
                 </div>
             </section>
 
-            <section id="tab-finance" class="tab-content">
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Quản Lý Thu Chi</h1>
+            <section id="tab-finance" class="tab-content max-w-6xl mx-auto">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6 tracking-tight">Quản Lý Thu Chi</h1>
                 
-                <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm mb-6">
-                    <h3 class="text-lg font-bold mb-4 text-indigo-600">Thêm Giao Dịch</h3>
+                <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                    <h3 class="text-lg font-bold mb-4 text-gray-800 flex items-center gap-2">
+                        <i class="fas fa-plus-circle text-indigo-500"></i> Thêm Giao Dịch
+                    </h3>
                     <form id="transaction-form" class="flex flex-wrap gap-4 items-end">
                         <div class="w-full md:w-auto flex-1">
-                            <label class="block text-sm mb-1 text-gray-600">Loại</label>
-                            <select id="t-type" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                            <label class="block text-sm font-medium mb-1 text-gray-700">Loại</label>
+                            <select id="t-type" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
                                 <option value="income">Thu Tiền (+)</option>
                                 <option value="expense">Chi Tiền (-)</option>
                             </select>
                         </div>
                         <div class="w-full md:w-auto flex-1">
-                            <label class="block text-sm mb-1 text-gray-600">Số tiền (VNĐ)</label>
-                            <input type="text" id="t-amount" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" required placeholder="1.000.000">
+                            <label class="block text-sm font-medium mb-1 text-gray-700">Số tiền (VNĐ)</label>
+                            <input type="text" id="t-amount" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" required placeholder="1.000.000">
                         </div>
                         <div class="w-full md:w-auto flex-[2]">
-                            <label class="block text-sm mb-1 text-gray-600">Nội dung</label>
-                            <input type="text" id="t-note" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" required placeholder="VD: Lương, Cafe...">
+                            <label class="block text-sm font-medium mb-1 text-gray-700">Nội dung</label>
+                            <input type="text" id="t-note" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500" required placeholder="VD: Lương, Mua sắm...">
                         </div>
-                        <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 h-[42px]">Thêm</button>
+                        <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white px-8 py-2.5 rounded-lg hover:bg-indigo-700 font-medium shadow-sm transition">Thêm</button>
                     </form>
                 </div>
 
-                <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm">
-                    <div class="flex flex-col md:flex-row gap-3 items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold">Lịch Sử Giao Dịch</h3>
+                <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                    <div class="flex flex-col md:flex-row gap-3 items-center justify-between mb-5">
+                        <h3 class="text-lg font-bold text-gray-800">Lịch Sử Giao Dịch</h3>
                         <div class="flex flex-wrap gap-2 w-full md:w-auto">
-                            <select id="filter-t-date" class="px-3 py-1.5 border rounded-lg text-sm flex-1 md:flex-none outline-none">
+                            <select id="filter-t-date" class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm flex-1 md:flex-none outline-none focus:border-indigo-500">
                                 <option value="all">Tất cả thời gian</option>
                                 <option value="today">Hôm nay</option>
                                 <option value="month">Tháng này</option>
                                 <option value="custom">Tùy chọn ngày...</option>
                             </select>
-                            <input type="text" id="search-finance" placeholder="Tìm nội dung..." class="px-3 py-1.5 border rounded-lg text-sm flex-1 md:flex-none outline-none focus:border-indigo-500">
+                            <div class="relative flex-1 md:flex-none">
+                                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                                <input type="text" id="search-finance" placeholder="Tìm giao dịch..." class="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none focus:border-indigo-500 transition">
+                            </div>
                         </div>
                     </div>
                     
-                    <div id="t-custom-date" class="hidden flex gap-2 mb-4 bg-gray-50 p-3 rounded border">
-                        <input type="date" id="t-date-start" class="px-2 py-1 text-sm border rounded">
-                        <span class="self-center">-</span>
-                        <input type="date" id="t-date-end" class="px-2 py-1 text-sm border rounded">
-                        <button id="btn-t-filter-custom" class="bg-slate-700 text-white px-3 py-1 rounded text-sm">Lọc</button>
+                    <div id="t-custom-date" class="hidden flex gap-2 mb-5 bg-indigo-50/50 p-3 rounded-lg border border-indigo-100 items-center">
+                        <input type="date" id="t-date-start" class="px-3 py-1.5 text-sm border border-gray-200 rounded outline-none">
+                        <span class="text-gray-500"><i class="fas fa-arrow-right"></i></span>
+                        <input type="date" id="t-date-end" class="px-3 py-1.5 text-sm border border-gray-200 rounded outline-none">
+                        <button id="btn-t-filter-custom" class="bg-indigo-600 text-white px-4 py-1.5 rounded text-sm hover:bg-indigo-700 font-medium">Lọc</button>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse min-w-[400px]">
+                    <div class="overflow-x-auto rounded-lg border border-gray-100">
+                        <table class="w-full text-left border-collapse min-w-[500px]">
                             <thead>
-                                <tr class="bg-gray-50 text-gray-600 border-b">
-                                    <th class="p-3 font-medium">Ngày</th>
+                                <tr class="bg-gray-50 text-gray-500 text-sm border-b border-gray-100">
+                                    <th class="p-3 font-medium rounded-tl-lg">Thời gian</th>
                                     <th class="p-3 font-medium">Nội dung</th>
                                     <th class="p-3 font-medium text-right">Số tiền</th>
-                                    <th class="p-3 font-medium text-center">Xóa</th>
+                                    <th class="p-3 font-medium text-center rounded-tr-lg w-16">Xóa</th>
                                 </tr>
                             </thead>
-                            <tbody id="transactions-list" class="divide-y divide-gray-100"></tbody>
+                            <tbody id="transactions-list" class="divide-y divide-gray-50 bg-white"></tbody>
                         </table>
                     </div>
                 </div>
@@ -218,17 +261,77 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // ==========================================
+        // CUSTOM MODAL (ALERTS & CONFIRMS)
+        // ==========================================
+        const modalEl = document.getElementById('custom-modal');
+        const modalBox = document.getElementById('custom-modal-box');
+        const modalIcon = document.getElementById('modal-icon');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const modalActions = document.getElementById('modal-actions');
+
+        function openModal() {
+            modalEl.classList.remove('hidden');
+            // Trigger animation
+            setTimeout(() => {
+                modalEl.classList.remove('opacity-0');
+                modalBox.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeModal() {
+            modalEl.classList.add('opacity-0');
+            modalBox.classList.add('scale-95');
+            setTimeout(() => { modalEl.classList.add('hidden'); }, 200);
+        }
+
+        // Thay thế alert()
+        window.showAlert = (title, message, type = 'info') => {
+            modalTitle.innerText = title;
+            modalBody.innerText = message;
+            
+            if (type === 'error') modalIcon.innerHTML = '<i class="fas fa-exclamation-circle text-red-500"></i>';
+            else if (type === 'success') modalIcon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
+            else modalIcon.innerHTML = '<i class="fas fa-info-circle text-blue-500"></i>';
+
+            modalActions.innerHTML = `<button id="btn-modal-ok" class="bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition font-medium">Đóng</button>`;
+            
+            openModal();
+            document.getElementById('btn-modal-ok').onclick = closeModal;
+        };
+
+        // Thay thế confirm()
+        window.showConfirm = (title, message, onConfirm) => {
+            modalTitle.innerText = title;
+            modalBody.innerText = message;
+            modalIcon.innerHTML = '<i class="fas fa-question-circle text-yellow-500"></i>';
+
+            modalActions.innerHTML = `
+                <button id="btn-modal-cancel" class="bg-gray-100 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-200 transition font-medium">Hủy</button>
+                <button id="btn-modal-yes" class="bg-red-500 text-white px-5 py-2 rounded-lg hover:bg-red-600 transition font-medium">Đồng ý</button>
+            `;
+            
+            openModal();
+            document.getElementById('btn-modal-cancel').onclick = closeModal;
+            document.getElementById('btn-modal-yes').onclick = () => {
+                closeModal();
+                onConfirm(); // Chạy hàm callback sau khi chọn Yes
+            };
+        };
+
+
         // --- UI & TAB LOGIC ---
         const navBtns = document.querySelectorAll('.nav-btn');
         const tabContents = document.querySelectorAll('.tab-content');
         navBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 navBtns.forEach(b => {
-                    b.classList.remove('bg-indigo-600', 'text-white');
+                    b.classList.remove('bg-indigo-600', 'text-white', 'shadow-md');
                     b.classList.add('bg-transparent', 'hover:bg-slate-700', 'text-slate-300');
                     if(b.querySelector('span')) b.querySelector('span').classList.replace('text-white', 'text-slate-300');
                 });
-                btn.classList.add('bg-indigo-600', 'text-white');
+                btn.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
                 btn.classList.remove('bg-transparent', 'hover:bg-slate-700', 'text-slate-300');
                 
                 tabContents.forEach(tab => tab.classList.remove('active'));
@@ -239,12 +342,19 @@
         // Định dạng input số tiền (thêm dấu chấm lúc gõ)
         const amountInput = document.getElementById('t-amount');
         amountInput.addEventListener('input', function(e) {
-            // Xóa mọi ký tự không phải số
             let val = this.value.replace(/[^0-9]/g, ''); 
             if (val === '') { this.value = ''; return; }
-            // Định dạng theo chuẩn VN
             this.value = parseInt(val).toLocaleString('vi-VN');
         });
+
+        // Format Date Time chuẩn VN
+        const formatDateTime = (timestamp) => {
+            if(!timestamp) return 'Đang xử lý...';
+            const d = new Date(timestamp.toDate());
+            const date = d.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'});
+            const time = d.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
+            return `${time} ${date}`;
+        };
 
         // --- AUTH ---
         let currentUser = null;
@@ -268,7 +378,9 @@
                 .catch(() => document.getElementById('login-error').classList.remove('hidden'));
         });
 
-        const handleLogout = () => signOut(auth);
+        const handleLogout = () => {
+            showConfirm('Đăng xuất', 'Bạn có muốn đăng xuất khỏi ứng dụng không?', () => { signOut(auth); });
+        };
         document.getElementById('logout-btn').addEventListener('click', handleLogout);
         document.getElementById('logout-btn-mobile').addEventListener('click', handleLogout);
 
@@ -277,13 +389,11 @@
         let financeData = [];
 
         function initData() {
-            // Lắng nghe Notes
             onSnapshot(query(collection(db, "notes"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc")), (snap) => {
                 notesData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderNotes();
                 renderDashboardNotes();
             });
-            // Lắng nghe Finance
             onSnapshot(query(collection(db, "transactions"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc")), (snap) => {
                 financeData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderFinance();
@@ -292,24 +402,19 @@
             });
         }
 
-        // --- HÀM HỖ TRỢ LỌC NGÀY ---
         function checkDateRange(timestamp, filterType, startDateVal, endDateVal) {
             if(!timestamp) return false;
             const date = timestamp.toDate();
             const now = new Date();
             
-            if (filterType === 'today') {
-                return date.toDateString() === now.toDateString();
-            }
-            if (filterType === 'month') {
-                return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-            }
+            if (filterType === 'today') return date.toDateString() === now.toDateString();
+            if (filterType === 'month') return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
             if (filterType === 'custom') {
                 const start = startDateVal ? new Date(startDateVal).setHours(0,0,0,0) : 0;
                 const end = endDateVal ? new Date(endDateVal).setHours(23,59,59,999) : Infinity;
                 return date.getTime() >= start && date.getTime() <= end;
             }
-            return true; // 'all'
+            return true;
         }
 
         // ==========================================
@@ -321,19 +426,23 @@
             const title = document.getElementById('n-title').value;
             const content = document.getElementById('n-content').value;
 
-            if (id) {
-                await updateDoc(doc(db, "notes", id), { title, content });
-                document.getElementById('btn-cancel-note').click();
-            } else {
-                await addDoc(collection(db, "notes"), { userId: currentUser.uid, title, content, createdAt: serverTimestamp() });
-                document.getElementById('note-form').reset();
-            }
+            try {
+                if (id) {
+                    await updateDoc(doc(db, "notes", id), { title, content });
+                    document.getElementById('btn-cancel-note').click();
+                    showAlert('Thành công', 'Đã cập nhật ghi chú', 'success');
+                } else {
+                    await addDoc(collection(db, "notes"), { userId: currentUser.uid, title, content, createdAt: serverTimestamp() });
+                    document.getElementById('note-form').reset();
+                    showAlert('Thành công', 'Đã thêm ghi chú mới', 'success');
+                }
+            } catch (err) { showAlert('Lỗi', err.message, 'error'); }
         });
 
         document.getElementById('btn-cancel-note').addEventListener('click', () => {
             document.getElementById('note-form').reset();
             document.getElementById('n-id').value = '';
-            document.getElementById('note-form-title').innerText = "Thêm Ghi Chú";
+            document.getElementById('note-form-title').innerHTML = '<i class="fas fa-plus-circle text-indigo-500"></i> Viết Ghi Chú';
             document.getElementById('btn-cancel-note').classList.add('hidden');
         });
 
@@ -341,13 +450,17 @@
             document.getElementById('n-id').value = id;
             document.getElementById('n-title').value = title;
             document.getElementById('n-content').value = content;
-            document.getElementById('note-form-title').innerText = "Chỉnh Sửa Ghi Chú";
+            document.getElementById('note-form-title').innerHTML = '<i class="fas fa-edit text-indigo-500"></i> Chỉnh Sửa Ghi Chú';
             document.getElementById('btn-cancel-note').classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
-        window.deleteNote = async (id) => { if(confirm("Xóa ghi chú này?")) await deleteDoc(doc(db, "notes", id)); };
 
-        // Xử lý UI Bộ lọc
+        window.deleteNote = (id) => { 
+            showConfirm("Xóa Ghi Chú", "Bạn có chắc chắn muốn xóa ghi chú này không?", async () => {
+                await deleteDoc(doc(db, "notes", id));
+            });
+        };
+
         const filterNDate = document.getElementById('filter-n-date');
         const nCustomBox = document.getElementById('n-custom-date');
         filterNDate.addEventListener('change', (e) => {
@@ -371,20 +484,20 @@
             });
 
             listEl.innerHTML = filtered.length ? filtered.map(n => `
-                <div class="border rounded-lg p-4 bg-gray-50 flex flex-col justify-between">
+                <div class="border border-gray-100 rounded-xl p-5 bg-white shadow-sm hover:shadow-md transition flex flex-col justify-between group">
                     <div>
                         <div class="flex justify-between items-start mb-2">
-                            <h4 class="font-bold text-lg">${n.title}</h4>
-                            <span class="text-xs text-gray-400">${n.createdAt ? new Date(n.createdAt.toDate()).toLocaleDateString('vi-VN') : ''}</span>
+                            <h4 class="font-bold text-gray-800 text-lg leading-tight line-clamp-2">${n.title}</h4>
                         </div>
+                        <span class="text-[11px] text-gray-400 font-medium mb-3 block"><i class="far fa-clock"></i> ${formatDateTime(n.createdAt)}</span>
                         <p class="text-gray-600 text-sm whitespace-pre-line mb-4">${n.content}</p>
                     </div>
-                    <div class="flex justify-end gap-3 border-t pt-2 mt-2">
-                        <button onclick="editNote('${n.id}', '${n.title.replace(/'/g, "\\'")}', '${n.content.replace(/'/g, "\\'")}')" class="text-indigo-500 text-sm"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteNote('${n.id}')" class="text-red-500 text-sm"><i class="fas fa-trash"></i></button>
+                    <div class="flex justify-end gap-3 border-t border-gray-50 pt-3 mt-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition">
+                        <button onclick="editNote('${n.id}', '${n.title.replace(/'/g, "\\'")}', '${n.content.replace(/'/g, "\\'")}')" class="text-indigo-500 bg-indigo-50 p-2 rounded hover:bg-indigo-100 transition"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteNote('${n.id}')" class="text-red-500 bg-red-50 p-2 rounded hover:bg-red-100 transition"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
-            `).join('') : '<p class="text-gray-500 text-sm italic col-span-2">Không có ghi chú nào phù hợp.</p>';
+            `).join('') : '<p class="text-gray-500 text-sm italic col-span-full">Không tìm thấy ghi chú nào.</p>';
         }
 
         // ==========================================
@@ -393,20 +506,25 @@
         document.getElementById('transaction-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const type = document.getElementById('t-type').value;
-            // Loại bỏ dấu chấm trước khi lưu vào database
             const rawAmount = document.getElementById('t-amount').value.replace(/\./g, '');
             const amount = Number(rawAmount);
             const note = document.getElementById('t-note').value;
 
-            if(!amount) return alert("Vui lòng nhập số tiền hợp lệ!");
+            if(!amount) return showAlert('Cảnh báo', 'Vui lòng nhập số tiền hợp lệ!', 'warning');
 
-            await addDoc(collection(db, "transactions"), { userId: currentUser.uid, type, amount, note, createdAt: serverTimestamp() });
-            document.getElementById('transaction-form').reset();
+            try {
+                await addDoc(collection(db, "transactions"), { userId: currentUser.uid, type, amount, note, createdAt: serverTimestamp() });
+                document.getElementById('transaction-form').reset();
+                showAlert('Thành công', 'Đã lưu giao dịch!', 'success');
+            } catch (err) { showAlert('Lỗi', err.message, 'error'); }
         });
 
-        window.deleteTrans = async (id) => { if(confirm("Xóa giao dịch này?")) await deleteDoc(doc(db, "transactions", id)); };
+        window.deleteTrans = (id) => { 
+            showConfirm("Xóa Giao Dịch", "Bạn có chắc chắn muốn xóa giao dịch này không?", async () => {
+                await deleteDoc(doc(db, "transactions", id));
+            });
+        };
 
-        // UI Bộ lọc thu chi
         const filterTDate = document.getElementById('filter-t-date');
         const tCustomBox = document.getElementById('t-custom-date');
         filterTDate.addEventListener('change', (e) => {
@@ -432,15 +550,17 @@
             listEl.innerHTML = filtered.length ? filtered.map(t => {
                 const isInc = t.type === 'income';
                 return `
-                <tr class="border-b hover:bg-gray-50">
-                    <td class="p-3 text-sm text-gray-500 whitespace-nowrap">${t.createdAt ? new Date(t.createdAt.toDate()).toLocaleDateString('vi-VN') : ''}</td>
+                <tr class="hover:bg-gray-50/50 transition border-b border-gray-50">
+                    <td class="p-3 text-xs text-gray-500 whitespace-nowrap">${formatDateTime(t.createdAt)}</td>
                     <td class="p-3 font-medium text-gray-800">${t.note}</td>
                     <td class="p-3 text-right font-bold ${isInc ? 'text-green-600' : 'text-red-600'} whitespace-nowrap">
                         ${isInc ? '+' : '-'}${t.amount.toLocaleString('vi-VN')}
                     </td>
-                    <td class="p-3 text-center"><button onclick="deleteTrans('${t.id}')" class="text-red-400"><i class="fas fa-times"></i></button></td>
+                    <td class="p-3 text-center">
+                        <button onclick="deleteTrans('${t.id}')" class="text-gray-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded transition"><i class="fas fa-trash"></i></button>
+                    </td>
                 </tr>`;
-            }).join('') : '<tr><td colspan="4" class="p-4 text-center text-sm text-gray-500 italic">Không có giao dịch.</td></tr>';
+            }).join('') : '<tr><td colspan="4" class="p-5 text-center text-sm text-gray-500 italic">Không tìm thấy giao dịch.</td></tr>';
         }
 
         // ==========================================
@@ -456,13 +576,18 @@
 
         function renderDashboardNotes() {
             const list = document.getElementById('dash-recent-notes');
-            const top5 = notesData.slice(0, 5); // Lấy 5 phần tử đầu tiên (mới nhất)
-            list.innerHTML = top5.length ? top5.map(n => `
-                <li class="py-3 flex justify-between items-center">
-                    <span class="font-medium truncate pr-4 text-gray-800 text-sm">${n.title}</span>
-                    <span class="text-xs text-gray-400 whitespace-nowrap">${n.createdAt ? new Date(n.createdAt.toDate()).toLocaleDateString('vi-VN') : ''}</span>
-                </li>
-            `).join('') : '<li class="py-3 text-sm italic text-gray-500">Chưa có ghi chú nào.</li>';
+            const top5 = notesData.slice(0, 5);
+            list.innerHTML = top5.length ? top5.map(n => {
+                const shortContent = n.content.length > 50 ? n.content.substring(0, 50) + '...' : n.content;
+                return `
+                <li class="py-3 flex flex-col hover:bg-gray-50 -mx-6 px-6 transition">
+                    <div class="flex justify-between items-start mb-1">
+                        <span class="font-bold text-gray-800 text-sm truncate pr-2">${n.title}</span>
+                        <span class="text-[10px] text-gray-400 whitespace-nowrap bg-gray-100 px-2 py-0.5 rounded">${formatDateTime(n.createdAt)}</span>
+                    </div>
+                    <span class="text-xs text-gray-500 line-clamp-1">${shortContent}</span>
+                </li>`;
+            }).join('') : '<li class="py-4 text-sm italic text-gray-400 text-center">Chưa có ghi chú nào.</li>';
         }
 
         function renderDashboardFinance() {
@@ -471,11 +596,14 @@
             list.innerHTML = top5.length ? top5.map(t => {
                 const isInc = t.type === 'income';
                 return `
-                <li class="py-3 flex justify-between items-center">
-                    <span class="font-medium truncate pr-4 text-gray-800 text-sm">${t.note}</span>
-                    <span class="font-bold text-sm whitespace-nowrap ${isInc ? 'text-green-600' : 'text-red-600'}">${isInc ? '+' : '-'}${t.amount.toLocaleString('vi-VN')}</span>
+                <li class="py-3 flex justify-between items-center hover:bg-gray-50 -mx-6 px-6 transition">
+                    <div class="flex flex-col truncate pr-4">
+                        <span class="font-medium text-gray-800 text-sm truncate">${t.note}</span>
+                        <span class="text-[10px] text-gray-400 mt-0.5"><i class="far fa-clock"></i> ${formatDateTime(t.createdAt)}</span>
+                    </div>
+                    <span class="font-bold text-sm whitespace-nowrap bg-gray-50 px-2 py-1 rounded ${isInc ? 'text-green-600' : 'text-red-600'}">${isInc ? '+' : '-'}${t.amount.toLocaleString('vi-VN')}đ</span>
                 </li>`;
-            }).join('') : '<li class="py-3 text-sm italic text-gray-500">Chưa có giao dịch nào.</li>';
+            }).join('') : '<li class="py-4 text-sm italic text-gray-400 text-center">Chưa có giao dịch nào.</li>';
         }
 
     </script>
